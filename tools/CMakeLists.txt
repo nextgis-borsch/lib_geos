@@ -20,12 +20,12 @@ if(UNIX)
     # just a dummy so installdest not set
     # want geos-config only for Mac unix build or framework+unixcompat
   else()
-    set(installdest bin)
+    set(installdest ${INSTALL_BIN_DIR})
     set(prefix ${CMAKE_INSTALL_PREFIX})
   endif()
 
-  set(exec_prefix ${prefix}/bin)
-  set(libdir ${prefix}/lib)
+  set(exec_prefix ${prefix}/${INSTALL_BIN_DIR})
+  set(libdir ${prefix}/${INSTALL_LIB_DIR})
   
   if(installdest)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/geos-config.in

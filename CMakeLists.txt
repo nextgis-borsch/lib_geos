@@ -10,16 +10,19 @@
 # See the COPYING file for more information.
 #
 #################################################################################
+cmake_minimum_required (VERSION 2.8.12 FATAL_ERROR)
+
 project(geos)
-cmake_minimum_required(VERSION 2.6)
 
-if(NOT CMAKE_VERSION)
-    set(CMAKE_VERSION
-      "${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
-endif()
+# some init settings
+set(CMAKE_COLOR_MAKEFILE ON)
+# set path to additional CMake modules
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
-# Location of custom CMake modules with macros used by GEOS
-set(CMAKE_MODULE_PATH "${geos_SOURCE_DIR}/cmake/modules")
+include(GNUInstallDirs)
+set(INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR} CACHE INTERNAL "Installation directory for executables" FORCE)
+set(INSTALL_LIB_DIR ${CMAKE_INSTALL_LIBDIR} CACHE INTERNAL "Installation directory for libraries" FORCE)
+set(INSTALL_INC_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" CACHE INTERNAL "Installation directory for headers" FORCE)
 
 #################################################################################
 # Setup GEOS version
@@ -34,7 +37,14 @@ set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 # JTS_PORT is the version of JTS this release is bound to
 set(JTS_PORT 1.13.0)
-message(STATUS "Setting GEOS version ${VERSION} as port of JTS ${JTS_PORT}")
+
+include (util)
+report_version(${PROJECT_NAME} ${VERSION})
+
+
+if(NOT SUPRESS_VERBOSE_OUTPUT)
+    message(STATUS "Setting GEOS version ${VERSION} as port of JTS ${JTS_PORT}")
+endif()
 
 # GEOS C API version
 set(CAPI_INTERFACE_CURRENT 10)
@@ -45,10 +55,16 @@ math(EXPR CAPI_VERSION_MAJOR "${CAPI_INTERFACE_CURRENT} - ${CAPI_INTERFACE_AGE}"
 set(CAPI_VERSION_MINOR ${CAPI_INTERFACE_AGE})
 set(CAPI_VERSION_PATCH ${CAPI_INTERFACE_REVISION})
 set(CAPI_VERSION "${CAPI_VERSION_MAJOR}.${CAPI_VERSION_MINOR}.${CAPI_VERSION_PATCH}")
-message(STATUS "Setting GEOS C API version ${CAPI_VERSION}")
+
+if(NOT SUPRESS_VERBOSE_OUTPUT)
+    message(STATUS "Setting GEOS C API version ${CAPI_VERSION}")
+endif()
+
 if (NOT WIN32)
   set(CAPI_SOVERSION ${CAPI_VERSION_MAJOR})
-  message(STATUS "Setting GEOS C API soversion ${CAPI_SOVERSION}")
+  if(NOT SUPRESS_VERBOSE_OUTPUT)
+    message(STATUS "Setting GEOS C API soversion ${CAPI_SOVERSION}")
+  endif()  
 endif()
 
 #################################################################################
@@ -56,7 +72,7 @@ endif()
 #################################################################################
 
 option(GEOS_ENABLE_TESTS
-  "Set to OFF|ON (default) to control build of GEOS tests package" ON)
+  "Set to ON|OFF (default) to control build of GEOS tests package" OFF)
 
 option(GEOS_ENABLE_INLINE
   "Set to OFF|ON (default) to control GEOS compilation with small functions inlining" ON)
@@ -87,7 +103,9 @@ if(NOT MSVC_IDE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING
       "Choose the type of build, options are: None Debug Release" FORCE)
   endif()
-  message(STATUS "Setting GEOS build type - ${CMAKE_BUILD_TYPE}")
+  if(NOT SUPRESS_VERBOSE_OUTPUT)
+    message(STATUS "Setting GEOS build type - ${CMAKE_BUILD_TYPE}")
+  endif()
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL Debug)
@@ -104,8 +122,10 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     # Remove extra precision by forcing conformance to IEEE 754 rather than IEEE 854
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffloat-store")
   endif()
-  message(STATUS
-    "Forcing IEEE 754 using flag -ffloat-store - ${GEOS_ENABLE_FLOATSTORE}")
+  
+  if(NOT SUPRESS_VERBOSE_OUTPUT)
+    message(STATUS "Forcing IEEE 754 using flag -ffloat-store - ${GEOS_ENABLE_FLOATSTORE}")
+  endif()  
 
   # Warnings specification
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-long-long")
@@ -131,7 +151,9 @@ elseif(MSVC)
     if(GEOS_MSVC_ENABLE_MP)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
     endif()
-    message(STATUS "Setting Visual Studio 2005+ option /MP to ${GEOS_MSVC_ENABLE_MP}")
+    if(NOT SUPRESS_VERBOSE_OUTPUT)
+        message(STATUS "Setting Visual Studio 2005+ option /MP to ${GEOS_MSVC_ENABLE_MP}")
+    endif()
     
     add_definitions(-D_SCL_SECURE_NO_WARNINGS)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -143,16 +165,21 @@ endif()
 if(GEOS_ENABLE_INLINE)
   add_definitions(-DGEOS_INLINE)
 endif()
-message(STATUS
-  "Setting GEOS compilation with small functions inlining - ${GEOS_ENABLE_INLINE}")
+
+if(NOT SUPRESS_VERBOSE_OUTPUT)
+    message(STATUS 
+        "Setting GEOS compilation with small functions inlining - ${GEOS_ENABLE_INLINE}")
+endif()
 
 if(NOT MSVC)
   if(GEOS_ENABLE_ASSERT)
     string(REGEX REPLACE "[-/]D.*NDEBUG" "-U NDEBUG"
       CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
   endif()
-  message(STATUS
-    "Setting GEOS compilation with assert() macro enabled - ${GEOS_ENABLE_ASSERT}")
+  if(NOT SUPRESS_VERBOSE_OUTPUT)
+    message(STATUS
+      "Setting GEOS compilation with assert() macro enabled - ${GEOS_ENABLE_ASSERT}")
+  endif()
 endif()
 
 #################################################################################
@@ -243,41 +270,44 @@ include_directories(${geos_BINARY_DIR}/include)
 #  DESCRIPTION:
 #      MACRO FOR GETTING THE SVN revision for this build
 #################################################################################
-MACRO (GET_SVN_REVISION)
-   FIND_PACKAGE(Subversion)
-   IF(SUBVERSION_FOUND)
-      Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)
+#macro (GET_SVN_REVISION)
+#   find_package(Subversion)
+#   if(SUBVERSION_FOUND)
+#      Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)
       # MESSAGE("Current revision is ${Project_WC_REVISION}")
       # Subversion_WC_LOG(${PROJECT_SOURCE_DIR} Project)
       # MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
-   ENDIF()
-ENDMACRO(GET_SVN_REVISION)
+#   endif()
+#endmacro(GET_SVN_REVISION)
 
 # Determine SVN/Git revision
-if(EXISTS "${CMAKE_SOURCE_DIR}/.svn")
-  GET_SVN_REVISION()
-endif()
-if ( NOT ${Project_WC_REVISION} EQUAL 0 )
-   set( GEOS_SVN_REVISION ${Project_WC_REVISION} )
-   configure_file ( 
-      "${PROJECT_SOURCE_DIR}/tools/geos_svn_revision_cmake.h.in"
-      "${PROJECT_SOURCE_DIR}/geos_svn_revision.h" )
+#if(EXISTS "${CMAKE_SOURCE_DIR}/.svn")
+#  GET_SVN_REVISION()
+#endif()
+#if ( NOT ${Project_WC_REVISION} EQUAL 0 )
+#   set( GEOS_SVN_REVISION ${Project_WC_REVISION} )
+#   configure_file ( 
+#      "${PROJECT_SOURCE_DIR}/tools/geos_svn_revision_cmake.h.in"
+#      "${PROJECT_SOURCE_DIR}/geos_svn_revision.h" )
       # "${geos_BINARY_DIR}/include/geos_svn_revision.h" )
-else()
-   message(STATUS "Generating revision header ${CMAKE_SOURCE_DIR}/geos_svn_revision.h")
-   find_program(SH sh)
-   if(SH)
-      execute_process(COMMAND ${SH} -c 
-      "cd ${CMAKE_SOURCE_DIR} && ${CMAKE_SOURCE_DIR}/tools/svn_repo_revision.sh")
+#else()
+#   if(NOT SUPRESS_VERBOSE_OUTPUT)
+#       message(STATUS "Generating revision header ${CMAKE_SOURCE_DIR}/geos_svn_revision.h")
+#   endif()
+   
+#   find_program(SH sh)
+#   if(SH)
+#      execute_process(COMMAND ${SH} -c 
+#      "cd ${CMAKE_SOURCE_DIR} && ${CMAKE_SOURCE_DIR}/tools/svn_repo_revision.sh")
 
-      file(RENAME "${CMAKE_SOURCE_DIR}/geos_svn_revision.h"
-      "${CMAKE_BINARY_DIR}/geos_svn_revision.h")
-   else()
-      message("*** sh-compatible command not found, cannot create geos_svn_revision.h")
-      message("*** Check SVN revision and create revision header manually:")
-      message("*** echo '#define GEOS_SVN_REVISION XYZ' > ${CMAKE_SOURCE_DIR}/geos_svn_revision.h")
-   endif()
-endif()
+#      file(RENAME "${CMAKE_SOURCE_DIR}/geos_svn_revision.h"
+#      "${CMAKE_BINARY_DIR}/geos_svn_revision.h")
+#   else()
+#      message("*** sh-compatible command not found, cannot create geos_svn_revision.h")
+#      message("*** Check SVN revision and create revision header manually:")
+#      message("*** echo '#define GEOS_SVN_REVISION XYZ' > ${CMAKE_SOURCE_DIR}/geos_svn_revision.h")
+#   endif()
+#endif()
 # End: Determine SVN/Git revision
 
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/platform.h)
@@ -325,12 +355,24 @@ endif()
 #################################################################################
 include(GenerateSourceGroups)
 
+set(EXPORT_TARGETS)
+
 add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(capi)
 add_subdirectory(tests)
 add_subdirectory(tools)
 
+if(BUILD_SHARED_LIBS)
+    set(EXPORT_NAME ${PROJECT_NAME})
+else()
+    set(EXPORT_NAME ${PROJECT_NAME}static)
+endif()
+
+if(EXPORT_TARGETS)
+    export(TARGETS ${EXPORT_TARGETS} FILE ${EXPORT_NAME}-exports.cmake EXPORT_LINK_INTERFACE_LIBRARIES)
+endif()
+    
 #################################################################################
 # Install/Uninstall
 #################################################################################
@@ -345,7 +387,9 @@ add_custom_target(uninstall
 #################################################################################
 # DEBUG settings - TODO: make a summary
 
-message(STATUS "CMake ${CMAKE_VERSION} successfully configured ${PROJECT_NAME} using ${CMAKE_GENERATOR} generator")
+if(NOT SUPRESS_VERBOSE_OUTPUT)
+    message(STATUS "CMake ${CMAKE_VERSION} successfully configured ${PROJECT_NAME} using ${CMAKE_GENERATOR} generator")
+endif()
 
 #message(STATUS "XXX: CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
 #message(STATUS "XXX: CMAKE_CXX_FLAGS_DEBUG=${CMAKE_CXX_FLAGS_DEBUG}")

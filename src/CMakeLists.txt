@@ -61,21 +61,31 @@ if(GEOS_ENABLE_MACOSX_FRAMEWORK)
 
 else()
 
-  add_library(geos SHARED ${geos_SOURCES} ${geos_ALL_HEADERS})
-  add_library(geos-static STATIC ${geos_SOURCES} ${geos_ALL_HEADERS})
+    if(BUILD_SHARED_LIBS)
+        set(LIB_TYPE SHARED)
+        set(LIB_NAME ${PROJECT_NAME})
+    else()
+        set(LIB_TYPE STATIC)
+        set(LIB_NAME ${PROJECT_NAME}-static)
+    endif()
 
-  set_target_properties(geos
-    PROPERTIES
-    DEFINE_SYMBOL GEOS_DLL_EXPORT
-    VERSION ${VERSION}
-    CLEAN_DIRECT_OUTPUT 1)
+  add_library(${LIB_NAME} ${LIB_TYPE} ${geos_SOURCES} ${geos_ALL_HEADERS})
 
-  set_target_properties(geos-static
-    PROPERTIES
-    OUTPUT_NAME "geos"
-    PREFIX "lib"
-    CLEAN_DIRECT_OUTPUT 1)
+    if(BUILD_SHARED_LIBS)
+      set_target_properties(${LIB_NAME}
+        PROPERTIES
+        DEFINE_SYMBOL GEOS_DLL_EXPORT
+        VERSION ${VERSION}
+        CLEAN_DIRECT_OUTPUT 1)
+    else()
+      set_target_properties(${LIB_NAME}
+        PROPERTIES
+        OUTPUT_NAME "geos"
+        PREFIX "lib"
+        CLEAN_DIRECT_OUTPUT 1)
+    endif()
 
+    set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)    
 endif()
 
 # if(APPLE)
@@ -90,10 +100,10 @@ endif()
 #################################################################################
 
 if(NOT GEOS_ENABLE_MACOSX_FRAMEWORK)
-  install(TARGETS geos geos-static
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib)
+  install(TARGETS ${LIB_NAME}
+    RUNTIME DESTINATION ${INSTALL_BIN_DIR}
+    LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+    ARCHIVE DESTINATION ${INSTALL_LIB_DIR})
 endif()
 
 #################################################################################

@@ -21,7 +21,7 @@
 if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
   set(installdest GEOS.framework/Versions/${VERSION_MAJOR}/Headers)
 else()
-  set(installdest include/geos)
+  set(installdest ${INSTALL_INC_DIR})
 endif()
 
 
