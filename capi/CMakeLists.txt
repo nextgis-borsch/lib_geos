@@ -35,9 +35,7 @@ if(NOT GEOS_ENABLE_MACOSX_FRAMEWORK)
     
   add_library(${LIB_NAME} ${LIB_TYPE} ${geos_c_SOURCES}) 
   
-    if(BUILD_SHARED_LIBS)
-        target_link_libraries(${LIB_NAME} ${EXPORT_TARGETS})
-    endif()
+  target_link_libraries(${LIB_NAME} ${EXPORT_TARGETS})
     
   if (WIN32)
     set_target_properties(${LIB_NAME}
