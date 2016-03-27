@@ -46,6 +46,8 @@ if(NOT GEOS_ENABLE_MACOSX_FRAMEWORK)
   else()
     set_target_properties(${LIB_NAME}
       PROPERTIES
+      OUTPUT_NAME "geos_c"
+      PREFIX "lib"
       VERSION ${CAPI_VERSION}
       SOVERSION ${CAPI_SOVERSION}
       CLEAN_DIRECT_OUTPUT 1)
