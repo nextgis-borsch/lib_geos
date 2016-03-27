@@ -41,7 +41,7 @@ class GEOS_DLL GeometryNoder
 {
 public:
 
-  static std::auto_ptr<geom::Geometry> node(const geom::Geometry& geom);
+  static std::auto_ptr<geom::Geometry> GEOS_DLL_API node(const geom::Geometry& geom);
 
   GeometryNoder(const geom::Geometry& g);
 

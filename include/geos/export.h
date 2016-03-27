@@ -28,4 +28,6 @@
 #  define GEOS_DLL
 #endif
 
+#define GEOS_DLL_API __stdcall
+
 #endif
