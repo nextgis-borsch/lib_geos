@@ -66,7 +66,7 @@ else()
         set(LIB_NAME ${PROJECT_NAME})
     else()
         set(LIB_TYPE STATIC)
-        set(LIB_NAME ${PROJECT_NAME}-static)
+        set(LIB_NAME ${PROJECT_NAME}static)
     endif()
 
   add_library(${LIB_NAME} ${LIB_TYPE} ${geos_SOURCES} ${geos_ALL_HEADERS})
