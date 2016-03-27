@@ -16,7 +16,7 @@
 
 #if defined(_MSC_VER) || defined(__CYGWIN__) || defined(__MINGW32__) || \
     defined( __BCPLUSPLUS__)  || defined( __MWERKS__)
-
+#  define GEOS_DLL_API __stdcall
 #  if defined(GEOS_DLL_EXPORT)
 #    define GEOS_DLL   __declspec(dllexport)
 #  elif defined(GEOS_DLL_IMPORT)
@@ -26,8 +26,9 @@
 #  endif
 #else
 #  define GEOS_DLL
+#  define GEOS_DLL_API __attribute__((stdcall))
 #endif
 
-#define GEOS_DLL_API __stdcall
+
 
 #endif
