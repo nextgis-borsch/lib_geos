@@ -362,6 +362,7 @@ add_subdirectory(src)
 add_subdirectory(capi)
 add_subdirectory(tests)
 add_subdirectory(tools)
+#TODO: add_subdirectory(doc)
 
 if(BUILD_SHARED_LIBS)
     set(EXPORT_NAME ${PROJECT_NAME})
@@ -390,7 +391,3 @@ add_custom_target(uninstall
 if(NOT SUPRESS_VERBOSE_OUTPUT)
     message(STATUS "CMake ${CMAKE_VERSION} successfully configured ${PROJECT_NAME} using ${CMAKE_GENERATOR} generator")
 endif()
-
-#message(STATUS "XXX: CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
-#message(STATUS "XXX: CMAKE_CXX_FLAGS_DEBUG=${CMAKE_CXX_FLAGS_DEBUG}")
-#message(STATUS "XXX: CMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
