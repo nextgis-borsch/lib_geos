@@ -265,36 +265,6 @@ include_directories(${geos_BINARY_DIR}/include)
 # Setup checks and generate config headers
 #################################################################################
 
-# Determine SVN/Git revision
-#if(EXISTS "${CMAKE_SOURCE_DIR}/.svn")
-#  GET_SVN_REVISION()
-#endif()
-#if ( NOT ${Project_WC_REVISION} EQUAL 0 )
-#   set( GEOS_SVN_REVISION ${Project_WC_REVISION} )
-#   configure_file ( 
-#      "${PROJECT_SOURCE_DIR}/tools/geos_svn_revision_cmake.h.in"
-#      "${PROJECT_SOURCE_DIR}/geos_svn_revision.h" )
-      # "${geos_BINARY_DIR}/include/geos_svn_revision.h" )
-#else()
-#   if(NOT SUPRESS_VERBOSE_OUTPUT)
-#       message(STATUS "Generating revision header ${CMAKE_SOURCE_DIR}/geos_svn_revision.h")
-#   endif()
-   
-#   find_program(SH sh)
-#   if(SH)
-#      execute_process(COMMAND ${SH} -c 
-#      "cd ${CMAKE_SOURCE_DIR} && ${CMAKE_SOURCE_DIR}/tools/svn_repo_revision.sh")
-
-#      file(RENAME "${CMAKE_SOURCE_DIR}/geos_svn_revision.h"
-#      "${CMAKE_BINARY_DIR}/geos_svn_revision.h")
-#   else()
-#      message("*** sh-compatible command not found, cannot create geos_svn_revision.h")
-#      message("*** Check SVN revision and create revision header manually:")
-#      message("*** echo '#define GEOS_SVN_REVISION XYZ' > ${CMAKE_SOURCE_DIR}/geos_svn_revision.h")
-#   endif()
-#endif()
-# End: Determine SVN/Git revision
-
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/platform.h)
   message(STATUS "Disabling existing ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/platform.h")
 
