@@ -3,6 +3,7 @@
 # Main GEOS build configuration file for CMake build system
 #
 # Copyright (C) 2009 Mateusz Loskot <mateusz@loskot.net>
+# Copyright (C) 2016, NextGIS <info@nextgis.com>
 #
 # This is free software; you can redistribute and/or modify it under
 # the terms of the GNU Lesser General Public Licence as published
@@ -263,22 +264,6 @@ include_directories(${geos_BINARY_DIR}/include)
 #################################################################################
 # Setup checks and generate config headers
 #################################################################################
-
-#################################################################################
-#  MACRO: GET_SVN_REVISION
-#  
-#  DESCRIPTION:
-#      MACRO FOR GETTING THE SVN revision for this build
-#################################################################################
-#macro (GET_SVN_REVISION)
-#   find_package(Subversion)
-#   if(SUBVERSION_FOUND)
-#      Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)
-      # MESSAGE("Current revision is ${Project_WC_REVISION}")
-      # Subversion_WC_LOG(${PROJECT_SOURCE_DIR} Project)
-      # MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
-#   endif()
-#endmacro(GET_SVN_REVISION)
 
 # Determine SVN/Git revision
 #if(EXISTS "${CMAKE_SOURCE_DIR}/.svn")
