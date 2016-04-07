@@ -3,6 +3,7 @@
 # GEOS C++ library build configuration for CMake build system
 #
 # Copyright (C) 2009 Mateusz Loskot <mateusz@loskot.net>
+# Copyright (C) 2016, NextGIS <info@nextgis.com>
 #
 # This is free software; you can redistribute and/or modify it under
 # the terms of the GNU Lesser General Public Licence as published
