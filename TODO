@@ -27,4 +27,4 @@ GEOS TODO:
 
 - Add distinct binary predicates test support in XMLTester
 
-- xenial test
+- Fix xenial test
