@@ -77,6 +77,7 @@ else()
         PROPERTIES
         DEFINE_SYMBOL GEOS_DLL_EXPORT
         VERSION ${VERSION}
+        SOVERSION ${SOVERSION}
         CLEAN_DIRECT_OUTPUT 1)
     else()
       set_target_properties(${LIB_NAME}
