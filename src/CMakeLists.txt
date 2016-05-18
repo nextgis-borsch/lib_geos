@@ -11,21 +11,8 @@
 # See the COPYING file for more information.
 #
 #################################################################################
-set(SRC_PARTS algorithm geom index io noding operation linearref simplify triangulate util)
-set(geos_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/inlines.cpp)
 
-foreach(SRC_PART ${SRC_PARTS})
-    file(GLOB_RECURSE geos_SOURCES_PART ${CMAKE_CURRENT_SOURCE_DIR}/${SRC_PART}/*.cpp)
-    set(geos_SOURCES ${geos_SOURCES} ${geos_SOURCES_PART})
-endforeach()    
-if(NOT ANDROID)
-    set(SRC_PARTS_ADD geomgraph planargraph precision)
-    foreach(SRC_PART_ADD ${SRC_PARTS_ADD})
-        file(GLOB_RECURSE geos_SOURCES_PART ${CMAKE_CURRENT_SOURCE_DIR}/${SRC_PART_ADD}/*.cpp)
-        set(geos_SOURCES ${geos_SOURCES} ${geos_SOURCES_PART})
-    endforeach()        
-endif()
-
+file(GLOB_RECURSE geos_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE geos_ALL_HEADERS ${CMAKE_SOURCE_DIR}/include/*.h) # fix source_group issue
 
 if(GEOS_ENABLE_MACOSX_FRAMEWORK)
