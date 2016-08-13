@@ -44,7 +44,7 @@ include (util)
 report_version(${PROJECT_NAME} ${VERSION})
 
 
-if(NOT SUPRESS_VERBOSE_OUTPUT)
+if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "Setting GEOS version ${VERSION} as port of JTS ${JTS_PORT}")
 endif()
 
@@ -58,13 +58,13 @@ set(CAPI_VERSION_MINOR ${CAPI_INTERFACE_AGE})
 set(CAPI_VERSION_PATCH ${CAPI_INTERFACE_REVISION})
 set(CAPI_VERSION "${CAPI_VERSION_MAJOR}.${CAPI_VERSION_MINOR}.${CAPI_VERSION_PATCH}")
 
-if(NOT SUPRESS_VERBOSE_OUTPUT)
+if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "Setting GEOS C API version ${CAPI_VERSION}")
 endif()
 
 if (NOT WIN32)
   set(CAPI_SOVERSION ${CAPI_VERSION_MAJOR})
-  if(NOT SUPRESS_VERBOSE_OUTPUT)
+  if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "Setting GEOS C API soversion ${CAPI_SOVERSION}")
   endif()  
 endif()
@@ -105,7 +105,7 @@ if(NOT MSVC_IDE)
     set(CMAKE_BUILD_TYPE Debug CACHE STRING
       "Choose the type of build, options are: None Debug Release" FORCE)
   endif()
-  if(NOT SUPRESS_VERBOSE_OUTPUT)
+  if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "Setting GEOS build type - ${CMAKE_BUILD_TYPE}")
   endif()
 endif()
@@ -125,7 +125,7 @@ if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffloat-store")
   endif()
   
-  if(NOT SUPRESS_VERBOSE_OUTPUT)
+  if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "Forcing IEEE 754 using flag -ffloat-store - ${GEOS_ENABLE_FLOATSTORE}")
   endif()  
 
@@ -153,7 +153,7 @@ elseif(MSVC)
     if(GEOS_MSVC_ENABLE_MP)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MP")
     endif()
-    if(NOT SUPRESS_VERBOSE_OUTPUT)
+    if(NOT SUPPRESS_VERBOSE_OUTPUT)
         message(STATUS "Setting Visual Studio 2005+ option /MP to ${GEOS_MSVC_ENABLE_MP}")
     endif()
     
@@ -168,7 +168,7 @@ if(GEOS_ENABLE_INLINE)
   add_definitions(-DGEOS_INLINE)
 endif()
 
-if(NOT SUPRESS_VERBOSE_OUTPUT)
+if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS 
         "Setting GEOS compilation with small functions inlining - ${GEOS_ENABLE_INLINE}")
 endif()
@@ -178,7 +178,7 @@ if(NOT MSVC)
     string(REGEX REPLACE "[-/]D.*NDEBUG" "-U NDEBUG"
       CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
   endif()
-  if(NOT SUPRESS_VERBOSE_OUTPUT)
+  if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS
       "Setting GEOS compilation with assert() macro enabled - ${GEOS_ENABLE_ASSERT}")
   endif()
@@ -344,6 +344,6 @@ add_custom_target(uninstall
 #################################################################################
 # DEBUG settings - TODO: make a summary
 
-if(NOT SUPRESS_VERBOSE_OUTPUT)
+if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "CMake ${CMAKE_VERSION} successfully configured ${PROJECT_NAME} using ${CMAKE_GENERATOR} generator")
 endif()
