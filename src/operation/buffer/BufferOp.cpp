@@ -40,8 +40,9 @@
 #include <geos/noding/MCIndexNoder.h>
 #include <geos/noding/IntersectionAdder.h>
 
-
-
+#ifdef max
+#undef max
+#endif // max
 
 #ifndef GEOS_DEBUG
 #define GEOS_DEBUG 0
