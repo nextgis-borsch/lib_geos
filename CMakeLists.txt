@@ -324,11 +324,7 @@ add_subdirectory(tests)
 add_subdirectory(tools)
 #TODO: add_subdirectory(doc)
 
-if(BUILD_SHARED_LIBS)
-    set(EXPORT_NAME ${PROJECT_NAME})
-else()
-    set(EXPORT_NAME ${PROJECT_NAME}static)
-endif()
+set(EXPORT_NAME ${PROJECT_NAME})
 
 if(EXPORT_TARGETS)
     export(TARGETS ${EXPORT_TARGETS} FILE ${EXPORT_NAME}-exports.cmake EXPORT_LINK_INTERFACE_LIBRARIES)
