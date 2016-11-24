@@ -7,7 +7,7 @@
 #
 # This is free software; you can redistribute and/or modify it under
 # the terms of the GNU Lesser General Public Licence as published
-# by the Free Software Foundation. 
+# by the Free Software Foundation.
 # See the COPYING file for more information.
 #
 #################################################################################
@@ -26,14 +26,14 @@ if(GEOS_ENABLE_MACOSX_FRAMEWORK)
 
   add_library(GEOS SHARED ${geos_SOURCES} ${geos_c_SOURCES})
 
-  math(EXPR CVERSION "${VERSION_MAJOR} + 1") 
- 	# VERSION = current version, SOVERSION = compatibility version 
+  math(EXPR CVERSION "${VERSION_MAJOR} + 1")
+ 	# VERSION = current version, SOVERSION = compatibility version
   set_target_properties(GEOS
     PROPERTIES
     CLEAN_DIRECT_OUTPUT 1
     FRAMEWORK 1
-    VERSION "${CVERSION}.${VERSION_MINOR}.${VERSION_PATCH}" 
- 	  SOVERSION ${CVERSION} 
+    VERSION "${CVERSION}.${VERSION_MINOR}.${VERSION_PATCH}"
+ 	  SOVERSION ${CVERSION}
     FRAMEWORK_VERSION ${VERSION_MAJOR}
     BUILD_WITH_INSTALL_RPATH TRUE
     INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}"
@@ -87,7 +87,15 @@ else()
         CLEAN_DIRECT_OUTPUT 1)
     endif()
 
-    set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)    
+    set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
+
+    if(NOT WIN32)
+      get_target_property(BUILD_TARGET_LOCATION ${LIB_NAME} LOCATION_${CMAKE_BUILD_TYPE})
+      CREATE_SYMLINK(${BUILD_TARGET_LOCATION} libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})
+  message(STATUS "CREATE_SYMLINK(${BUILD_TARGET_LOCATION} libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX})")
+      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
+         DESTINATION ${INSTALL_LIB_DIR})
+    endif(NOT WIN32)
 endif()
 
 # if(APPLE)
