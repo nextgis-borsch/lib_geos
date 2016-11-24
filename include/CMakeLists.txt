@@ -6,7 +6,7 @@
 #
 # This is free software; you can redistribute and/or modify it under
 # the terms of the GNU Lesser General Public Licence as published
-# by the Free Software Foundation. 
+# by the Free Software Foundation.
 # See the COPYING file for more information.
 #
 #################################################################################
@@ -19,7 +19,7 @@
 # for OS X framework, but it's not practical this complex tree
 
 if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
-  set(installdest GEOS.framework/Versions/${VERSION_MAJOR}/Headers)
+  set(installdest ${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${VERSION_MAJOR}/Headers/geos)
 else()
   set(installdest ${INSTALL_INC_DIR})
 endif()
@@ -43,13 +43,13 @@ install(DIRECTORY geos/
 
 # Some post-processing for the framework
 # luckily GEOS uses header subdir already, just need to change case
-if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
-  install(CODE 
-    "execute_process(COMMAND find \"$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${installdest}\" -name *.* -print0 
-    COMMAND xargs -0 sed -E -i \"\" \"s,# *include[[:space:]]+<geos/,#include <GEOS/,g\")")
-  install(CODE 
-    "execute_process(COMMAND ln -sfh Versions/Current/Headers \"$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/GEOS.framework/Headers\")")
-endif()
+#if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
+#  install(CODE
+#    "execute_process(COMMAND find \"${installdest}\" -name *.* -print0
+#    COMMAND xargs -0 sed -E -i \"\" \"s,# *include[[:space:]]+<geos/,#include <GEOS/,g\")")
+#  install(CODE
+#    "execute_process(COMMAND ln -sfh Versions/Current/Headers \"${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Headers\")")
+#endif()
 
 #################################################################################
 # Group source files for IDE source explorers (e.g. Visual Studio)
