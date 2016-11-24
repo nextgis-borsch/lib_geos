@@ -22,7 +22,7 @@ set(geos_c_SOURCES
 
 file(GLOB geos_capi_HEADERS ${CMAKE_BINARY_DIR}/capi/*.h) # fix source_group issue
 
-if(NOT GEOS_ENABLE_MACOSX_FRAMEWORK)
+if(NOT OSX_FRAMEWORK)
   # if building OS X framework, CAPI built into C++ library
 
     if(BUILD_SHARED_LIBS)
@@ -61,16 +61,16 @@ endif()
 # Installation
 #################################################################################
 
-if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
+if(OSX_FRAMEWORK)
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos_c.h
-  DESTINATION "${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${VERSION_MAJOR}/Headers/geos")
-#  install(CODE "execute_process(COMMAND sed -E -i \"\" \"s,# *include[[:space:]]+<geos/,#include <GEOS/,g\" \"${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${VERSION_MAJOR}/Headers/geos_c.h\")")
+  DESTINATION "${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/")
+#  install(CODE "execute_process(COMMAND sed -E -i \"\" \"s,# *include[[:space:]]+<geos/,#include <GEOS/,g\" \"${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/geos_c.h\")")
 else()
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos_c.h
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endif()
 
-if(NOT GEOS_ENABLE_MACOSX_FRAMEWORK)
+if(NOT OSX_FRAMEWORK)
   install(TARGETS ${LIB_NAME}
     RUNTIME DESTINATION ${INSTALL_BIN_DIR}
     LIBRARY DESTINATION ${INSTALL_LIB_DIR}

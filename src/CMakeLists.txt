@@ -15,7 +15,7 @@
 file(GLOB_RECURSE geos_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE geos_ALL_HEADERS ${CMAKE_SOURCE_DIR}/include/*.h) # fix source_group issue
 
-if(GEOS_ENABLE_MACOSX_FRAMEWORK)
+if(OSX_FRAMEWORK)
   # OS X frameworks don't have static libs
   # also 1 binary, so include CAPI here
   # and, make name all caps
@@ -34,7 +34,7 @@ if(GEOS_ENABLE_MACOSX_FRAMEWORK)
     FRAMEWORK 1
     VERSION "${CVERSION}.${VERSION_MINOR}.${VERSION_PATCH}"
  	  SOVERSION ${CVERSION}
-    FRAMEWORK_VERSION ${VERSION_MAJOR}
+    FRAMEWORK_VERSION ${FRAMEWORK_VERSION}
 #    BUILD_WITH_INSTALL_RPATH TRUE
 #    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}"
 #    MACOSX_FRAMEWORK_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
@@ -109,7 +109,7 @@ endif()
 # Installation
 #################################################################################
 
-if(NOT GEOS_ENABLE_MACOSX_FRAMEWORK)
+if(NOT OSX_FRAMEWORK)
   install(TARGETS ${LIB_NAME}
     RUNTIME DESTINATION ${INSTALL_BIN_DIR}
     LIBRARY DESTINATION ${INSTALL_LIB_DIR}

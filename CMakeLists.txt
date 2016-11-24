@@ -26,7 +26,7 @@ if(OSX_FRAMEWORK AND (BUILD_SHARED_LIBS OR BUILD_STATIC_LIBS))
 endif()
 
 if(OSX_FRAMEWORK)
-  set(APPLE ON)
+  set(APPLE TRUE)
   set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/Applications" CACHE INTERNAL "Installation directory for executables" FORCE)
   set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks" CACHE INTERNAL "Installation directory for libraries" FORCE)
   set(SKIP_INSTALL_HEADERS ON)
@@ -50,8 +50,8 @@ if(OSX_FRAMEWORK)
   # which point to directories outside the build tree to the install RPATH
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
 
-  set(GEOS_ENABLE_MACOSX_FRAMEWORK ON)
-  set(GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT OFF)
+  set(GEOS_ENABLE_MACOSX_FRAMEWORK TRUE)
+  set(GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT FALSE)
   set(FRAMEWORK_NAME ${PROJECT_NAME})
 else()
     include(GNUInstallDirs)
@@ -71,6 +71,7 @@ set(VERSION_MINOR 5)
 set(VERSION_PATCH 0)
 set(SOVERSION 1)
 set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+set(FRAMEWORK_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
 
 # JTS_PORT is the version of JTS this release is bound to
 set(JTS_PORT 1.13.0)

@@ -18,8 +18,8 @@
 # There is a builtin cmake way to get headers in the right location
 # for OS X framework, but it's not practical this complex tree
 
-if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
-  set(installdest ${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${VERSION_MAJOR}/Headers/geos)
+if(OSX_FRAMEWORK)
+  set(installdest ${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/geos)
 else()
   set(installdest ${INSTALL_INC_DIR})
 endif()
