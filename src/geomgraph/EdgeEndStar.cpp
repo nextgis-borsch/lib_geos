@@ -9,7 +9,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -29,6 +29,7 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #ifndef GEOS_DEBUG
 #define GEOS_DEBUG 0
@@ -61,6 +62,13 @@ EdgeEndStar::getCoordinate()
 	EdgeEnd *e=*it;
 	assert(e);
 	return e->getCoordinate();
+}
+
+/*public*/
+const Coordinate&
+EdgeEndStar::getCoordinate() const
+{
+	return const_cast<EdgeEndStar*>(this)->getCoordinate();
 }
 
 /*public*/
@@ -100,7 +108,7 @@ EdgeEndStar::computeLabelling(std::vector<GeometryGraph*> *geomGraph)
 	 * In all other cases (e.g. the node is on a line, on a point, or
 	 * not on the geometry at all) the edge
 	 * has the location EXTERIOR for the geometry.
-	 * 
+	 *
 	 * Note that the edge cannot be on the BOUNDARY of the geometry,
 	 * since then there would have been a parallel edge from the
 	 * Geometry at this node also labelled BOUNDARY
@@ -210,10 +218,8 @@ EdgeEndStar::checkAreaLabelsConsistent(int geomIndex)
 	if (edgeMap.size()==0) return true;
 
 	// initialize startLoc to location of last L side (if any)
-	EdgeEndStar::reverse_iterator it=rbegin();
-
-	assert(*it);
-	const Label& startLabel = (*it)->getLabel();
+	assert(*rbegin());
+	const Label& startLabel = (*rbegin())->getLabel();
 	int startLoc = startLabel.getLocation(geomIndex, Position::LEFT);
 
 	// Found unlabelled area edge
@@ -338,16 +344,24 @@ EdgeEndStar::propagateSideLabels(int geomIndex)
 
 /*public*/
 std::string
-EdgeEndStar::print()
+EdgeEndStar::print() const
 {
-	std::string out="EdgeEndStar:   " + getCoordinate().toString()+"\n";
-	for (EdgeEndStar::iterator it=begin(), itEnd=end(); it!=itEnd; ++it)
+	std::ostringstream s;
+  s << *this;
+  return s.str();
+}
+
+std::ostream&
+operator<< (std::ostream& os, const EdgeEndStar& es)
+{
+	os << "EdgeEndStar:   " << es.getCoordinate() << "\n";
+	for (EdgeEndStar::const_iterator it=es.begin(), itEnd=es.end(); it!=itEnd; ++it)
 	{
-		EdgeEnd *e=*it;
+		const EdgeEnd *e=*it;
 		assert(e);
-		out+=e->print();
+		os << *e;
 	}
-	return out;
+	return os;
 }
 
 } // namespace geos.geomgraph

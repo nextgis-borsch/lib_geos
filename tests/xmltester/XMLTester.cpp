@@ -435,7 +435,7 @@ XMLTester::parseRun(const TiXmlNode* node)
         std::cerr << *curr_file <<": run: Precision Model: " << pm->toString() <<std::endl;
     }
 
-    factory.reset(new geom::GeometryFactory(pm.get()));
+    factory = geom::GeometryFactory::create(pm.get());
     wktreader.reset(new io::WKTReader(factory.get()));
     wktwriter.reset(new io::WKTWriter());
     wkbreader.reset(new io::WKBReader(*factory));
@@ -765,6 +765,15 @@ XMLTester::parseTest(const TiXmlNode* node)
 
             if (im->matches(opArg3)) actual_result="true";
             else actual_result="false";
+
+            if (actual_result==opRes) success=1;
+        }
+        else if (opName=="relatestring")
+        {
+            std::auto_ptr<geom::IntersectionMatrix> im(gA->relate(gB));
+            assert(im.get());
+
+            actual_result=im->toString();
 
             if (actual_result==opRes) success=1;
         }

@@ -437,6 +437,30 @@ GEOSConvexHull(const Geometry *g)
 }
 
 Geometry *
+GEOSMinimumRotatedRectangle(const Geometry *g)
+{
+    return GEOSMinimumRotatedRectangle_r( handle, g );
+}
+
+Geometry *
+GEOSMinimumWidth(const Geometry *g)
+{
+    return GEOSMinimumWidth_r( handle, g );
+}
+
+Geometry *
+GEOSMinimumClearanceLine(const Geometry *g)
+{
+    return GEOSMinimumClearanceLine_r( handle, g );
+}
+
+int
+GEOSMinimumClearance(const Geometry *g, double *d)
+{
+    return GEOSMinimumClearance_r( handle, g, d);
+}
+
+Geometry *
 GEOSDifference(const Geometry *g1, const Geometry *g2)
 {
     return GEOSDifference_r( handle, g1, g2 );
@@ -693,6 +717,18 @@ GEOSSetSRID(Geometry *g, int srid)
     return GEOSSetSRID_r( handle, g, srid );
 }
 
+void *
+GEOSGeom_getUserData(const Geometry *g)
+{
+    return GEOSGeom_getUserData_r( handle, g );
+}
+
+void
+GEOSGeom_setUserData(Geometry *g, void* userData)
+{
+    return GEOSGeom_setUserData_r( handle, g, userData );
+}
+
 char
 GEOSHasZ(const Geometry *g)
 {
@@ -836,6 +872,18 @@ Geometry *
 GEOSGeom_clone(const Geometry *g)
 {
     return GEOSGeom_clone_r( handle, g );
+}
+
+GEOSGeometry *
+GEOSGeom_setPrecision(const GEOSGeometry *g, double gridSize, int flags)
+{
+	return GEOSGeom_setPrecision_r(handle, g, gridSize, flags);
+}
+
+double
+GEOSGeom_getPrecision(const GEOSGeometry *g)
+{
+	return GEOSGeom_getPrecision_r(handle, g);
 }
 
 int
@@ -1120,6 +1168,22 @@ GEOSSTRtree_query (geos::index::strtree::STRtree *tree,
                    void *userdata)
 {
     GEOSSTRtree_query_r( handle, tree, g, cb, userdata );
+}
+
+const GEOSGeometry *
+GEOSSTRtree_nearest (geos::index::strtree::STRtree *tree,
+                     const geos::geom::Geometry *g)
+{
+    return GEOSSTRtree_nearest_r( handle, tree, g);
+}
+
+const void* GEOSSTRtree_nearest_generic(GEOSSTRtree *tree,
+                                        const void* item,
+                                        const GEOSGeometry* itemEnvelope,
+                                        GEOSDistanceCallback distancefn,
+                                        void* userdata)
+{
+    return GEOSSTRtree_nearest_generic_r( handle, tree, item, itemEnvelope, distancefn, userdata);
 }
 
 void

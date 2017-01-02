@@ -26,33 +26,18 @@ if(OSX_FRAMEWORK AND (BUILD_SHARED_LIBS OR BUILD_STATIC_LIBS))
 endif()
 
 if(OSX_FRAMEWORK)
-  set(APPLE TRUE)
-  set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/Applications" CACHE INTERNAL "Installation directory for executables" FORCE)
-  set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks" CACHE INTERNAL "Installation directory for libraries" FORCE)
-  set(SKIP_INSTALL_HEADERS ON)
-  set(SKIP_INSTALL_EXECUTABLES ON)
-  set(SKIP_INSTALL_FILES ON)
-  set(SKIP_INSTALL_EXPORT ON)
-
-  set(CMAKE_MACOSX_RPATH ON)
-
-  # use, i.e. don't skip the full RPATH for the build tree
-  set(CMAKE_SKIP_BUILD_RPATH  TRUE)
-
-  # when building, don't use the install RPATH already
-  # (but later on when installing)
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-  # the RPATH to be used when installing
-  set(CMAKE_INSTALL_RPATH "${INSTALL_LIB_DIR}")
-
-  # don't add the automatically determined parts of the RPATH
-  # which point to directories outside the build tree to the install RPATH
-  set(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
-
-  set(GEOS_ENABLE_MACOSX_FRAMEWORK TRUE)
-  set(GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT FALSE)
-  set(FRAMEWORK_NAME ${PROJECT_NAME})
+    set(FRAMEWORK_NAME ${PROJECT_NAME})
+    set(APPLE TRUE)
+    set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/Applications" CACHE INTERNAL "Installation directory for executables" FORCE)
+    set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks" CACHE INTERNAL "Installation directory for libraries" FORCE)
+    set(INSTALL_INC_DIR "${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Headers" CACHE INTERNAL "Installation directory for headers" FORCE)
+    set(SKIP_INSTALL_HEADERS ON)
+    set(SKIP_INSTALL_EXECUTABLES ON)
+    set(SKIP_INSTALL_FILES ON)
+    set(SKIP_INSTALL_EXPORT ON)
+    set(CMAKE_MACOSX_RPATH ON)
+    set(GEOS_ENABLE_MACOSX_FRAMEWORK TRUE)
+    set(GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT FALSE)
 else()
     include(GNUInstallDirs)
     set(INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR} CACHE INTERNAL "Installation directory for executables" FORCE)
@@ -63,31 +48,21 @@ endif()
 #################################################################################
 # Setup GEOS version
 #################################################################################
-
-# GEOS release version
-# GEOS C++ library SONAME will use these encoding ABI break at every release
-set(VERSION_MAJOR 3)
-set(VERSION_MINOR 5)
-set(VERSION_PATCH 0)
-set(SOVERSION 1)
-set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
-set(FRAMEWORK_VERSION "${VERSION_MAJOR}.${VERSION_MINOR}")
-
-# JTS_PORT is the version of JTS this release is bound to
-set(JTS_PORT 1.13.0)
-
 include (util)
+
+check_version(VERSION_MAJOR VERSION_MINOR VERSION_PATCH CAPI_INTERFACE_CURRENT CAPI_INTERFACE_REVISION CAPI_INTERFACE_AGE JTS_PORT)
+# GEOS C++ library SONAME will use these encoding ABI break at every release
+set(VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+set(SOVERSION 1)
+
+set(FRAMEWORK_VERSION "${VERSION_MAJOR}")
+
 report_version(${PROJECT_NAME} ${VERSION})
 
 
 if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "Setting GEOS version ${VERSION} as port of JTS ${JTS_PORT}")
 endif()
-
-# GEOS C API version
-set(CAPI_INTERFACE_CURRENT 10)
-set(CAPI_INTERFACE_REVISION 0)
-set(CAPI_INTERFACE_AGE 9)
 
 math(EXPR CAPI_VERSION_MAJOR "${CAPI_INTERFACE_CURRENT} - ${CAPI_INTERFACE_AGE}")
 set(CAPI_VERSION_MINOR ${CAPI_INTERFACE_AGE})
@@ -180,7 +155,7 @@ elseif(MSVC)
   #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
   string(REGEX REPLACE "/W[0-9]" "/W4" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
-  if(MSVC80 OR MSVC90 OR MSVC10 OR MSVC11 OR MSVC12 OR MSVC13)
+  if(NOT (MSVC_VERSION LESS 1400)) # Visual Studio 2005 or later
 
     # Option is to enable the /MP switch for Visual Studio 2005 or later
     option(GEOS_MSVC_ENABLE_MP
@@ -277,17 +252,6 @@ if(NOT HAVE_STD_ISFINITE)
   endif()
 endif()
 
-################################################################################
-# Setup build directories
-#################################################################################
-
-# Put the libaries and binaries that get built into directories at the
-# top of the build tree rather than in hard-to-find leaf
-# directories. This simplifies manual testing and the use of the build
-# tree rather than installed Boost libraries.
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 ################################################################################
 # Setup include directories
@@ -336,14 +300,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/capi/geos_c.h.in
 #################################################################################
 
 if(GEOS_ENABLE_TESTS)
-
- # Include CTest support
- include(CTest)
  enable_testing()
-
   # Define "make check" as alias for "make test"
   add_custom_target(check COMMAND ctest)
-
 endif()
 
 #################################################################################
@@ -364,7 +323,29 @@ set(EXPORT_NAME ${PROJECT_NAME})
 
 if(EXPORT_TARGETS)
     export(TARGETS ${EXPORT_TARGETS} FILE ${EXPORT_NAME}-exports.cmake EXPORT_LINK_INTERFACE_LIBRARIES)
+
+    if (REGISTER_PACKAGE)
+
+        set(EXPORT_PACKAGE_NAME GEOS)
+        set(EXPORT_PACKAGE_NAME_UPPER ${EXPORT_PACKAGE_NAME})
+        set(EXPORT_PACKAGE_LIB_NAME ${PROJECT_NAME})
+
+        export(PACKAGE ${EXPORT_PACKAGE_NAME})
+
+        include(CMakePackageConfigHelpers)
+        configure_package_config_file(
+            ${CMAKE_SOURCE_DIR}/cmake/PackageConfig.cmake.in
+            ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}Config.cmake
+            INSTALL_DESTINATION ${INSTALL_LIB_DIR}/cmake
+            PATH_VARS INSTALL_INC_DIR )
+        write_basic_package_version_file(
+            ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}ConfigVersion.cmake
+            VERSION ${VERSION}
+            COMPATIBILITY AnyNewerVersion )
+    endif()
 endif()
+
+
 
 #################################################################################
 # Install/Uninstall

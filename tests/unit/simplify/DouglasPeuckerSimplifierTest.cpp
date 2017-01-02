@@ -1,4 +1,4 @@
-// 
+//
 // Test Suite for geos::simplify::DouglasPeuckerSimplifierTest
 
 #include <tut.hpp>
@@ -19,7 +19,7 @@
 namespace tut
 {
 	using namespace geos::simplify;
-	
+
 	//
 	// Test Group
 	//
@@ -27,8 +27,6 @@ namespace tut
 	// Common data used by tests
 	struct test_dpsimp_data
 	{
-		geos::geom::PrecisionModel pm;
-		geos::geom::GeometryFactory gf;
 		geos::io::WKTReader wktreader;
         geos::io::WKTWriter wktwriter;
 
@@ -36,9 +34,7 @@ namespace tut
 
 		test_dpsimp_data()
 			:
-			pm(geos::geom::PrecisionModel::FLOATING),
-			gf(&pm),
-			wktreader(&gf)
+			wktreader()
 		{}
 	};
 
@@ -55,7 +51,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<1>()
-	{         
+	{
 		std::string wkt("POLYGON((20 220, 40 220, 60 220, 80 220, 100 220, \
 					120 220, 140 220, 140 180, 100 180, 60 180, 20 180, 20 220))");
 
@@ -74,10 +70,10 @@ namespace tut
 	template<>
 	template<>
 	void object::test<2>()
-	{         
+	{
 		std::string wkt_in("POLYGON ((40 240, 160 241, 280 240, 280 160, \
 					160 240, 40 140, 40 240))");
-		
+
 		std::string wkt_ex("MULTIPOLYGON (((40.0 240.0, 160.0 240.0, 40.0 140.0, 40.0 240.0)), \
 					((160.0 240.0, 280.0 240.0, 280.0 160.0, 160.0 240.0)))");
 
@@ -91,7 +87,7 @@ namespace tut
 			g.get(), 10.0);
 
 		ensure( simplified->isValid() );
-		
+
 		ensure( simplified->equalsExact(expected.get()) );
 
 	}
@@ -100,7 +96,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<3>()
-	{         
+	{
 		std::string wkt_in("POLYGON ((120 120, 121 121, 122 122, 220 120, \
 					180 199, 160 200, 140 199, 120 120))");
 
@@ -114,7 +110,7 @@ namespace tut
 			g.get(), 10.0);
 
 		ensure( simplified->isValid() );
-		
+
 		ensure( simplified->equalsExact(expected.get()) );
 
 	}
@@ -123,10 +119,10 @@ namespace tut
 	template<>
 	template<>
 	void object::test<4>()
-	{         
+	{
 		std::string wkt_in("POLYGON ((80 200, 240 200, 240 60, 80 60, 80 200), \
 					(120 120, 220 120, 180 199, 160 200, 140 199, 120 120))");
-		
+
 		std::string wkt_ex("POLYGON ((80 200, 160 200, 240 200, 240 60, 80 60, 80 200), \
 					(160 200, 140 199, 120 120, 220 120, 180 199, 160 200)))");
 
@@ -149,7 +145,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<5>()
-	{         
+	{
 		std::string wkt_in("POLYGON ((0 0, 50 0, 53 0, 55 0, 100 0, 70 1, 60 1, 50 1, 40 1, 0 0))");
 		std::string wkt_ex("POLYGON EMPTY");
 
@@ -171,7 +167,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<6>()
-	{         
+	{
 		std::string wkt_in("POLYGON ((0 5, 5 5, 5 0, 0 0, 0 1, 0 5))");
 		std::string wkt_ex("POLYGON EMPTY");
 
@@ -193,7 +189,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<7>()
-	{         
+	{
 		std::string wkt_in("LINESTRING (0 5, 1 5, 2 5, 5 5)");
 		std::string wkt_ex("LINESTRING (0 5, 5 5)");
 
@@ -214,7 +210,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<8>()
-	{         
+	{
 		std::string wkt_in("MULTIPOINT(80 200, 240 200, 240 60, 80 60, 80 200, 140 199, 120 120)");
 
 		GeomPtr g(wktreader.read(wkt_in));
@@ -230,10 +226,10 @@ namespace tut
 	template<>
 	template<>
 	void object::test<9>()
-	{         
+	{
 		std::string wkt_in("MULTILINESTRING( (0 0, 50 0, 70 0, 80 0, 100 0), \
 					(0 0, 50 1, 60 1, 100 0) )");
-		
+
 		std::string wkt_ex("MULTILINESTRING( (0 0, 100 0), (0 0, 100 0) )");
 
 		GeomPtr g(wktreader.read(wkt_in));
@@ -252,7 +248,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<10>()
-	{         
+	{
 		std::string wkt_in("GEOMETRYCOLLECTION ( \
 					MULTIPOINT (80 200, 240 200, 240 60, 80 60, 80 200, 140 199, 120 120), \
 					POLYGON ((80 200, 240 200, 240 60, 80 60, 80 200)), \
@@ -290,7 +286,7 @@ namespace tut
 		GeomPtr g(wktreader.read(wkt));
         std::size_t const gN = g->getNumPoints();
         ensure_equals(gN, std::size_t(37));
-        
+
         // 1) Simplify with 1/2048
         double const d1 = 1/2048.0;
 		GeomPtr simplified1 = DouglasPeuckerSimplifier::simplify(g.get(), d1);
@@ -315,8 +311,8 @@ namespace tut
                 ::geos::ignore_unused_variable_warning(seq);
                 ::geos::ignore_unused_variable_warning(i);
             }
-            bool isDone() const { return false; } 
-            bool isGeometryChanged() const { return true; } 
+            bool isDone() const { return false; }
+            bool isGeometryChanged() const { return true; }
         };
 
         Multiplier m(2047);
@@ -333,6 +329,27 @@ namespace tut
         std::size_t const simplifiedN2 = simplified2->getNumPoints();
         ensure_equals(simplifiedN2, std::size_t(36));
         //std::string const simplifiedWkt2 = wktwriter.write(simplified2.get());
+	}
+
+	// 13 - Polygon with inner ring whose extent is less than the simplify distance (#741)
+	template<>
+	template<>
+	void object::test<13>()
+	{
+		std::string wkt_in("POLYGON ((0 0,0 1,1 1,0 0),(0.1 0.1,0.2 0.1,0.2 0.2,0.1 0.1))");
+
+		std::string wkt_ex("POLYGON ((0 0,0 1,1 1,0 0))");
+
+		GeomPtr g(wktreader.read(wkt_in));
+
+		GeomPtr expected(wktreader.read(wkt_ex));
+
+		GeomPtr simplified = DouglasPeuckerSimplifier::simplify(
+			g.get(), 0.5);
+
+		ensure( simplified->isValid() );
+
+		ensure( simplified->equalsExact(expected.get()) );
 	}
 
 } // namespace tut

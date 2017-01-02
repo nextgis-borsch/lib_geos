@@ -31,7 +31,7 @@ namespace tut
 	struct test_wkbreader_data
 	{
 		geos::geom::PrecisionModel pm;
-		geos::geom::GeometryFactory gf;
+		geos::geom::GeometryFactory::unique_ptr gf;
 		geos::io::WKBReader wkbreader;
 		geos::io::WKBWriter xdrwkbwriter;
 		geos::io::WKBWriter ndrwkbwriter;
@@ -42,13 +42,13 @@ namespace tut
 		test_wkbreader_data()
 			:
 			pm(1.0),
-			gf(&pm),
-			wkbreader(gf),
+			gf(geos::geom::GeometryFactory::create(&pm)),
+			wkbreader(*gf),
 			// 2D only, XDR (big endian)
 			xdrwkbwriter(2, geos::io::WKBConstants::wkbXDR),
 			// 2D only, NDR (little endian)
 			ndrwkbwriter(2, geos::io::WKBConstants::wkbNDR),
-			wktreader(&gf)
+			wktreader(gf.get())
 		{}
 
 		void testInputOutput(const std::string& WKT,
@@ -259,6 +259,22 @@ namespace tut
     }
     ensure("Missing expected error", !err.empty());
     ensure_equals(err, "ParseException: Premature end of HEX string");
+  }
+
+  // 9 - Extended HEXWKB (3dZ + srid)
+  template<>
+  template<>
+  void object::test<9>()
+  {         
+    std::stringstream hexwkb;
+    hexwkb <<
+// SRID=4326;POINT(1 2 3)
+// NDR HEXEWKB
+"01010000A0E6100000000000000000F03F00000000000000400000000000000840";
+    std::string err;
+    GeomPtr gWKB(wkbreader.readHEX(hexwkb));
+    ensure_equals(gWKB->getSRID(), 4326);
+    ensure_equals(gWKB->getCoordinateDimension(), 3);
   }
 
 

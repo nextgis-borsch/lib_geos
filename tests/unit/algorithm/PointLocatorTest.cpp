@@ -42,8 +42,8 @@ namespace tut
 	// for the same reason...
 	//
 	static PrecisionModel pm;
-	static GeometryFactory gf(&pm);
-        static geos::io::WKTReader reader(&gf);
+	static GeometryFactory::unique_ptr gf = GeometryFactory::create(&pm);
+	static geos::io::WKTReader reader(gf.get());
 
 	typedef std::auto_ptr<Geometry> GeomPtr;
 
@@ -96,8 +96,15 @@ namespace tut
 	    runPtLocator(Location::EXTERIOR, Coordinate(11, 11),
 	                     "LINEARRING(10 10, 10 20, 20 10, 10 10)");
 	}
-		      
 
+	// 5 - TestPointLocator Point inside MultiPoint
+	template<>
+	template<>
+	void object::test<5>()
+	{
+		runPtLocator(Location::INTERIOR, Coordinate(0, 0),
+				"MULTIPOINT ((1 1), (0 0))");
+	}
 
 } // namespace tut
 

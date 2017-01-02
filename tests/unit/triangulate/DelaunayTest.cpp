@@ -49,7 +49,7 @@ namespace tut
 		Geometry *expected = reader.read(expectedWkt);
 		DelaunayTriangulationBuilder builder;
 		builder.setTolerance(tolerance);
-		GeometryFactory geomFact;
+    const GeometryFactory& geomFact(*GeometryFactory::getDefaultInstance());
 
 		builder.setSites(*sites);
 		if(computeTriangles)
@@ -84,7 +84,7 @@ namespace tut
 		triangulator.insertSite(Vertex(0, 0));
 
 		//extract the triangles from the subdivision
-		GeometryFactory geomFact;
+    const GeometryFactory& geomFact(*GeometryFactory::getDefaultInstance());
 		std::auto_ptr<GeometryCollection> tris = sub.getTriangles(geomFact);
 	}
 
@@ -181,14 +181,12 @@ namespace tut
 		v->push_back( Coordinate (150,200) );
 		v->push_back( Coordinate (180,270) );
 		v->push_back( Coordinate (275,163) );
+		geos::geom::CoordinateArraySequence seq(v);
 
-		geos::geom::CoordinateArraySequence *seq = new CoordinateArraySequence(v);
-
-		Envelope env = DelaunayTriangulationBuilder::envelope(*seq);
+		Envelope env = DelaunayTriangulationBuilder::envelope(seq);
 
 		ensure_equals(env.getWidth() , 125);
 		ensure_equals(env.getHeight() , 107);
-
 	}
 
 } // namespace tut

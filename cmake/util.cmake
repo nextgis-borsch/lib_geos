@@ -19,6 +19,33 @@
 # You should have received a copy of the GNU General Public License
 # along with this script.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
+function(check_version major minor patch api_carrent api_rev api_age jts_port)
+
+    # GEOS release version
+    set(VERSION_MAJOR 3)
+    set(VERSION_MINOR 6)
+    set(VERSION_PATCH 1)
+    # JTS_PORT is the version of JTS this release is bound to
+    set(JTS_PORT 1.13.0)
+
+    # GEOS C API version
+    set(CAPI_INTERFACE_CURRENT 11)
+    set(CAPI_INTERFACE_REVISION 1)
+    set(CAPI_INTERFACE_AGE 10)
+
+    set(${major} ${VERSION_MAJOR} PARENT_SCOPE)
+    set(${minor} ${VERSION_MINOR} PARENT_SCOPE)
+    set(${patch} ${VERSION_PATCH} PARENT_SCOPE)
+    set(${api_carrent} ${CAPI_INTERFACE_CURRENT} PARENT_SCOPE)
+    set(${api_rev} ${CAPI_INTERFACE_REVISION} PARENT_SCOPE)
+    set(${api_age} ${CAPI_INTERFACE_AGE} PARENT_SCOPE)
+    set(${jts_port} ${JTS_PORT} PARENT_SCOPE)
+
+    # Store version string in file for installer needs
+    file(TIMESTAMP ${CMAKE_CURRENT_SOURCE_DIR}/geos_svn_revision.h VERSION_DATETIME "%Y-%m-%d %H:%M:%S" UTC)
+    file(WRITE ${CMAKE_BINARY_DIR}/version.str "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}\n${VERSION_DATETIME}")
+
+endfunction(check_version)
 
 function(report_version name ver)
 

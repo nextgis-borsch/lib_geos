@@ -40,9 +40,8 @@
 #include <geos/noding/MCIndexNoder.h>
 #include <geos/noding/IntersectionAdder.h>
 
-#ifdef max
-#undef max
-#endif // max
+
+
 
 #ifndef GEOS_DEBUG
 #define GEOS_DEBUG 0
@@ -61,13 +60,12 @@ namespace buffer { // geos.operation.buffer
 static Profiler *profiler = Profiler::instance();
 #endif
 
-namespace {
-
+#if 0
 double OLDprecisionScaleFactor(const Geometry *g,
 	double distance, int maxPrecisionDigits)
 {
 	const Envelope *env=g->getEnvelopeInternal();
-	double envSize=(std::max)(env->getHeight(), env->getWidth());
+	double envSize=std::max(env->getHeight(), env->getWidth());
 	double expandByDistance=distance > 0.0 ? distance : 0.0;
 	double bufEnvSize=envSize + 2 * expandByDistance;
 	// the smallest power of 10 greater than the buffer envelope
@@ -77,8 +75,7 @@ double OLDprecisionScaleFactor(const Geometry *g,
 	double scaleFactor=std::pow(10.0,-minUnitLog10);
 	return scaleFactor;
 }
-
-} // anonymous namespace
+#endif
 
 /*private*/
 double

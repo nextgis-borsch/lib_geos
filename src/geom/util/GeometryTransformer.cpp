@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -59,11 +59,17 @@ GeometryTransformer::GeometryTransformer()
 	pruneEmptyGeometry(true),
 	preserveGeometryCollectionType(true),
 	preserveCollections(false),
-	preserveType(false)
+	preserveType(false),
+	skipTransformedInvalidInteriorRings(false)
 {}
 
 GeometryTransformer::~GeometryTransformer()
 {
+}
+
+void GeometryTransformer::setSkipTransformedInvalidInteriorRings(bool b)
+{
+	skipTransformedInvalidInteriorRings = b;
 }
 
 /*public*/
@@ -98,7 +104,7 @@ GeometryTransformer::transform(const Geometry* nInputGeom)
 
 	throw IllegalArgumentException("Unknown Geometry subtype.");
 }
- 
+
 std::auto_ptr<CoordinateSequence>
 GeometryTransformer::createCoordinateSequence(
 		std::auto_ptr< std::vector<Coordinate> > coords)
@@ -262,7 +268,7 @@ GeometryTransformer::transformPolygon(
 
 	Geometry::AutoPtr shell = transformLinearRing(lr, geom);
 	if ( shell.get() == NULL
-		|| ! dynamic_cast<LinearRing*>(shell.get()) 
+		|| ! dynamic_cast<LinearRing*>(shell.get())
 		|| shell->isEmpty() )
 	{
 		isAllValidLinearRings = false;
@@ -283,6 +289,8 @@ GeometryTransformer::transformPolygon(
 
 		if ( ! dynamic_cast<LinearRing*>(hole.get()) )
 		{
+			if ( skipTransformedInvalidInteriorRings )
+			    continue;
 			isAllValidLinearRings = false;
 		}
 

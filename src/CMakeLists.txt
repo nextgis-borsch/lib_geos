@@ -24,7 +24,11 @@ if(OSX_FRAMEWORK)
     ${CMAKE_CURRENT_SOURCE_DIR}/../capi/geos_c.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../capi/geos_ts_c.cpp)
 
-  add_library(${FRAMEWORK_NAME} SHARED ${geos_SOURCES} ${geos_c_SOURCES})
+    set(geos_HHEADERS
+        ${CMAKE_SOURCE_DIR}/include/geos.h
+    )
+
+  add_library(${FRAMEWORK_NAME} SHARED ${geos_SOURCES} ${geos_c_SOURCES} ${geos_HHEADERS})
 
   math(EXPR CVERSION "${VERSION_MAJOR} + 1")
  	# VERSION = current version, SOVERSION = compatibility version
@@ -41,7 +45,11 @@ if(OSX_FRAMEWORK)
     MACOSX_FRAMEWORK_BUNDLE_VERSION "GEOS ${VERSION}"
     MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${VERSION}
     MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.geos
-    XCODE_ATTRIBUTE_INSTALL_PATH "@rpath")
+    XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
+    PUBLIC_HEADER "${geos_HHEADERS}"
+    )
+
+  set(EXPORT_TARGETS ${FRAMEWORK_NAME} ${LIB_NAME} PARENT_SCOPE)
 
   install(TARGETS ${FRAMEWORK_NAME} FRAMEWORK DESTINATION ${INSTALL_LIB_DIR})
 
@@ -97,13 +105,6 @@ else()
          DESTINATION ${INSTALL_LIB_DIR})
     endif(NOT WIN32)
 endif()
-
-# if(APPLE)
-#   set_target_properties(geos
-#     PROPERTIES
-#     BUILD_WITH_INSTALL_RPATH TRUE
-#     INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}")
-# endif()
 
 #################################################################################
 # Installation

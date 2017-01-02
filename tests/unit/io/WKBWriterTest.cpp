@@ -27,7 +27,7 @@ namespace tut
 	struct test_wkbwriter_data
 	{
 		geos::geom::PrecisionModel pm;
-		geos::geom::GeometryFactory gf;
+		geos::geom::GeometryFactory::unique_ptr gf;
 		geos::io::WKTReader wktreader;
 		geos::io::WKTWriter wktwriter;
 		geos::io::WKBReader wkbreader;
@@ -36,9 +36,9 @@ namespace tut
 		test_wkbwriter_data()
 			:
 			pm(1000.0),
-			gf(&pm),
-      wktreader(&gf),
-      wkbreader(gf)
+			gf(geos::geom::GeometryFactory::create(&pm)),
+      wktreader(gf.get()),
+      wkbreader(*gf)
 		{}
 
 	};
@@ -144,7 +144,8 @@ namespace tut
     GeomVect *geoms = new GeomVect;
     geoms->push_back( wktreader.read("POLYGON((0 0,1 0,1 1,0 1,0 0))") );
     geoms->back()->setSRID(4326);
-    Geom *geom = gf.createGeometryCollection(geoms);
+    Geom *geom = gf->createGeometryCollection(geoms);
+    geom->setSRID(4326);
     std::stringstream result_stream;
 
     wkbwriter.setOutputDimension( 2 );
@@ -154,10 +155,34 @@ namespace tut
     delete geom;
 
     std::string actual = result_stream.str();
-    ensure_equals( actual, "0107000000010000000103000000010000000500000000000000000000000000000000000000000000000000F03F0000000000000000000000000000F03F000000000000F03F0000000000000000000000000000F03F00000000000000000000000000000000");
+    ensure_equals( actual, "0107000020E6100000010000000103000000010000000500000000000000000000000000000000000000000000000000F03F0000000000000000000000000000F03F000000000000F03F0000000000000000000000000000F03F00000000000000000000000000000000" );
 
   }
 
+    // 5 - Check WKB representation of empty polygon
+    // See http://trac.osgeo.org/geos/ticket/680
+    template<>
+    template<>
+    void object::test<5>()
+    {
+        geos::geom::Geometry *geom = wktreader.read("POLYGON EMPTY");
+        geom->setSRID(4326);
+        std::stringstream result_stream;
+
+        wkbwriter.setOutputDimension( 2 );
+        wkbwriter.setByteOrder( 1 );
+        wkbwriter.setIncludeSRID( 1 );
+        wkbwriter.writeHEX( *geom, result_stream );
+
+        std::string actual = result_stream.str();
+        ensure_equals( actual, "0103000020E610000000000000" );
+
+        geos::geom::Geometry *geom2 = wkbreader.readHEX(result_stream);
+        assert( geom->equals(geom2) );
+
+        delete geom;
+        delete geom2;
+    }
 
 } // namespace tut
 
