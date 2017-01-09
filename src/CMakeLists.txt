@@ -88,6 +88,17 @@ else()
         VERSION ${VERSION}
         SOVERSION ${SOVERSION}
         CLEAN_DIRECT_OUTPUT 1)
+
+        if(BUILD_STATIC_LIBS)
+            add_library(${LIB_NAME}static STATIC ${geos_SOURCES} ${geos_ALL_HEADERS})
+            set(INSTALL_TARGETS ${INSTALL_TARGETS} ${LIB_NAME}static)
+            if(WIN32)
+                set_target_properties(${LIB_NAME}static PROPERTIES OUTPUT_NAME ${LIB_NAME}_i)
+            else()
+                set_target_properties(${LIB_NAME}static PROPERTIES OUTPUT_NAME ${LIB_NAME})
+            endif()
+        endif()
+
     else()
       set_target_properties(${LIB_NAME}
         PROPERTIES
@@ -96,13 +107,14 @@ else()
         CLEAN_DIRECT_OUTPUT 1)
     endif()
 
+    set(INSTALL_TARGETS ${INSTALL_TARGETS} ${LIB_NAME})
     set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
 
-    if(NOT WIN32)
-      CREATE_SYMLINK($<TARGET_FILE:${LIB_NAME}> libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX} ${LIB_NAME})
-      install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
-         DESTINATION ${INSTALL_LIB_DIR})
-    endif(NOT WIN32)
+    if(NOT WIN32 AND BUILD_SHARED_LIBS)
+        CREATE_SYMLINK($<TARGET_FILE:${LIB_NAME}> libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX} ${LIB_NAME})
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
+            DESTINATION ${INSTALL_LIB_DIR})
+    endif()
 endif()
 
 #################################################################################
@@ -110,7 +122,7 @@ endif()
 #################################################################################
 
 if(NOT OSX_FRAMEWORK)
-  install(TARGETS ${LIB_NAME}
+  install(TARGETS ${INSTALL_TARGETS}
     RUNTIME DESTINATION ${INSTALL_BIN_DIR}
     LIBRARY DESTINATION ${INSTALL_LIB_DIR}
     ARCHIVE DESTINATION ${INSTALL_LIB_DIR})
