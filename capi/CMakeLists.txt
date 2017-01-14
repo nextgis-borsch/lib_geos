@@ -24,14 +24,12 @@ file(GLOB geos_capi_HEADERS ${CMAKE_BINARY_DIR}/capi/*.h) # fix source_group iss
 
 if(NOT OSX_FRAMEWORK)
   # if building OS X framework, CAPI built into C++ library
-
+    set(LIB_NAME ${PROJECT_NAME}_c)
     if(BUILD_SHARED_LIBS)
         set(LIB_TYPE SHARED)
-        set(LIB_NAME ${PROJECT_NAME}_c)
     else()
         message(WARNING "Some functions are not available due to export static functions problem")
         set(LIB_TYPE STATIC)
-        set(LIB_NAME ${PROJECT_NAME}_cstatic)
     endif()
 
   add_library(${LIB_NAME} ${LIB_TYPE} ${geos_c_SOURCES})
