@@ -321,31 +321,27 @@ add_subdirectory(tools)
 
 set(EXPORT_NAME ${PROJECT_NAME})
 
-if(EXPORT_TARGETS)
+if (REGISTER_PACKAGE)
+    export(TARGETS ${EXPORT_TARGETS} FILE ${EXPORT_NAME}-exports.cmake)
+    set(EXPORT_PACKAGE_NAME GEOS)
+    set(EXPORT_PACKAGE_NAME_UPPER ${EXPORT_PACKAGE_NAME})
+    set(EXPORT_PACKAGE_LIB_NAME ${PROJECT_NAME})
+
+    export(PACKAGE ${EXPORT_PACKAGE_NAME})
+
+    include(CMakePackageConfigHelpers)
+    configure_package_config_file(
+        ${CMAKE_SOURCE_DIR}/cmake/PackageConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}Config.cmake
+        INSTALL_DESTINATION ${INSTALL_LIB_DIR}/cmake
+        PATH_VARS INSTALL_INC_DIR )
+    write_basic_package_version_file(
+        ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}ConfigVersion.cmake
+        VERSION ${VERSION}
+        COMPATIBILITY AnyNewerVersion )
+else()
     export(TARGETS ${EXPORT_TARGETS} FILE ${EXPORT_NAME}-exports.cmake EXPORT_LINK_INTERFACE_LIBRARIES)
-
-    if (REGISTER_PACKAGE)
-
-        set(EXPORT_PACKAGE_NAME GEOS)
-        set(EXPORT_PACKAGE_NAME_UPPER ${EXPORT_PACKAGE_NAME})
-        set(EXPORT_PACKAGE_LIB_NAME ${PROJECT_NAME})
-
-        export(PACKAGE ${EXPORT_PACKAGE_NAME})
-
-        include(CMakePackageConfigHelpers)
-        configure_package_config_file(
-            ${CMAKE_SOURCE_DIR}/cmake/PackageConfig.cmake.in
-            ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}Config.cmake
-            INSTALL_DESTINATION ${INSTALL_LIB_DIR}/cmake
-            PATH_VARS INSTALL_INC_DIR )
-        write_basic_package_version_file(
-            ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}ConfigVersion.cmake
-            VERSION ${VERSION}
-            COMPATIBILITY AnyNewerVersion )
-    endif()
 endif()
-
-
 
 #################################################################################
 # Install/Uninstall
