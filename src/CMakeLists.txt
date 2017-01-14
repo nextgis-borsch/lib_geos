@@ -70,16 +70,14 @@ if(OSX_FRAMEWORK)
   endif()
 
 else()
-
+    set(LIB_NAME ${PROJECT_NAME})
     if(BUILD_SHARED_LIBS)
         set(LIB_TYPE SHARED)
-        set(LIB_NAME ${PROJECT_NAME})
     else()
         set(LIB_TYPE STATIC)
-        set(LIB_NAME ${PROJECT_NAME}static)
     endif()
 
-  add_library(${LIB_NAME} ${LIB_TYPE} ${geos_SOURCES} ${geos_ALL_HEADERS})
+    add_library(${LIB_NAME} ${LIB_TYPE} ${geos_SOURCES} ${geos_ALL_HEADERS})
 
     if(BUILD_SHARED_LIBS)
       set_target_properties(${LIB_NAME}
