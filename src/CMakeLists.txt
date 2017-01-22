@@ -35,7 +35,7 @@ if(OSX_FRAMEWORK)
   set_target_properties(${FRAMEWORK_NAME}
     PROPERTIES
     CLEAN_DIRECT_OUTPUT 1
-    FRAMEWORK 1
+    FRAMEWORK TRUE
     VERSION "${CVERSION}.${VERSION_MINOR}.${VERSION_PATCH}"
  	  SOVERSION ${CVERSION}
     FRAMEWORK_VERSION ${FRAMEWORK_VERSION}
@@ -84,8 +84,7 @@ else()
         PROPERTIES
         DEFINE_SYMBOL GEOS_DLL_EXPORT
         VERSION ${VERSION}
-        SOVERSION ${SOVERSION}
-        CLEAN_DIRECT_OUTPUT 1)
+        SOVERSION ${SOVERSION})
 
         if(BUILD_STATIC_LIBS)
             add_library(${LIB_NAME}static STATIC ${geos_SOURCES} ${geos_ALL_HEADERS})
@@ -95,18 +94,20 @@ else()
             else()
                 set_target_properties(${LIB_NAME}static PROPERTIES OUTPUT_NAME ${LIB_NAME})
             endif()
+            set_target_properties(${LIB_NAME}static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
         endif()
 
     else()
       set_target_properties(${LIB_NAME}
         PROPERTIES
         OUTPUT_NAME "geos"
-        PREFIX "lib"
-        CLEAN_DIRECT_OUTPUT 1)
+        PREFIX "lib")
     endif()
 
     set(INSTALL_TARGETS ${INSTALL_TARGETS} ${LIB_NAME})
     set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
+
+    set_target_properties(${LIB_NAME} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
 
     if(NOT WIN32 AND BUILD_SHARED_LIBS)
         CREATE_SYMLINK($<TARGET_FILE:${LIB_NAME}> libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX} ${LIB_NAME})
