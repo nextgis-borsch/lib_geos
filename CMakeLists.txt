@@ -31,6 +31,7 @@ if(OSX_FRAMEWORK)
     set(INSTALL_BIN_DIR "${CMAKE_INSTALL_PREFIX}/Applications" CACHE INTERNAL "Installation directory for executables" FORCE)
     set(INSTALL_LIB_DIR "${CMAKE_INSTALL_PREFIX}/Library/Frameworks" CACHE INTERNAL "Installation directory for libraries" FORCE)
     set(INSTALL_INC_DIR "${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Headers" CACHE INTERNAL "Installation directory for headers" FORCE)
+    set(INSTALL_INC_ROOT_DIR ${INSTALL_INC_DIR})
     set(SKIP_INSTALL_HEADERS ON)
     set(SKIP_INSTALL_EXECUTABLES ON)
     set(SKIP_INSTALL_FILES ON)
@@ -40,9 +41,10 @@ if(OSX_FRAMEWORK)
     set(GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT FALSE)
 else()
     include(GNUInstallDirs)
-    set(INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR} CACHE INTERNAL "Installation directory for executables" FORCE)
-    set(INSTALL_LIB_DIR ${CMAKE_INSTALL_LIBDIR} CACHE INTERNAL "Installation directory for libraries" FORCE)
-    set(INSTALL_INC_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" CACHE INTERNAL "Installation directory for headers" FORCE)
+    set(INSTALL_BIN_DIR ${CMAKE_INSTALL_FULL_BINDIR} CACHE INTERNAL "Installation directory for executables" FORCE)
+    set(INSTALL_LIB_DIR ${CMAKE_INSTALL_FULL_LIBDIR} CACHE INTERNAL "Installation directory for libraries" FORCE)
+    set(INSTALL_INC_DIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}/${PROJECT_NAME}" CACHE INTERNAL "Installation directory for headers" FORCE)
+    set(INSTALL_INC_ROOT_DIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}" CACHE INTERNAL "Installation directory for geos_c.h" FORCE)
 endif()
 
 #################################################################################
@@ -323,9 +325,9 @@ set(EXPORT_NAME ${PROJECT_NAME})
 
 if (REGISTER_PACKAGE)
     export(TARGETS ${EXPORT_TARGETS} FILE ${EXPORT_NAME}-exports.cmake)
-    set(EXPORT_PACKAGE_NAME GEOS)
-    set(EXPORT_PACKAGE_NAME_UPPER ${EXPORT_PACKAGE_NAME})
-    set(EXPORT_PACKAGE_LIB_NAME ${PROJECT_NAME})
+    set(EXPORT_PACKAGE_NAME ${EXPORT_NAME})
+    string(TOUPPER ${EXPORT_PACKAGE_NAME} EXPORT_PACKAGE_NAME_UPPER)
+    set(EXPORT_PACKAGE_LIB_NAMES ${EXPORT_TARGETS})
 
     export(PACKAGE ${EXPORT_PACKAGE_NAME})
 
@@ -334,7 +336,7 @@ if (REGISTER_PACKAGE)
         ${CMAKE_SOURCE_DIR}/cmake/PackageConfig.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}Config.cmake
         INSTALL_DESTINATION ${INSTALL_LIB_DIR}/cmake
-        PATH_VARS INSTALL_INC_DIR )
+        PATH_VARS INSTALL_INC_ROOT_DIR ) # because geos_c.h install in CMAKE_INSTALL_INCLUDEDIR see lib_geos\capi\CMakeLists.txt
     write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}ConfigVersion.cmake
         VERSION ${VERSION}
