@@ -335,8 +335,7 @@ if (REGISTER_PACKAGE)
     configure_package_config_file(
         ${CMAKE_SOURCE_DIR}/cmake/PackageConfig.cmake.in
         ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}Config.cmake
-        INSTALL_DESTINATION ${INSTALL_LIB_DIR}/cmake
-        PATH_VARS INSTALL_INC_ROOT_DIR ) # because geos_c.h install in CMAKE_INSTALL_INCLUDEDIR see lib_geos\capi\CMakeLists.txt
+        INSTALL_DESTINATION ${CMAKE_CURRENT_BINARY_DIR} ) 
     write_basic_package_version_file(
         ${CMAKE_CURRENT_BINARY_DIR}/${EXPORT_PACKAGE_NAME}ConfigVersion.cmake
         VERSION ${VERSION}
