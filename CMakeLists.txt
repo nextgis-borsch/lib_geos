@@ -61,7 +61,6 @@ set(FRAMEWORK_VERSION "${VERSION_MAJOR}")
 
 report_version(${PROJECT_NAME} ${VERSION})
 
-
 if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "Setting GEOS version ${VERSION} as port of JTS ${JTS_PORT}")
 endif()
