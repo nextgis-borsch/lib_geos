@@ -21,17 +21,53 @@
 ################################################################################
 function(check_version major minor patch api_carrent api_rev api_age jts_port)
 
+    set(VERSION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/version.h.vc)
+
+    file(READ ${VERSION_FILE} VERSION1_H_CONTENTS)
+
+    string(REGEX MATCH "GEOS_VERSION_MAJOR[ \t]+([0-9]+)"
+        GEOS_VERSION_MAJOR ${VERSION1_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)"
+        GEOS_VERSION_MAJOR ${GEOS_VERSION_MAJOR})
+    string(REGEX MATCH "GEOS_VERSION_MINOR[ \t]+([0-9]+)"
+        GEOS_VERSION_MINOR ${VERSION1_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)"
+        GEOS_VERSION_MINOR ${GEOS_VERSION_MINOR})
+    string(REGEX MATCH "GEOS_VERSION_PATCH[ \t]+([0-9]+)"
+        GEOS_VERSION_PATCH ${VERSION1_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)"
+        GEOS_VERSION_PATCH ${GEOS_VERSION_PATCH})
+    string(REGEX MATCH "GEOS_JTS_PORT[ \t]+([0-9.\"]+)"
+        GEOS_JTS_PORT ${VERSION1_H_CONTENTS})
+    string (REGEX MATCH "([0-9.]+)"
+        GEOS_JTS_PORT ${GEOS_JTS_PORT})
+
     # GEOS release version
-    set(VERSION_MAJOR 3)
-    set(VERSION_MINOR 6)
-    set(VERSION_PATCH 1)
+    set(VERSION_MAJOR ${GEOS_VERSION_MAJOR})
+    set(VERSION_MINOR ${GEOS_VERSION_MINOR})
+    set(VERSION_PATCH ${GEOS_VERSION_PATCH})
     # JTS_PORT is the version of JTS this release is bound to
-    set(JTS_PORT 1.13.0)
+    set(JTS_PORT ${GEOS_JTS_PORT})
+
+    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/capi/geos_c.h.in VERSION2_H_CONTENTS)
+
+    string(REGEX MATCH "GEOS_CAPI_VERSION_MAJOR[ \t]+([0-9]+)"
+        GEOS_CAPI_VERSION_MAJOR ${VERSION2_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)"
+        GEOS_CAPI_VERSION_MAJOR ${GEOS_CAPI_VERSION_MAJOR})
+    string(REGEX MATCH "GEOS_CAPI_VERSION_MINOR[ \t]+([0-9]+)"
+        GEOS_CAPI_VERSION_MINOR ${VERSION2_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)"
+        GEOS_CAPI_VERSION_MINOR ${GEOS_CAPI_VERSION_MINOR})
+    string(REGEX MATCH "GEOS_CAPI_VERSION_PATCH[ \t]+([0-9]+)"
+        GEOS_CAPI_VERSION_PATCH ${VERSION2_H_CONTENTS})
+    string (REGEX MATCH "([0-9]+)"
+        GEOS_CAPI_VERSION_PATCH ${GEOS_CAPI_VERSION_PATCH})
 
     # GEOS C API version
-    set(CAPI_INTERFACE_CURRENT 11)
-    set(CAPI_INTERFACE_REVISION 1)
-    set(CAPI_INTERFACE_AGE 10)
+    set(CAPI_INTERFACE_CURRENT ${GEOS_CAPI_VERSION_MAJOR})
+    set(CAPI_INTERFACE_REVISION ${GEOS_CAPI_VERSION_MINOR})
+    set(CAPI_INTERFACE_AGE ${GEOS_CAPI_VERSION_PATCH})
 
     set(${major} ${VERSION_MAJOR} PARENT_SCOPE)
     set(${minor} ${VERSION_MINOR} PARENT_SCOPE)
@@ -42,8 +78,10 @@ function(check_version major minor patch api_carrent api_rev api_age jts_port)
     set(${jts_port} ${JTS_PORT} PARENT_SCOPE)
 
     # Store version string in file for installer needs
-    file(TIMESTAMP ${CMAKE_CURRENT_SOURCE_DIR}/geos_svn_revision.h VERSION_DATETIME "%Y-%m-%d %H:%M:%S" UTC)
-    file(WRITE ${CMAKE_BINARY_DIR}/version.str "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}\n${VERSION_DATETIME}")
+    file(TIMESTAMP ${VERSION_FILE} VERSION_DATETIME "%Y-%m-%d %H:%M:%S" UTC)
+    set(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+    get_cpack_filename(${VERSION} PROJECT_CPACK_FILENAME)
+    file(WRITE ${CMAKE_BINARY_DIR}/version.str "${VERSION}\n${VERSION_DATETIME}\n${PROJECT_CPACK_FILENAME}")
 
 endfunction(check_version)
 
@@ -79,3 +117,37 @@ macro(CREATE_SYMLINK SRC_FILE DEST_FILE LIB_TARGET)
         ADD_CUSTOM_TARGET(SYMLINK_COPY ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${DEST_FILE}")
     endif()
 endmacro()
+
+function(get_cpack_filename ver name)
+    get_compiler_version(COMPILER)
+    if(BUILD_STATIC_LIBS)
+        set(STATIC_PREFIX "static-")
+    endif()
+
+    if(BUILD_SHARED_LIBS OR OSX_FRAMEWORK)
+        set(${name} ${PROJECT_NAME}-${STATIC_PREFIX}${ver}-${COMPILER} PARENT_SCOPE)
+    else()
+        set(${name} ${PROJECT_NAME}-${STATIC_PREFIX}${ver}-STATIC-${COMPILER} PARENT_SCOPE)
+    endif()
+endfunction()
+
+function(get_compiler_version ver)
+    ## Limit compiler version to 2 or 1 digits
+    string(REPLACE "." ";" VERSION_LIST ${CMAKE_C_COMPILER_VERSION})
+    list(LENGTH VERSION_LIST VERSION_LIST_LEN)
+    if(VERSION_LIST_LEN GREATER 2 OR VERSION_LIST_LEN EQUAL 2)
+        list(GET VERSION_LIST 0 COMPILER_VERSION_MAJOR)
+        list(GET VERSION_LIST 1 COMPILER_VERSION_MINOR)
+        set(COMPILER ${CMAKE_C_COMPILER_ID}-${COMPILER_VERSION_MAJOR}.${COMPILER_VERSION_MINOR})
+    else()
+        set(COMPILER ${CMAKE_C_COMPILER_ID}-${CMAKE_C_COMPILER_VERSION})
+    endif()
+
+    if(WIN32)
+        if(CMAKE_CL_64)
+            set(COMPILER "${COMPILER}-64bit")
+        endif()
+    endif()
+
+    set(${ver} ${COMPILER} PARENT_SCOPE)
+endfunction()

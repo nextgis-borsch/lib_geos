@@ -60,19 +60,28 @@ endif()
 #################################################################################
 
 if(OSX_FRAMEWORK)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos_c.h
-  DESTINATION "${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/")
-#  install(CODE "execute_process(COMMAND sed -E -i \"\" \"s,# *include[[:space:]]+<geos/,#include <GEOS/,g\" \"${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/geos_c.h\")")
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos_c.h
+        DESTINATION "${INSTALL_LIB_DIR}/${PROJECT_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/")
+    #  install(CODE "execute_process(COMMAND sed -E -i \"\" \"s,# *include[[:space:]]+<geos/,#include <GEOS/,g\" \"${INSTALL_LIB_DIR}/${PROJECT_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/geos_c.h\")")
 else()
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos_c.h
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-endif()
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos_c.h
+        DESTINATION ${INSTALL_INC_DIR})
 
-if(NOT OSX_FRAMEWORK)
-  install(TARGETS ${LIB_NAME}
-    RUNTIME DESTINATION ${INSTALL_BIN_DIR}
-    LIBRARY DESTINATION ${INSTALL_LIB_DIR}
-    ARCHIVE DESTINATION ${INSTALL_LIB_DIR})
+    target_include_directories(${LIB_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/capi
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/capi
+    )
+
+    if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
+        install(TARGETS ${LIB_NAME}
+            EXPORT ${PACKAGE_UPPER_NAME}Targets
+            RUNTIME DESTINATION ${INSTALL_BIN_DIR}
+            LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+            ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
+            INCLUDES DESTINATION ${INSTALL_INC_DIR}
+            FRAMEWORK DESTINATION ${INSTALL_LIB_DIR}
+        )
+    endif()
 endif()
 
 #################################################################################

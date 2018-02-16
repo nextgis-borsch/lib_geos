@@ -6,7 +6,7 @@
 #
 # This is free software; you can redistribute and/or modify it under
 # the terms of the GNU Lesser General Public Licence as published
-# by the Free Software Foundation. 
+# by the Free Software Foundation.
 # See the COPYING file for more information.
 #
 #################################################################################
@@ -31,18 +31,11 @@ if(GEOS_ENABLE_TESTS)
     SingleSidedBufferResultMatcher.cpp)
 
   add_executable(simplewkttester ${simplewkttester_SOURCES})
-  if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
-    target_link_libraries(simplewkttester GEOS)
- 	else()
-    target_link_libraries(simplewkttester geos)
- 	endif()
+  target_link_libraries(simplewkttester ${PROJECT_NAME})
 
   add_executable(xmltester ${xmltester_SOURCES})
-  if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
-    target_link_libraries(xmltester GEOS)
- 	else()
-    target_link_libraries(xmltester geos)
-  endif()
+  target_link_libraries(xmltester ${PROJECT_NAME})
+
 
   set(XMLTESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
   set(SAVE_XMLTESTS
@@ -110,4 +103,6 @@ if(GEOS_ENABLE_TESTS)
   set(STATUS_RESULT "ON")
 endif()
 
+if(NOT SUPPRESS_VERBOSE_OUTPUT)
 message(STATUS "${STATUS_MESSAGE} - ${STATUS_RESULT}")
+endif()

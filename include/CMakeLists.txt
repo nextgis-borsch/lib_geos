@@ -19,7 +19,7 @@
 # for OS X framework, but it's not practical this complex tree
 
 if(OSX_FRAMEWORK)
-  set(installdest ${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/geos)
+  set(installdest ${INSTALL_LIB_DIR}/${PROJECT_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/geos)
 else()
   set(installdest ${INSTALL_INC_DIR})
 endif()

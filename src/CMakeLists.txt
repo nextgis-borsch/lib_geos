@@ -3,7 +3,7 @@
 # GEOS C++ library build configuration for CMake build system
 #
 # Copyright (C) 2009 Mateusz Loskot <mateusz@loskot.net>
-# Copyright (C) 2016, NextGIS <info@nextgis.com>
+# Copyright (C) 2016-2018, NextGIS <info@nextgis.com>
 #
 # This is free software; you can redistribute and/or modify it under
 # the terms of the GNU Lesser General Public Licence as published
@@ -20,54 +20,52 @@ if(OSX_FRAMEWORK)
   # also 1 binary, so include CAPI here
   # and, make name all caps
 
-  set(geos_c_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/../capi/geos_c.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../capi/geos_ts_c.cpp)
+    set(geos_c_SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/../capi/geos_c.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/../capi/geos_ts_c.cpp)
 
     set(geos_HHEADERS
-        ${CMAKE_SOURCE_DIR}/include/geos.h
-    )
+        ${CMAKE_SOURCE_DIR}/include/geos.h)
+    set(LIB_NAME ${PROJECT_NAME})
+    add_library(${LIB_NAME} SHARED ${geos_SOURCES} ${geos_c_SOURCES} ${geos_HHEADERS})
 
-  add_library(${FRAMEWORK_NAME} SHARED ${geos_SOURCES} ${geos_c_SOURCES} ${geos_HHEADERS})
-
-  math(EXPR CVERSION "${VERSION_MAJOR} + 1")
+    math(EXPR CVERSION "${VERSION_MAJOR} + 1")
  	# VERSION = current version, SOVERSION = compatibility version
-  set_target_properties(${FRAMEWORK_NAME}
+    set_target_properties(${LIB_NAME}
     PROPERTIES
     CLEAN_DIRECT_OUTPUT 1
     FRAMEWORK TRUE
     VERSION "${CVERSION}.${VERSION_MINOR}.${VERSION_PATCH}"
- 	  SOVERSION ${CVERSION}
+    	  SOVERSION ${CVERSION}
     FRAMEWORK_VERSION ${FRAMEWORK_VERSION}
-#    BUILD_WITH_INSTALL_RPATH TRUE
-#    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}"
-#    MACOSX_FRAMEWORK_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+    #    BUILD_WITH_INSTALL_RPATH TRUE
+    #    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}"
+    #    MACOSX_FRAMEWORK_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
     MACOSX_FRAMEWORK_BUNDLE_VERSION "GEOS ${VERSION}"
     MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${VERSION}
     MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.geos
     XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
-    PUBLIC_HEADER "${geos_HHEADERS}"
-    )
+    PUBLIC_HEADER "${geos_HHEADERS}" )
 
-  set(EXPORT_TARGETS ${FRAMEWORK_NAME} ${LIB_NAME} PARENT_SCOPE)
+    set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
 
-  install(TARGETS ${FRAMEWORK_NAME} FRAMEWORK DESTINATION ${INSTALL_LIB_DIR})
+    # install(TARGETS ${LIB_NAME} FRAMEWORK DESTINATION ${INSTALL_LIB_DIR})
 
-  if(GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT)
-    # Unix compatibility option, provides typical bin/lib/include folder
-    # structure for framework-challenged projects
+    if(GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT)
+        # Unix compatibility option, provides typical bin/lib/include folder
+        # structure for framework-challenged projects
 
-    set(GEOS_FWDIR "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${FRAMEWORK_NAME}.framework")
-    set(GEOS_FWDIR_VER "${GEOS_FWDIR}/Versions/${VERSION_MAJOR}")
-    install(CODE "execute_process(COMMAND mkdir -p \"${GEOS_FWDIR_VER}/unix/bin\")")
-    install(CODE "execute_process(COMMAND mkdir -p \"${GEOS_FWDIR_VER}/unix/include\")")
-    install(CODE "execute_process(COMMAND mkdir -p \"${GEOS_FWDIR_VER}/unix/lib\")")
-    install(CODE "execute_process(COMMAND ln -sfh ../../Headers \"${GEOS_FWDIR_VER}/unix/include/geos\")")
-    install(CODE "execute_process(COMMAND ln -sf ../../Headers/geos_c.h \"${GEOS_FWDIR_VER}/unix/include/geos_c.h\")")
-    install(CODE "execute_process(COMMAND ln -sf ../../${FRAMEWORK_NAME} \"${GEOS_FWDIR_VER}/unix/lib/libgeos.dylib\")")
-    install(CODE "execute_process(COMMAND ln -sf ../../${FRAMEWORK_NAME} \"${GEOS_FWDIR_VER}/unix/lib/libgeos_c.dylib\")")
-    install(CODE "execute_process(COMMAND ln -sfh Versions/Current/unix \"${GEOS_FWDIR}/unix\")")
-  endif()
+        set(GEOS_FWDIR "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.framework")
+        set(GEOS_FWDIR_VER "${GEOS_FWDIR}/Versions/${VERSION_MAJOR}")
+        install(CODE "execute_process(COMMAND mkdir -p \"${GEOS_FWDIR_VER}/unix/bin\")")
+        install(CODE "execute_process(COMMAND mkdir -p \"${GEOS_FWDIR_VER}/unix/include\")")
+        install(CODE "execute_process(COMMAND mkdir -p \"${GEOS_FWDIR_VER}/unix/lib\")")
+        install(CODE "execute_process(COMMAND ln -sfh ../../Headers \"${GEOS_FWDIR_VER}/unix/include/geos\")")
+        install(CODE "execute_process(COMMAND ln -sf ../../Headers/geos_c.h \"${GEOS_FWDIR_VER}/unix/include/geos_c.h\")")
+        install(CODE "execute_process(COMMAND ln -sf ../../${PROJECT_NAME} \"${GEOS_FWDIR_VER}/unix/lib/libgeos.dylib\")")
+        install(CODE "execute_process(COMMAND ln -sf ../../${PROJECT_NAME} \"${GEOS_FWDIR_VER}/unix/lib/libgeos_c.dylib\")")
+        install(CODE "execute_process(COMMAND ln -sfh Versions/Current/unix \"${GEOS_FWDIR}/unix\")")
+    endif()
 
 else()
     set(LIB_NAME ${PROJECT_NAME})
@@ -104,7 +102,6 @@ else()
         PREFIX "lib")
     endif()
 
-    set(INSTALL_TARGETS ${INSTALL_TARGETS} ${LIB_NAME})
     set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
 
     set_target_properties(${LIB_NAME} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
@@ -116,15 +113,21 @@ else()
     endif()
 endif()
 
-#################################################################################
-# Installation
-#################################################################################
+if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
+    # Add path to includes to build-tree export
+    target_include_directories(${LIB_NAME} PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/include
+    )
 
-if(NOT OSX_FRAMEWORK)
-  install(TARGETS ${INSTALL_TARGETS}
-    RUNTIME DESTINATION ${INSTALL_BIN_DIR}
-    LIBRARY DESTINATION ${INSTALL_LIB_DIR}
-    ARCHIVE DESTINATION ${INSTALL_LIB_DIR})
+    install(TARGETS ${LIB_NAME}
+        EXPORT ${PACKAGE_UPPER_NAME}Targets
+        RUNTIME DESTINATION ${INSTALL_BIN_DIR}
+        LIBRARY DESTINATION ${INSTALL_LIB_DIR}
+        ARCHIVE DESTINATION ${INSTALL_LIB_DIR}
+        INCLUDES DESTINATION ${INSTALL_INC_DIR}
+        FRAMEWORK DESTINATION ${INSTALL_LIB_DIR}
+    )
 endif()
 
 #################################################################################

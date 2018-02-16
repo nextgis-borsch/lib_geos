@@ -14,8 +14,8 @@
 if(UNIX)
 
   if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK AND GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT)
-    set(installdest ${FRAMEWORK_NAME}.framework/Versions/${FRAMEWORK_VERSION}/unix/bin)
-    set(prefix ${CMAKE_INSTALL_PREFIX}/${FRAMEWORK_NAME}.framework/Versions/${FRAMEWORK_VERSION}/unix)
+    set(installdest ${PROJECT_NAME}.framework/Versions/${FRAMEWORK_VERSION}/unix/bin)
+    set(prefix ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.framework/Versions/${FRAMEWORK_VERSION}/unix)
   elseif(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
     # just a dummy so installdest not set
     # want geos-config only for Mac unix build or framework+unixcompat
