@@ -58,8 +58,8 @@ else()
     include(GNUInstallDirs)
     set(INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR} CACHE INTERNAL "Installation directory for executables" FORCE)
     set(INSTALL_LIB_DIR ${CMAKE_INSTALL_LIBDIR} CACHE INTERNAL "Installation directory for libraries" FORCE)
-    set(INSTALL_INC_DIR "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}" CACHE INTERNAL "Installation directory for headers" FORCE)
-    set(INSTALL_INC_ROOT_DIR "${CMAKE_INSTALL_INCLUDEDIR}" CACHE INTERNAL "Installation directory for geos_c.h" FORCE)
+    set(INSTALL_INC_DIR ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME} CACHE INTERNAL "Installation directory for headers" FORCE)
+    set(INSTALL_INC_ROOT_DIR ${CMAKE_INSTALL_INCLUDEDIR} CACHE INTERNAL "Installation directory for geos_c.h" FORCE)
     set(INSTALL_CMAKECONF_DIR ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}/CMake CACHE INTERNAL "Installation directory for cmake config files" FORCE)
 endif()
 
@@ -68,16 +68,10 @@ endif()
 #################################################################################
 report_version(${PROJECT_NAME} ${VERSION})
 
-<<<<<<< HEAD
-=======
 if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "Setting GEOS version ${VERSION} as port of JTS ${JTS_PORT}")
 endif()
 
-math(EXPR CAPI_VERSION_MAJOR "${CAPI_INTERFACE_CURRENT} - ${CAPI_INTERFACE_AGE}")
-set(CAPI_VERSION_MINOR ${CAPI_INTERFACE_AGE})
-set(CAPI_VERSION_PATCH ${CAPI_INTERFACE_REVISION})
->>>>>>> 8bd97bdd7d960f7db242f1ccf9933be1516c5f65
 set(CAPI_VERSION "${CAPI_VERSION_MAJOR}.${CAPI_VERSION_MINOR}.${CAPI_VERSION_PATCH}")
 set(CAPI_SOVERSION ${CAPI_VERSION_MAJOR})
 
