@@ -68,6 +68,16 @@ endif()
 #################################################################################
 report_version(${PROJECT_NAME} ${VERSION})
 
+<<<<<<< HEAD
+=======
+if(NOT SUPPRESS_VERBOSE_OUTPUT)
+    message(STATUS "Setting GEOS version ${VERSION} as port of JTS ${JTS_PORT}")
+endif()
+
+math(EXPR CAPI_VERSION_MAJOR "${CAPI_INTERFACE_CURRENT} - ${CAPI_INTERFACE_AGE}")
+set(CAPI_VERSION_MINOR ${CAPI_INTERFACE_AGE})
+set(CAPI_VERSION_PATCH ${CAPI_INTERFACE_REVISION})
+>>>>>>> 8bd97bdd7d960f7db242f1ccf9933be1516c5f65
 set(CAPI_VERSION "${CAPI_VERSION_MAJOR}.${CAPI_VERSION_MINOR}.${CAPI_VERSION_PATCH}")
 set(CAPI_SOVERSION ${CAPI_VERSION_MAJOR})
 
