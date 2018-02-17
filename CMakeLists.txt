@@ -3,13 +3,14 @@
 # Main GEOS build configuration file for CMake build system
 #
 # Copyright (C) 2009 Mateusz Loskot <mateusz@loskot.net>
-# Copyright (C) 2016, NextGIS <info@nextgis.com>
+# Copyright (C) 2016-2018, NextGIS <info@nextgis.com>
 #
 # This is free software; you can redistribute and/or modify it under
 # the terms of the GNU Lesser General Public Licence as published
 # by the Free Software Foundation.
 # See the COPYING file for more information.
 #
+# Modified to support NextGIS Borsch v2
 #################################################################################
 cmake_minimum_required (VERSION 2.8.12 FATAL_ERROR)
 

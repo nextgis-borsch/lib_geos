@@ -82,7 +82,7 @@ else()
         PROPERTIES
         DEFINE_SYMBOL GEOS_DLL_EXPORT
         VERSION ${VERSION}
-        SOVERSION ${SOVERSION})
+        SOVERSION ${CAPI_SOVERSION})
 
         if(BUILD_STATIC_LIBS)
             add_library(${LIB_NAME}static STATIC ${geos_SOURCES} ${geos_ALL_HEADERS})
