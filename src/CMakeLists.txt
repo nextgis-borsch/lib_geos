@@ -115,10 +115,16 @@ endif()
 
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
     # Add path to includes to build-tree export
-    target_include_directories(${LIB_NAME} PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>/include
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>/include
+    target_include_directories(${LIB_NAME} INTERFACE
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/include>
     )
+
+    if(OSX_FRAMEWORK)
+        target_include_directories(${LIB_NAME} INTERFACE
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/capi>
+        )
+    endif()
 
     install(TARGETS ${LIB_NAME}
         EXPORT ${PACKAGE_UPPER_NAME}Targets
