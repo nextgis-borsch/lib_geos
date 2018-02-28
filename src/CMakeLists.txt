@@ -130,6 +130,20 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
     )
 endif()
 
+# Create the <Package>Config.cmake file
+configure_file(${PROJECT_SOURCE_DIR}/cmake/PackageConfig.cmake.in
+  ${PROJECT_BINARY_DIR}/${PACKAGE_UPPER_NAME}Config.cmake @ONLY)
+
+if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
+  # Install the <Package>Config.cmake
+  install(FILES
+    ${PROJECT_BINARY_DIR}/${PACKAGE_UPPER_NAME}Config.cmake
+    DESTINATION ${INSTALL_CMAKECONF_DIR} COMPONENT dev)
+
+  # Install the export set for use with the install-tree
+  install(EXPORT ${PACKAGE_UPPER_NAME}Targets DESTINATION ${INSTALL_CMAKECONF_DIR} COMPONENT dev)
+endif()
+
 #################################################################################
 # Group source files for IDE source explorers (e.g. Visual Studio)
 #################################################################################
