@@ -19,27 +19,24 @@
 # for OS X framework, but it's not practical this complex tree
 
 if(OSX_FRAMEWORK)
-  set(installdest ${INSTALL_LIB_DIR}/${PROJECT_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/geos)
+  set(installdest ${INSTALL_LIB_DIR}/${PROJECT_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers)
 else()
   set(installdest ${INSTALL_INC_DIR})
 endif()
 
+install(FILES geos.h DESTINATION ${installdest})
 
-install(FILES geos.h
-  DESTINATION ${installdest})
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos/platform.h
-  DESTINATION ${installdest})
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos/version.h
-  DESTINATION ${installdest})
+install(FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/geos/platform.h
+            ${CMAKE_CURRENT_BINARY_DIR}/geos/version.h
+        DESTINATION ${installdest}/geos)
 
 install(DIRECTORY geos/
-  DESTINATION ${installdest}
-  FILES_MATCHING
-  PATTERN "*.h"
-  PATTERN "*.inl"
-  PATTERN ".svn" EXCLUDE)
+    DESTINATION ${installdest}/geos
+    FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "*.inl"
+    PATTERN ".svn" EXCLUDE)
 
 # Some post-processing for the framework
 # luckily GEOS uses header subdir already, just need to change case
