@@ -27,12 +27,12 @@ endif()
 install(FILES geos.h DESTINATION ${installdest})
 
 install(FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/geos/platform.h
-            ${CMAKE_CURRENT_BINARY_DIR}/geos/version.h
+            ${PROJECT_BINARY_DIR}/include/geos/platform.h
+            ${PROJECT_BINARY_DIR}/include/geos/version.h
         DESTINATION ${installdest}/geos)
 
 install(DIRECTORY geos/
-    DESTINATION ${installdest}/geos
+    DESTINATION ${installdest}
     FILES_MATCHING
     PATTERN "*.h"
     PATTERN "*.inl"
