@@ -60,11 +60,11 @@ endif()
 #################################################################################
 
 if(OSX_FRAMEWORK)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos_c.h
+    install(FILES ${geos_capi_HEADERS}
         DESTINATION "${INSTALL_LIB_DIR}/${PROJECT_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/")
     #  install(CODE "execute_process(COMMAND sed -E -i \"\" \"s,# *include[[:space:]]+<geos/,#include <GEOS/,g\" \"${INSTALL_LIB_DIR}/${PROJECT_NAME}.framework/Versions/${FRAMEWORK_VERSION}/Headers/geos_c.h\")")
 else()
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos_c.h
+    install(FILES ${geos_capi_HEADERS}
         DESTINATION ${INSTALL_INC_DIR})
 
     target_include_directories(${LIB_NAME} PUBLIC

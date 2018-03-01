@@ -108,11 +108,12 @@ else()
 
     if(NOT WIN32 AND BUILD_SHARED_LIBS)
         add_custom_target(create_symlink
-            ALL ${CMAKE_COMMAND} -E create_symlink "$<TARGET_FILE_NAME:${LIB_NAME}>" "$<TARGET_FILE_DIR:${LIB_NAME}>/libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}"
+            ALL ${CMAKE_COMMAND} -E create_symlink "$<TARGET_FILE_NAME:${LIB_NAME}>" "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}"
             DEPENDS ${LIB_NAME}
         )
-        install(FILES $<TARGET_FILE_DIR:${LIB_NAME}>/libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
+        install(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
             DESTINATION ${INSTALL_LIB_DIR})
+
     endif()
 endif()
 
