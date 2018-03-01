@@ -24,15 +24,16 @@ else()
   set(installdest ${INSTALL_INC_DIR})
 endif()
 
-install(FILES geos.h DESTINATION ${installdest})
+set(ROOT_HEADERS
+    ${CMAKE_CURRENT_BINARY_DIR}/geos/platform.h
+    ${CMAKE_CURRENT_BINARY_DIR}/geos/version.h
+)
 
-install(FILES
-            ${PROJECT_BINARY_DIR}/include/geos/platform.h
-            ${PROJECT_BINARY_DIR}/include/geos/version.h
-        DESTINATION ${installdest}/geos)
+install(FILES geos.h DESTINATION ${installdest})
+install(FILES ${ROOT_HEADERS} DESTINATION ${installdest}/geos)
 
 install(DIRECTORY geos/
-    DESTINATION ${installdest}
+    DESTINATION ${installdest}/geos
     FILES_MATCHING
     PATTERN "*.h"
     PATTERN "*.inl"
