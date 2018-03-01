@@ -91,12 +91,11 @@ function(report_version name ver)
     set(BoldYellow  "${Esc}[1;33m")
     set(ColourReset "${Esc}[m")
 
-    message(STATUS "${BoldYellow}${name} version ${ver}${ColourReset}")
+    message("${BoldYellow}${name} version ${ver}${ColourReset}")
 
 endfunction()
 
 macro(CREATE_SYMLINK SRC_FILE DEST_FILE LIB_TARGET)
-    message(STATUS "CREATE_SYMLINK ${SRC_FILE} ${DEST_FILE} ${LIB_TARGET}")
     if(EXISTS $<TARGET_FILE_DIR:${LIB_TARGET}>/${DEST_FILE})
         FILE(REMOVE $<TARGET_FILE_DIR:${LIB_TARGET}>/${DEST_FILE})
     endif()
@@ -107,14 +106,14 @@ macro(CREATE_SYMLINK SRC_FILE DEST_FILE LIB_TARGET)
             COMMAND ${CMAKE_COMMAND} -E copy_if_different  "${SRC_FILE}" ${CMAKE_CURRENT_BINARY_DIR}/${DEST_FILE}
             DEPENDS ${LIB_TARGET}
             )
-        ADD_CUSTOM_TARGET(SYMLINK_COPY ALL DEPENDS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${DEST_FILE})
+        ADD_CUSTOM_TARGET(SYMLINK_COPY ALL DEPENDS ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/${DEST_FILE} ${LIB_TARGET})
     else()
         ADD_CUSTOM_COMMAND(
             OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${DEST_FILE}"
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different  "${SRC_FILE}" "$<TARGET_FILE_DIR:${LIB_TARGET}>/${DEST_FILE}"
+            COMMAND ${CMAKE_COMMAND} -E create_symlink "${SRC_FILE}" "$<TARGET_FILE_DIR:${LIB_TARGET}>/${DEST_FILE}"
             DEPENDS ${LIB_TARGET}
             )
-        ADD_CUSTOM_TARGET(SYMLINK_COPY ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${DEST_FILE}")
+        ADD_CUSTOM_TARGET(SYMLINK_COPY ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${DEST_FILE} ${LIB_TARGET})
     endif()
 endmacro()
 
