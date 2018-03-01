@@ -117,6 +117,8 @@ else()
     endif()
 endif()
 
+set(INSTALL_TARGETS ${INSTALL_TARGETS} ${LIB_NAME})
+
 if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
     # Add path to includes to build-tree export
     target_include_directories(${LIB_NAME} INTERFACE
@@ -130,7 +132,7 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL )
         )
     endif()
 
-    install(TARGETS ${LIB_NAME}
+    install(TARGETS ${INSTALL_TARGETS}
         EXPORT ${PACKAGE_UPPER_NAME}Targets
         RUNTIME DESTINATION ${INSTALL_BIN_DIR}
         LIBRARY DESTINATION ${INSTALL_LIB_DIR}
