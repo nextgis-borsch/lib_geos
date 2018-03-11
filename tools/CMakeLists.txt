@@ -24,8 +24,8 @@ if(UNIX)
     set(prefix ${CMAKE_INSTALL_PREFIX})
   endif()
 
-  set(exec_prefix ${INSTALL_BIN_DIR})
-  set(libdir ${INSTALL_LIB_DIR})
+  set(exec_prefix ${prefix}/${INSTALL_BIN_DIR})
+  set(libdir ${prefix}/${INSTALL_LIB_DIR})
 
   if(installdest)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/geos-config.in
