@@ -91,7 +91,14 @@ else()
                 OUTPUT_NAME "geos-${VERSION}"
                 PREFIX "lib"
             )
-        else()
+            add_custom_target(create_symlink
+                ALL ${CMAKE_COMMAND} -E create_symlink "$<TARGET_FILE_NAME:${LIB_NAME}>" "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libgeos${CMAKE_SHARED_LIBRARY_SUFFIX}"
+                DEPENDS ${LIB_NAME}
+            )
+            install(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libgeos${CMAKE_SHARED_LIBRARY_SUFFIX}
+                DESTINATION ${INSTALL_LIB_DIR}
+            )
+        endif()
 
         if(BUILD_STATIC_LIBS)
             add_library(${LIB_NAME}static STATIC ${geos_SOURCES} ${geos_ALL_HEADERS})
