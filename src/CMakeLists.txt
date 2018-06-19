@@ -96,25 +96,22 @@ else()
         endif()
 
     else()
-      set_target_properties(${LIB_NAME}
-        PROPERTIES
-        OUTPUT_NAME "geos"
-        PREFIX "lib")
+        if(UNIX AND NOT OSX_FRAMEWORK)
+            set_target_properties(${LIB_NAME}
+                PROPERTIES
+                OUTPUT_NAME "geos-${VERSION}"
+                PREFIX "lib")
+        else()
+            set_target_properties(${LIB_NAME}
+                PROPERTIES
+                OUTPUT_NAME "geos"
+                PREFIX "lib")
+        endif()
     endif()
 
     set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
 
     set_target_properties(${LIB_NAME} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
-
-    if(NOT WIN32 AND BUILD_SHARED_LIBS)
-        add_custom_target(create_symlink
-            ALL ${CMAKE_COMMAND} -E create_symlink "$<TARGET_FILE_NAME:${LIB_NAME}>" "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}"
-            DEPENDS ${LIB_NAME}
-        )
-        install(FILES ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libgeos-${VERSION}${CMAKE_SHARED_LIBRARY_SUFFIX}
-            DESTINATION ${INSTALL_LIB_DIR})
-
-    endif()
 endif()
 
 set(INSTALL_TARGETS ${INSTALL_TARGETS} ${LIB_NAME})
