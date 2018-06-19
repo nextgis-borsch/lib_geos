@@ -78,11 +78,20 @@ else()
     add_library(${LIB_NAME} ${LIB_TYPE} ${geos_SOURCES} ${geos_ALL_HEADERS})
 
     if(BUILD_SHARED_LIBS)
-      set_target_properties(${LIB_NAME}
-        PROPERTIES
-        DEFINE_SYMBOL GEOS_DLL_EXPORT
-        VERSION ${VERSION}
-        SOVERSION ${CAPI_SOVERSION})
+        set_target_properties(${LIB_NAME}
+            PROPERTIES
+            DEFINE_SYMBOL GEOS_DLL_EXPORT
+            VERSION ${VERSION}
+            SOVERSION ${CAPI_SOVERSION}
+        )
+
+        if(UNIX AND NOT OSX_FRAMEWORK)
+            set_target_properties(${LIB_NAME}
+                PROPERTIES
+                OUTPUT_NAME "geos-${VERSION}"
+                PREFIX "lib"
+            )
+        else()
 
         if(BUILD_STATIC_LIBS)
             add_library(${LIB_NAME}static STATIC ${geos_SOURCES} ${geos_ALL_HEADERS})
@@ -94,19 +103,12 @@ else()
             endif()
             set_target_properties(${LIB_NAME}static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
         endif()
-
     else()
-        if(UNIX AND NOT OSX_FRAMEWORK)
-            set_target_properties(${LIB_NAME}
-                PROPERTIES
-                OUTPUT_NAME "geos-${VERSION}"
-                PREFIX "lib")
-        else()
-            set_target_properties(${LIB_NAME}
-                PROPERTIES
-                OUTPUT_NAME "geos"
-                PREFIX "lib")
-        endif()
+        set_target_properties(${LIB_NAME}
+            PROPERTIES
+            OUTPUT_NAME "geos"
+            PREFIX "lib"
+        )
     endif()
 
     set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
