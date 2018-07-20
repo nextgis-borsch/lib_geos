@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2010 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2010 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -61,14 +61,14 @@ Polygonizer::LineStringAdder::filter_ro(const Geometry *g)
  * as the input Geometry
  */
 Polygonizer::Polygonizer():
-	lineStringAdder(this), 
-	graph(NULL),
+	lineStringAdder(this),
+	graph(nullptr),
 	dangles(),
 	cutEdges(),
 	invalidRingLines(),
 	holeList(),
 	shellList(),
-	polyList(NULL)
+	polyList(nullptr)
 {
 }
 
@@ -76,13 +76,11 @@ Polygonizer::~Polygonizer()
 {
 	delete graph;
 
-	for (unsigned int i=0, n=invalidRingLines.size(); i<n; ++i)
-		delete invalidRingLines[i];
+	for (auto &r : invalidRingLines) delete r;
 
 	if ( polyList )
 	{
-		for (unsigned int i=0, n=polyList->size(); i<n; ++i)
-			delete (*polyList)[i];
+		for (auto &p : (*polyList)) delete p;
 		delete polyList;
 	}
 }
@@ -98,11 +96,7 @@ Polygonizer::~Polygonizer()
 void
 Polygonizer::add(vector<Geometry*> *geomList)
 {
-	for(unsigned int i=0, n=geomList->size(); i<n; ++i)
-	{
-		const Geometry *geometry=(*geomList)[i];
-		add(geometry);
-	}
+	for (auto &g : (*geomList)) add(g);
 }
 
 /*
@@ -116,11 +110,7 @@ Polygonizer::add(vector<Geometry*> *geomList)
 void
 Polygonizer::add(vector<const Geometry*> *geomList)
 {
-	for(unsigned int i=0, n=geomList->size(); i<n; ++i)
-	{
-		const Geometry *geometry=(*geomList)[i];
-		add(geometry);
-	}
+	for (auto &g : (*geomList)) add(g);
 }
 
 /*
@@ -160,7 +150,7 @@ void
 Polygonizer::add(const LineString *line)
 {
 	// create a new graph using the factory from the input Geometry
-	if (graph==NULL)
+	if (graph==nullptr)
 		graph=new PolygonizeGraph(line->getFactory());
 	graph->addEdge(line);
 }
@@ -174,7 +164,7 @@ Polygonizer::getPolygons()
 {
 	polygonize();
 	vector<Polygon *> *ret = polyList;
-	polyList = NULL;
+	polyList = nullptr;
 	return ret;
 }
 
@@ -207,12 +197,12 @@ void
 Polygonizer::polygonize()
 {
 	// check if already computed
-	if (polyList!=NULL) return;
+	if (polyList!=nullptr) return;
 
 	polyList=new vector<Polygon*>();
 
 	// if no geometries were supplied it's possible graph could be null
-	if (graph==NULL) return; 
+	if (graph==nullptr) return;
 
 	graph->deleteDangles(dangles);
 
@@ -239,9 +229,8 @@ Polygonizer::polygonize()
 
 	assignHolesToShells(holeList, shellList);
 
-	for (unsigned int i=0, n=shellList.size(); i<n; ++i)
+	for (const auto &er : shellList)
 	{
-		EdgeRing *er=shellList[i];
 		polyList->push_back(er->getPolygon());
 	}
 }
@@ -252,11 +241,8 @@ Polygonizer::findValidRings(const vector<EdgeRing*>& edgeRingList,
 	vector<EdgeRing*>& validEdgeRingList,
 	vector<LineString*>& invalidRingList)
 {
-	typedef vector<EdgeRing*> EdgeRingList;
-	
-	for (EdgeRingList::size_type i=0, n=edgeRingList.size(); i<n; ++i)
+	for (const auto &er : edgeRingList)
 	{
-		EdgeRing *er = edgeRingList[i];
 		if (er->isValid())
 		{
 			validEdgeRingList.push_back(er);
@@ -275,15 +261,14 @@ Polygonizer::findValidRings(const vector<EdgeRing*>& edgeRingList,
 void
 Polygonizer::findShellsAndHoles(const vector<EdgeRing*>& edgeRingList)
 {
-	holeList.clear(); 
+	holeList.clear();
 	shellList.clear();
-	for (unsigned int i=0, n=edgeRingList.size(); i<n; ++i)
-	{
-		EdgeRing *er=edgeRingList[i];
+	for (const auto &er : edgeRingList) {
 		if (er->isHole())
 			holeList.push_back(er);
 		else
 			shellList.push_back(er);
+
 		GEOS_CHECK_FOR_INTERRUPTS();
 	}
 }
@@ -292,9 +277,7 @@ Polygonizer::findShellsAndHoles(const vector<EdgeRing*>& edgeRingList)
 void
 Polygonizer::assignHolesToShells(const vector<EdgeRing*>& holeList, vector<EdgeRing*>& shellList)
 {
-	for (unsigned int i=0, n=holeList.size(); i<n; ++i)
-	{
-		EdgeRing *holeER=holeList[i];
+	for (const auto &holeER : holeList) {
 		assignHoleToShell(holeER, shellList);
 		GEOS_CHECK_FOR_INTERRUPTS();
 	}
@@ -307,7 +290,7 @@ Polygonizer::assignHoleToShell(EdgeRing *holeER,
 {
 	EdgeRing *shell = EdgeRing::findEdgeRingContaining(holeER, &shellList);
 
-	if (shell!=NULL)
+	if (shell!=nullptr)
 		shell->addHole(holeER->getRingOwnership());
 }
 

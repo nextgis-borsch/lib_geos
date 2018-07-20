@@ -21,6 +21,10 @@
 #include <geos/index/strtree/AbstractNode.h>
 #include <geos/util/IllegalArgumentException.h>
 
+namespace geos {
+namespace index {
+namespace strtree {
+
 BoundablePair::BoundablePair(const Boundable* boundable1, const Boundable* boundable2, ItemDistance* itemDistance) :
 	boundable1(boundable1),
 	boundable2(boundable2),
@@ -59,7 +63,7 @@ bool BoundablePair::isLeaves() const {
 }
 
 bool BoundablePair::isComposite(const Boundable* item) {
-	return dynamic_cast<const AbstractNode*>(item) != NULL;
+	return dynamic_cast<const AbstractNode*>(item) != nullptr;
 }
 
 double BoundablePair::area(const Boundable* b) {
@@ -100,10 +104,14 @@ void BoundablePair::expand(const Boundable* bndComposite, const Boundable* bndOt
 	std::vector<Boundable*> *children = ((AbstractNode*) bndComposite)->getChildBoundables();
 	for(std::vector<Boundable*>::iterator it = children->begin(); it != children->end(); ++it) {
 		Boundable* child = *it;
-		std::auto_ptr<BoundablePair> bp(new BoundablePair(child, bndOther, itemDistance));
+		std::unique_ptr<BoundablePair> bp(new BoundablePair(child, bndOther, itemDistance));
 		if (minDistance == std::numeric_limits<double>::infinity() || bp->getDistance() < minDistance) {
 			priQ.push(bp.release());
 		}
 	}
+}
+
+}
+}
 }
 

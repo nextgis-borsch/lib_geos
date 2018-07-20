@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::io::WKBWriter
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/io/WKBReader.h>
 #include <geos/io/WKBWriter.h>
@@ -27,7 +27,7 @@ namespace tut
 	struct test_wkbwriter_data
 	{
 		geos::geom::PrecisionModel pm;
-		geos::geom::GeometryFactory::unique_ptr gf;
+		geos::geom::GeometryFactory::Ptr gf;
 		geos::io::WKTReader wktreader;
 		geos::io::WKTWriter wktwriter;
 		geos::io::WKBReader wkbreader;
@@ -57,21 +57,21 @@ namespace tut
 	template<>
 	template<>
 	void object::test<1>()
-	{         
+	{
             geos::geom::Geometry *geom = wktreader.read("POINT(-117 33)");
 			std::stringstream result_stream;
 
             wkbwriter.setOutputDimension( 3 );
             wkbwriter.write( *geom, result_stream );
             delete geom;
-            geom = NULL;
+            geom = nullptr;
 
             ensure( result_stream.str().length() == 21 );
 
             result_stream.seekg( 0 );
             geom = wkbreader.read( result_stream );
 
-            ensure( geom != NULL );
+            ensure( geom != nullptr );
 
             ensure( geom->getCoordinateDimension() == 2 );
             ensure( geom->getCoordinate()->x == -117.0 );
@@ -85,14 +85,14 @@ namespace tut
 	template<>
 	template<>
 	void object::test<2>()
-	{         
+	{
             geos::geom::Geometry *geom = wktreader.read("POINT(-117 33 11)");
 			std::stringstream result_stream;
 
             wkbwriter.setOutputDimension( 3 );
             wkbwriter.write( *geom, result_stream );
             delete geom;
-            geom = NULL;
+            geom = nullptr;
 
             ensure( result_stream.str().length() == 29 );
 
@@ -111,14 +111,14 @@ namespace tut
 	template<>
 	template<>
 	void object::test<3>()
-	{         
+	{
             geos::geom::Geometry *geom = wktreader.read("POINT(-117 33 11)");
 			std::stringstream result_stream;
 
             wkbwriter.setOutputDimension( 2 );
             wkbwriter.write( *geom, result_stream );
             delete geom;
-            geom = NULL;
+            geom = nullptr;
 
             ensure( result_stream.str().length() == 21 );
 
@@ -138,7 +138,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<4>()
-	{         
+	{
     typedef geos::geom::Geometry Geom;
     typedef std::vector<Geom *> GeomVect;
     GeomVect *geoms = new GeomVect;

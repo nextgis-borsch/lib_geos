@@ -1,9 +1,9 @@
 
-// 
+//
 // Test Suite for geos::triangulate::quadedge::QuadEdge
 //
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/triangulate/quadedge/QuadEdge.h>
 #include <geos/triangulate/quadedge/QuadEdgeSubdivision.h>
@@ -44,7 +44,7 @@ namespace tut
 	void runDelaunay(const char *sitesWkt, bool computeTriangles, const char *expectedWkt, double tolerance=0.0)
 	{
 		WKTReader reader;
-		std::auto_ptr<Geometry> results;
+		std::unique_ptr<Geometry> results;
 		Geometry *sites = reader.read(sitesWkt);
 		Geometry *expected = reader.read(expectedWkt);
 		DelaunayTriangulationBuilder builder;
@@ -59,7 +59,7 @@ namespace tut
 
 		results->normalize();
 		expected->normalize();
-			
+
 		ensure(results->toString(), results->equalsExact(expected, 1e-7));
 		ensure_equals(results->getCoordinateDimension(), expected->getCoordinateDimension());
 
@@ -85,7 +85,7 @@ namespace tut
 
 		//extract the triangles from the subdivision
     const GeometryFactory& geomFact(*GeometryFactory::getDefaultInstance());
-		std::auto_ptr<GeometryCollection> tris = sub.getTriangles(geomFact);
+		std::unique_ptr<GeometryCollection> tris = sub.getTriangles(geomFact);
 	}
 
 	// 2 - Test Triangle
@@ -148,7 +148,7 @@ namespace tut
 
 		runDelaunay(wkt, false, expectedEdges);
 	}
-	
+
 	// 7 - Test grid (2.5d)
 	template<>
 	template<>
@@ -176,7 +176,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<9>()
-	{   
+	{
 		std::vector<Coordinate>* v = new std::vector<Coordinate>();
 		v->push_back( Coordinate (150,200) );
 		v->push_back( Coordinate (180,270) );

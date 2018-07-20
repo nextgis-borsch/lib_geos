@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -64,9 +64,9 @@ EdgeRing::EdgeRing(DirectedEdge *newStart,
 	edges(),
 	pts(newGeometryFactory->getCoordinateSequenceFactory()->create()),
         label(Location::UNDEF), // new Label(Location::UNDEF)),
-        ring(NULL),
+        ring(nullptr),
         isHoleVar(false),
-        shell(NULL)
+        shell(nullptr)
 {
 	/*
 	 * Commented out to fix different polymorphism in C++ (from Java)
@@ -90,11 +90,11 @@ EdgeRing::~EdgeRing()
 	 * destroyed by `ring' dtor and we must not destroy
 	 * it twice.
 	 */
-	if ( ring == NULL )
+	if ( ring == nullptr )
 	{
 		delete pts;
 	}
-	else 
+	else
 	{
 		delete ring;
 	}
@@ -149,7 +149,7 @@ bool
 EdgeRing::isShell()
 {
 	testInvariant();
-	return (shell==NULL);
+	return (shell==nullptr);
 }
 
 EdgeRing*
@@ -163,7 +163,7 @@ void
 EdgeRing::setShell(EdgeRing *newShell)
 {
 	shell=newShell;
-	if (shell!=NULL) shell->addHole(this);
+	if (shell!=nullptr) shell->addHole(this);
 	testInvariant();
 }
 
@@ -202,7 +202,7 @@ EdgeRing::computeRing()
 {
 	testInvariant();
 
-	if (ring!=NULL) return;   // don't compute more than once
+	if (ring!=nullptr) return;   // don't compute more than once
 	ring=geometryFactory->createLinearRing(pts);
 	isHoleVar=CGAlgorithms::isCCW(pts);
 
@@ -230,7 +230,7 @@ EdgeRing::computePoints(DirectedEdge *newStart)
 	do {
 		//util::Assert::isTrue(de!=NULL,"EdgeRing::computePoints: found null Directed Edge");
 		//assert(de!=NULL); // EdgeRing::computePoints: found null Directed Edge
-		if(de==NULL)
+		if(de==nullptr)
 			throw util::TopologyException(
 				"EdgeRing::computePoints: found null Directed Edge");
 
@@ -333,7 +333,7 @@ void
 EdgeRing::addPoints(Edge *edge, bool isForward, bool isFirstEdge)
 {
 	// EdgeRing::addPoints: can't add points after LinearRing construction
-	assert(ring==NULL);
+	assert(ring==nullptr);
 
 	assert(edge);
 	const CoordinateSequence* edgePts=edge->getCoordinates();
@@ -351,11 +351,11 @@ EdgeRing::addPoints(Edge *edge, bool isForward, bool isFirstEdge)
 			pts->add(edgePts->getAt(i));
 		}
 	}
-	
+
 	else { // is backward
 		size_t startIndex=numEdgePts-1;
 		if (isFirstEdge) startIndex=numEdgePts;
-		//for (int i=startIndex;i>=0;i--) 
+		//for (int i=startIndex;i>=0;i--)
 		for (size_t i=startIndex; i>0; --i)
 		{
 			pts->add(edgePts->getAt(i-1));

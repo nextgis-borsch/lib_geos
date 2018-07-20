@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -28,7 +28,7 @@
 #include <cassert>
 #include <functional>
 #include <vector>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 #include <algorithm> // for std::min etc.
 
 #ifndef GEOS_DEBUG
@@ -55,32 +55,22 @@ namespace validate { // geos.operation.overlay.validate
 
 namespace { // anonymous namespace
 
-bool
-isArea(const Geometry& g)
-{
-        GeometryTypeId type = g.getGeometryTypeId();
-        if ( type == GEOS_POLYGON ) return true;
-        if ( type == GEOS_MULTIPOLYGON ) return true;
 #if GEOS_DEBUG
-	cerr << "OverlayResultValidator: one of the geoms being checked is not a POLYGON or MULTIPOLYGON, blindly returning a positive answer (is valid)" << endl;
-#endif
-        return false;
-}
-
-auto_ptr<MultiPoint>
+unique_ptr<MultiPoint>
 toMultiPoint(vector<Coordinate>& coords)
 {
 	const GeometryFactory& gf = *(GeometryFactory::getDefaultInstance());
-	const CoordinateSequenceFactory& csf = 
+	const CoordinateSequenceFactory& csf =
 			*(gf.getCoordinateSequenceFactory());
 
-	auto_ptr< vector<Coordinate> > nc ( new vector<Coordinate>(coords) );
-	auto_ptr<CoordinateSequence> cs(csf.create(nc.release()));
+	unique_ptr< vector<Coordinate> > nc ( new vector<Coordinate>(coords) );
+	unique_ptr<CoordinateSequence> cs(csf.create(nc.release()));
 
-	auto_ptr<MultiPoint> mp ( gf.createMultiPoint(*cs) );
+	unique_ptr<MultiPoint> mp ( gf.createMultiPoint(*cs) );
 
 	return mp;
 }
+#endif
 
 } // anonymous namespace
 
@@ -118,13 +108,6 @@ OverlayResultValidator::OverlayResultValidator(
 bool
 OverlayResultValidator::isValid(OverlayOp::OpCode overlayOp)
 {
-	// The check only works for areal geoms
-#if 0 // now that FuzzyPointLocator extracts polygonal geoms,
-      // there should be no problem here
-	if ( ! isArea(g0) ) return true;
-	if ( ! isArea(g1) ) return true;
-	if ( ! isArea(gres) ) return true;
-#endif
 
 	addTestPts(g0);
 	addTestPts(g1);
@@ -153,7 +136,7 @@ void
 OverlayResultValidator::addTestPts(const Geometry& g)
 {
 	OffsetPointGenerator ptGen(g, 5 * boundaryDistanceTolerance);
-	auto_ptr< vector<geom::Coordinate> > pts = ptGen.getPoints();
+	unique_ptr< vector<geom::Coordinate> > pts = ptGen.getPoints();
 	testCoords.insert(testCoords.end(), pts->begin(), pts->end());
 }
 
@@ -163,7 +146,7 @@ OverlayResultValidator::addVertices(const Geometry& g)
 {
 	// TODO: optimize this by not copying coordinates
 	//       and pre-allocating memory
-	auto_ptr<CoordinateSequence> cs ( g.getCoordinates() );
+	unique_ptr<CoordinateSequence> cs ( g.getCoordinates() );
 	const vector<Coordinate>* coords = cs->toVector();
 	testCoords.insert(testCoords.end(), coords->begin(), coords->end());
 }

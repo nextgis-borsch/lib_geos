@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for CGAlgorithms::signedArea() function
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/algorithm/CGAlgorithms.h>
 #include <geos/geom/Polygon.h>
@@ -27,22 +27,22 @@ namespace tut
 
     struct test_signedarea_data
     {
-	    typedef std::auto_ptr<geos::geom::Geometry> GeometryPtr;
+	    typedef std::unique_ptr<geos::geom::Geometry> GeometryPtr;
 
         geos::geom::CoordinateSequence* cs_;
         geos::io::WKTReader reader_;
         geos::io::WKBReader breader_;
 
         test_signedarea_data()
-            : cs_(0)
+            : cs_(nullptr)
         {
-            assert(0 == cs_);
+            assert(nullptr == cs_);
         }
-        
+
         ~test_signedarea_data()
         {
             delete cs_;
-            cs_ = 0;
+            cs_ = nullptr;
         }
     };
 

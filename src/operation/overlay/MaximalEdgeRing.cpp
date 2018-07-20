@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -115,7 +115,7 @@ MaximalEdgeRing::buildMinimalRings(vector<MinimalEdgeRing*>& minEdgeRings)
 {
 	DirectedEdge *de=startDe;
 	do {
-		if(de->getMinEdgeRing()==NULL) {
+		if(de->getMinEdgeRing()==nullptr) {
 			MinimalEdgeRing *minEr=new MinimalEdgeRing(de, geometryFactory);
 			minEdgeRings.push_back(minEr);
 		}
@@ -129,7 +129,7 @@ MaximalEdgeRing::buildMinimalRings(vector<EdgeRing*>& minEdgeRings)
 {
 	DirectedEdge *de=startDe;
 	do {
-		if(de->getMinEdgeRing()==NULL) {
+		if(de->getMinEdgeRing()==nullptr) {
 			MinimalEdgeRing *minEr=new MinimalEdgeRing(de, geometryFactory);
 			minEdgeRings.push_back(minEr);
 		}

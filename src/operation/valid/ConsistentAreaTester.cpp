@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -17,20 +17,20 @@
  *
  **********************************************************************/
 
-#include <geos/operation/valid/ConsistentAreaTester.h> 
+#include <geos/operation/valid/ConsistentAreaTester.h>
 #include <geos/algorithm/LineIntersector.h>
-#include <geos/geomgraph/GeometryGraph.h> 
-#include <geos/geomgraph/EdgeEnd.h> 
-#include <geos/geomgraph/EdgeEndStar.h> 
-#include <geos/geomgraph/Edge.h> 
-#include <geos/geomgraph/index/SegmentIntersector.h> 
-#include <geos/geom/Coordinate.h> 
-#include <geos/operation/relate/RelateNodeGraph.h> 
-#include <geos/operation/relate/RelateNode.h> 
-#include <geos/operation/relate/EdgeEndBundle.h> 
+#include <geos/geomgraph/GeometryGraph.h>
+#include <geos/geomgraph/EdgeEnd.h>
+#include <geos/geomgraph/EdgeEndStar.h>
+#include <geos/geomgraph/Edge.h>
+#include <geos/geomgraph/index/SegmentIntersector.h>
+#include <geos/geom/Coordinate.h>
+#include <geos/operation/relate/RelateNodeGraph.h>
+#include <geos/operation/relate/RelateNode.h>
+#include <geos/operation/relate/EdgeEndBundle.h>
 
-#include <memory> // auto_ptr
-#include <cassert> 
+#include <memory> // unique_ptr
+#include <cassert>
 
 using namespace std;
 using namespace geos::algorithm;
@@ -69,7 +69,7 @@ ConsistentAreaTester::isNodeConsistentArea()
 	 * To fully check validity, it is necessary to
 	 * compute ALL intersections, including self-intersections within a single edge.
 	 */
-	auto_ptr<SegmentIntersector> intersector(geomGraph->computeSelfNodes(&li, true, true));
+	unique_ptr<SegmentIntersector> intersector(geomGraph->computeSelfNodes(&li, true, true));
 	/**
 	* A proper intersection means that the area is not consistent.
 	*/

@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -51,9 +51,9 @@ public:
 
 	virtual ~SweepLineEvent();
 
-	bool isInsert() { return insertEvent==NULL; }
+	bool isInsert() { return insertEvent==nullptr; }
 
-	bool isDelete() { return insertEvent!=NULL; }
+	bool isDelete() { return insertEvent!=nullptr; }
 
 	SweepLineEvent* getInsertEvent() { return insertEvent; }
 

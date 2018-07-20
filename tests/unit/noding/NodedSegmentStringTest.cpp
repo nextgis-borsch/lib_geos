@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for geos::noding::NodedSegmentString class.
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/noding/NodedSegmentString.h>
 #include <geos/noding/Octant.h>
@@ -21,16 +21,16 @@ namespace tut
     struct test_nodedsegmentstring_data
     {
 
-        typedef std::auto_ptr<geos::geom::CoordinateSequence> \
+        typedef std::unique_ptr<geos::geom::CoordinateSequence> \
         CoordinateSequenceAutoPtr;
 
-        typedef std::auto_ptr<geos::noding::NodedSegmentString> \
+        typedef std::unique_ptr<geos::noding::NodedSegmentString> \
         SegmentStringAutoPtr;
-    
+
     const geos::geom::CoordinateSequenceFactory* csFactory;
 
     SegmentStringAutoPtr
-    makeSegmentString(geos::geom::CoordinateSequence* cs, void *d = 0)
+    makeSegmentString(geos::geom::CoordinateSequence* cs, void *d = nullptr)
     {
         return SegmentStringAutoPtr(
             new geos::noding::NodedSegmentString(cs, d)
@@ -65,7 +65,7 @@ namespace tut
     {
         CoordinateSequenceAutoPtr cs(csFactory->create((size_t)0, 2));
 
-        ensure(0 != cs.get());
+        ensure(nullptr != cs.get());
 
         geos::geom::Coordinate c0(0, 0);
         geos::geom::Coordinate c1(0, 0);
@@ -76,11 +76,11 @@ namespace tut
         ensure_equals(cs->size(), 2u);
 
         SegmentStringAutoPtr ss(makeSegmentString(cs.release()));
-        ensure(0 != ss.get());
+        ensure(nullptr != ss.get());
 
         ensure_equals(ss->size(), 2u);
 
-        ensure_equals(ss->getData(), (void*)0);
+        ensure_equals(ss->getData(), (void*)nullptr);
 
         ensure_equals(ss->getCoordinate(0), c0);
 
@@ -100,7 +100,7 @@ namespace tut
     {
         CoordinateSequenceAutoPtr cs(csFactory->create((size_t)0, 2));
 
-    ensure(0 != cs.get());
+    ensure(nullptr != cs.get());
 
     geos::geom::Coordinate c0(0, 0);
     geos::geom::Coordinate c1(1, 0);
@@ -111,11 +111,11 @@ namespace tut
     ensure_equals(cs->size(), 2u);
 
     SegmentStringAutoPtr ss(makeSegmentString(cs.release()));
-    ensure(0 != ss.get());
+    ensure(nullptr != ss.get());
 
     ensure_equals(ss->size(), 2u);
 
-    ensure_equals(ss->getData(), (void*)0);
+    ensure_equals(ss->getData(), (void*)nullptr);
 
     ensure_equals(ss->getCoordinate(0), c0);
 
@@ -135,7 +135,7 @@ namespace tut
     {
         CoordinateSequenceAutoPtr cs(csFactory->create((size_t)0, 2));
 
-    ensure(0 != cs.get());
+    ensure(nullptr != cs.get());
 
     geos::geom::Coordinate c0(0, 0);
     geos::geom::Coordinate c1(1, 0);
@@ -149,11 +149,11 @@ namespace tut
     ensure_equals(cs->size(), 4u);
 
     SegmentStringAutoPtr ss(makeSegmentString(cs.release()));
-    ensure(0 != ss.get());
+    ensure(nullptr != ss.get());
 
     ensure_equals(ss->size(), 4u);
 
-    ensure_equals(ss->getData(), (void*)0);
+    ensure_equals(ss->getData(), (void*)nullptr);
 
     ensure_equals(ss->getCoordinate(0), c0);
 
@@ -255,7 +255,7 @@ namespace tut
 //      SegmentString::NonConstVect inputStrings;
 //      inputStrings.push_back(makeSegmentString(cs2.get()).get());
 //
-//      std::auto_ptr<SegmentString::NonConstVect> nodedStrings(
+//      std::unique_ptr<SegmentString::NonConstVect> nodedStrings(
 //          NodedSegmentString::getNodedSubstrings(inputStrings)
 //      );
 //

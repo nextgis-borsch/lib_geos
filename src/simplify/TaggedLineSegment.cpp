@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -46,7 +46,7 @@ TaggedLineSegment::TaggedLineSegment(const geom::Coordinate& p0,
 			const geom::Coordinate& p1)
 	:
 	LineSegment(p0, p1),
-	parent(NULL),
+	parent(nullptr),
 	index(0)
 {
 }
@@ -59,7 +59,7 @@ TaggedLineSegment::TaggedLineSegment(const TaggedLineSegment& ls)
 {
 }
 
-const geom::Geometry* 
+const geom::Geometry*
 TaggedLineSegment::getParent() const
 {
 	return parent;

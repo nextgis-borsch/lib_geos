@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -65,11 +65,11 @@ DelaunayTriangulationBuilder::toVertices(
 }
 
 DelaunayTriangulationBuilder::DelaunayTriangulationBuilder() :
-	siteCoords(NULL), tolerance(0.0), subdiv(NULL)
+	siteCoords(nullptr), tolerance(0.0), subdiv(nullptr)
 {
 }
 
-DelaunayTriangulationBuilder::~DelaunayTriangulationBuilder() 
+DelaunayTriangulationBuilder::~DelaunayTriangulationBuilder()
 {
 	if(siteCoords)
 		delete siteCoords;
@@ -99,7 +99,7 @@ DelaunayTriangulationBuilder::setSites(const CoordinateSequence& coords)
 void
 DelaunayTriangulationBuilder::create()
 {
-	if(subdiv != NULL || siteCoords == NULL)
+	if(subdiv != nullptr || siteCoords == nullptr)
 		return;
 
 	Envelope siteEnv;
@@ -118,7 +118,7 @@ DelaunayTriangulationBuilder::getSubdivision()
 	return *subdiv;
 }
 
-std::auto_ptr<MultiLineString>
+std::unique_ptr<MultiLineString>
 DelaunayTriangulationBuilder::getEdges(
     const GeometryFactory& geomFact)
 {
@@ -126,7 +126,7 @@ DelaunayTriangulationBuilder::getEdges(
 	return subdiv->getEdges(geomFact);
 }
 
-std::auto_ptr<geom::GeometryCollection>
+std::unique_ptr<geom::GeometryCollection>
 DelaunayTriangulationBuilder::getTriangles(
 		const geom::GeometryFactory& geomFact)
 {
@@ -141,10 +141,10 @@ DelaunayTriangulationBuilder::envelope(const geom::CoordinateSequence& coords)
 	std::vector<Coordinate> coord_vector;
 	coords.toVector(coord_vector);
 	for(std::vector<Coordinate>::iterator it= coord_vector.begin() ; it!=coord_vector.end() ; ++it)
-	{   
+	{
 		const Coordinate& coord = *it;
 		env.expandToInclude(coord);
-	}   
+	}
 	return env;
 }
 

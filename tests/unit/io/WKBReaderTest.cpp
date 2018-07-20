@@ -1,12 +1,12 @@
-// 
-// Test Suite for geos::io::WKBReader 
+//
+// Test Suite for geos::io::WKBReader
 // Uses geos::io::WKTReader to check correctness.
 // Uses geos::io::WKBWriter to check correctness.
 // Currently only tests 2D geoms of all (7) types.
 // Tests NDR and XDR input and output .
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/io/WKBReader.h>
 #include <geos/io/WKBConstants.h>
@@ -31,13 +31,13 @@ namespace tut
 	struct test_wkbreader_data
 	{
 		geos::geom::PrecisionModel pm;
-		geos::geom::GeometryFactory::unique_ptr gf;
+		geos::geom::GeometryFactory::Ptr gf;
 		geos::io::WKBReader wkbreader;
 		geos::io::WKBWriter xdrwkbwriter;
 		geos::io::WKBWriter ndrwkbwriter;
 		geos::io::WKTReader wktreader;
 
-		typedef std::auto_ptr<geos::geom::Geometry> GeomPtr;
+		typedef std::unique_ptr<geos::geom::Geometry> GeomPtr;
 
 		test_wkbreader_data()
 			:
@@ -102,7 +102,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<1>()
-	{         
+	{
 		testInputOutput(
 
 			// WKT
@@ -121,7 +121,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<2>()
-	{         
+	{
 
 		testInputOutput(
 
@@ -142,7 +142,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<3>()
-	{         
+	{
 		testInputOutput(
 
 			// WKT
@@ -162,7 +162,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<4>()
-	{         
+	{
 
 		testInputOutput(
 
@@ -183,7 +183,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<5>()
-	{         
+	{
 
 		testInputOutput(
 
@@ -204,7 +204,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<6>()
-	{         
+	{
 
 		testInputOutput(
 
@@ -221,11 +221,11 @@ namespace tut
 
 	}
 
-	// 7 - Read a collection 
+	// 7 - Read a collection
 	template<>
 	template<>
 	void object::test<7>()
-	{         
+	{
 
 		testInputOutput(
 
@@ -246,7 +246,7 @@ namespace tut
   template<>
   template<>
   void object::test<8>()
-  {         
+  {
     std::stringstream hexwkb;
     // NOTE: add a 0 to make valid
     hexwkb << "01010000000000000000000000000000000000000";
@@ -265,7 +265,7 @@ namespace tut
   template<>
   template<>
   void object::test<9>()
-  {         
+  {
     std::stringstream hexwkb;
     hexwkb <<
 // SRID=4326;POINT(1 2 3)

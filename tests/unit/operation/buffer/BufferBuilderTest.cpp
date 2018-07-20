@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::buffer::BufferBuilder class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/buffer/BufferBuilder.h>
 #include <geos/operation/buffer/BufferParameters.h>
@@ -33,8 +33,8 @@ namespace tut
         geos::io::WKTReader wktreader;
         int const default_quadrant_segments;
 
-        typedef geos::geom::Geometry::AutoPtr GeomPtr;
-        typedef std::auto_ptr<geos::geom::CoordinateSequence> CSPtr;
+        typedef geos::geom::Geometry::Ptr GeomPtr;
+        typedef std::unique_ptr<geos::geom::CoordinateSequence> CSPtr;
 
         test_bufferbuilder_data()
             : gf(*geos::geom::GeometryFactory::getDefaultInstance())
@@ -45,8 +45,8 @@ namespace tut
         }
     private:
         // noncopyable
-        test_bufferbuilder_data(test_bufferbuilder_data const& other);
-        test_bufferbuilder_data& operator=(test_bufferbuilder_data const& rhs);
+        test_bufferbuilder_data(test_bufferbuilder_data const& other) = delete;
+        test_bufferbuilder_data& operator=(test_bufferbuilder_data const& rhs) = delete;
     };
 
     typedef test_group<test_bufferbuilder_data> group;
@@ -83,7 +83,7 @@ namespace tut
         double const distance = 5;
 
         GeomPtr g0(wktreader.read(wkt0));
-        ensure(0 != g0.get());
+        ensure(nullptr != g0.get());
         ensure_equals(g0->getNumPoints(), std::size_t(5));
 
         BufferParameters params;
@@ -98,7 +98,7 @@ namespace tut
         // left-side
         {
             GeomPtr gB(builder.bufferLineSingleSided(g0.get(), distance, true));
-            ensure(0 != gB.get());
+            ensure(nullptr != gB.get());
             ensure_equals(gB->getGeometryTypeId(), geos::geom::GEOS_LINESTRING);
             // Left-side offset curve expected with 5+ vertices
             ensure(gB->getNumPoints() >= g0->getNumPoints());
@@ -113,7 +113,7 @@ namespace tut
         // right-side
         {
             GeomPtr gB(builder.bufferLineSingleSided(g0.get(), distance, false));
-            ensure(0 != gB.get());
+            ensure(nullptr != gB.get());
             ensure_equals(gB->getGeometryTypeId(), geos::geom::GEOS_LINESTRING);
             // Right-side offset curve expected with 5+ vertices
             ensure(gB->getNumPoints() >= g0->getNumPoints());

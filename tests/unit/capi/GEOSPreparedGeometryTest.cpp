@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSPreparedGeometry
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 #include <geos/io/WKBReader.h>
@@ -37,15 +37,15 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeospreparedgeometry_data()
-            : geom1_(0), geom2_(0), prepGeom1_(0), prepGeom2_(0)
+            : geom1_(nullptr), geom2_(nullptr), prepGeom1_(nullptr), prepGeom2_(nullptr)
         {
             initGEOS(notice, notice);
-        }       
+        }
 
         ~test_capigeospreparedgeometry_data()
         {
@@ -53,10 +53,10 @@ namespace tut
             GEOSGeom_destroy(geom2_);
         GEOSPreparedGeom_destroy(prepGeom1_);
         GEOSPreparedGeom_destroy(prepGeom2_);
-            geom1_ = 0;
-            geom2_ = 0;
-            prepGeom1_ = 0;
-            prepGeom2_ = 0;
+            geom1_ = nullptr;
+            geom2_ = nullptr;
+            prepGeom1_ = nullptr;
+            prepGeom2_ = nullptr;
             finishGEOS();
         }
 
@@ -79,13 +79,13 @@ namespace tut
             geom1_ = GEOSGeomFromWKT("POLYGON EMPTY");
         prepGeom1_ = GEOSPrepare(geom1_);
 
-        ensure(0 != prepGeom1_);
+        ensure(nullptr != prepGeom1_);
 
     }
 
     // Test PreparedContainsProperly
     // Taken from regress/regress_ogc_prep.sql of postgis
-    // as of revno 3936 
+    // as of revno 3936
     // ref: containsproperly200 (a)
     template<>
     template<>
@@ -95,7 +95,7 @@ namespace tut
     geom2_ = GEOSGeomFromWKT("POLYGON((2 2, 2 3, 3 3, 3 2, 2 2))");
     prepGeom1_ = GEOSPrepare(geom1_);
 
-    ensure(0 != prepGeom1_);
+    ensure(nullptr != prepGeom1_);
 
     int ret = GEOSPreparedContainsProperly(prepGeom1_, geom2_);
     ensure_equals(ret, 1);
@@ -104,7 +104,7 @@ namespace tut
 
     // Test PreparedContainsProperly
     // Taken from regress/regress_ogc_prep.sql of postgis
-    // as of revno 3936 
+    // as of revno 3936
     // ref: containsproperly200 (b)
     template<>
     template<>
@@ -114,7 +114,7 @@ namespace tut
     geom2_ = GEOSGeomFromWKT("POLYGON((0 0, 0 10, 10 10, 10 0, 0 0))");
     prepGeom1_ = GEOSPrepare(geom1_);
 
-    ensure(0 != prepGeom1_);
+    ensure(nullptr != prepGeom1_);
 
     int ret = GEOSPreparedContainsProperly(prepGeom1_, geom2_);
     ensure_equals(ret, 0);
@@ -124,7 +124,7 @@ namespace tut
     // Test PreparedIntersects
     // Also used as a linestring leakage reported
     // by http://trac.osgeo.org/geos/ticket/305
-    // 
+    //
     template<>
     template<>
     void object::test<4>()
@@ -133,7 +133,7 @@ namespace tut
     geom2_ = GEOSGeomFromWKT("LINESTRING(0 10, 10 0)");
     prepGeom1_ = GEOSPrepare(geom1_);
 
-    ensure(0 != prepGeom1_);
+    ensure(nullptr != prepGeom1_);
 
     int ret = GEOSPreparedIntersects(prepGeom1_, geom2_);
     ensure_equals(ret, 1);
@@ -149,7 +149,7 @@ namespace tut
     geom2_ = GEOSGeomFromWKT("POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))");
     prepGeom1_ = GEOSPrepare(geom1_);
 
-    ensure(0 != prepGeom1_);
+    ensure(nullptr != prepGeom1_);
 
     int ret = GEOSPreparedCovers(prepGeom1_, geom2_);
     ensure_equals(ret, 1);
@@ -165,7 +165,7 @@ namespace tut
     geom2_ = GEOSGeomFromWKT("POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))");
     prepGeom1_ = GEOSPrepare(geom1_);
 
-    ensure(0 != prepGeom1_);
+    ensure(nullptr != prepGeom1_);
 
     int ret = GEOSPreparedContains(prepGeom1_, geom2_);
     ensure_equals(ret, 1);
@@ -173,13 +173,13 @@ namespace tut
     }
 
     // Test PreparedIntersects: point on segment with FLOAT PM
-    // X coordinate of 3rd and 4th vertises of the line are not 
+    // X coordinate of 3rd and 4th vertises of the line are not
     // float-point exact with X coordinate of the point.
     // The X values differ after 14th decimal place:
     // POINT (-23.1094689600055080 50.5195368635957180)
     // --------------------^^^^^^^------------^^^^^^^^
     // LINESTRING 3rd and 4th points
-    //        -23.1094689600055150 50.5223376452201340, 
+    //        -23.1094689600055150 50.5223376452201340,
     //        -23.1094689600055010 50.5169177629559480,
     // --------------------^^^^^^^------------^^^^^^^^
     // So, in float-point precision model, the point does DOES NOT intersect the segment.
@@ -197,19 +197,19 @@ namespace tut
         geom2_ = GEOSGeomFromHEX_buf(reinterpret_cast<const unsigned char*>(point.data()), point.size());
 
         prepGeom1_ = GEOSPrepare(geom1_);
-        ensure(0 != prepGeom1_);
+        ensure(nullptr != prepGeom1_);
         int ret = GEOSPreparedIntersects(prepGeom1_, geom2_);
         ensure_equals(ret, 0);
     }
 
     // Test PreparedIntersects: point on segment with FIXED PM
-    // X coordinate of 3rd and 4th vertises of the line are not 
+    // X coordinate of 3rd and 4th vertices of the line are not
     // float-point exact with X coordinate of the point.
     // The X values differ after 14th decimal place:
     // POINT (-23.1094689600055080 50.5195368635957180)
     // --------------------^^^^^^^------------^^^^^^^^
     // LINESTRING 3rd and 4th points
-    //        -23.1094689600055150 50.5223376452201340, 
+    //        -23.1094689600055150 50.5223376452201340,
     //        -23.1094689600055010 50.5169177629559480,
     // --------------------^^^^^^^------------^^^^^^^^
     // So, if float-point values are trimmed up to 14 decimal digits, the point DOES intersect the segment.
@@ -219,7 +219,7 @@ namespace tut
     void object::test<8>()
     {
         geos::geom::PrecisionModel pm(1e+13);
-        geos::geom::GeometryFactory::unique_ptr factory = geos::geom::GeometryFactory::create(&pm);
+        geos::geom::GeometryFactory::Ptr factory = geos::geom::GeometryFactory::create(&pm);
         geos::io::WKBReader reader(*factory);
 
         // POINT located between 3rd and 4th vertex of LINESTRING
@@ -233,7 +233,7 @@ namespace tut
         geom1_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sLine));
 
         prepGeom1_ = GEOSPrepare(geom1_);
-        ensure(0 != prepGeom1_);
+        ensure(nullptr != prepGeom1_);
         int ret = GEOSPreparedIntersects(prepGeom1_, geom2_);
         ensure_equals(ret, 1);
     }
@@ -251,7 +251,7 @@ namespace tut
         geom1_ = GEOSGeomFromHEX_buf(reinterpret_cast<const unsigned char*>(line.data()), line.size());
         geom2_ = GEOSGeomFromHEX_buf(reinterpret_cast<const unsigned char*>(point.data()), point.size());
         prepGeom1_ = GEOSPrepare(geom1_);
-        ensure(0 != prepGeom1_);
+        ensure(nullptr != prepGeom1_);
 
         int ret = GEOSPreparedIntersects(prepGeom1_, geom2_);
         ensure_equals(ret, 1);
@@ -271,38 +271,42 @@ namespace tut
         // A contains B if precision is limited to 1e+10
         {
             geos::geom::PrecisionModel pm(1e+10); // NOTE: higher precision fails this test case
-            geos::geom::GeometryFactory::unique_ptr factory = geos::geom::GeometryFactory::create(&pm);
+            geos::geom::GeometryFactory::Ptr factory = geos::geom::GeometryFactory::create(&pm);
             geos::io::WKBReader reader(*factory);
 
             std::istringstream sOuter(outer);
             geom1_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sOuter));
             std::istringstream sInner(inner);
             geom2_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sInner));
-            ensure(0 != geom1_);
-            ensure(0 != geom2_);
+            ensure(nullptr != geom1_);
+            ensure(nullptr != geom2_);
             prepGeom1_ = GEOSPrepare(geom1_);
-            ensure(0 != prepGeom1_);
+            ensure(nullptr != prepGeom1_);
 
             int ret = GEOSPreparedContains(prepGeom1_, geom2_);
             ensure_equals(ret, 1);
             ret = GEOSPreparedContainsProperly(prepGeom1_, geom2_);
             ensure_equals(ret, 0);
+
+            GEOSGeom_destroy(geom1_);
+            GEOSGeom_destroy(geom2_);
+            GEOSPreparedGeom_destroy(prepGeom1_);
         }
 
         // A does NOT contain B if precision is extended to 1e+11 or beyond
         {
             geos::geom::PrecisionModel pm(1e+11);
-            geos::geom::GeometryFactory::unique_ptr factory = geos::geom::GeometryFactory::create(&pm);
+            geos::geom::GeometryFactory::Ptr factory = geos::geom::GeometryFactory::create(&pm);
             geos::io::WKBReader reader(*factory);
 
             std::istringstream sOuter(outer);
             geom1_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sOuter));
             std::istringstream sInner(inner);
             geom2_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sInner));
-            ensure(0 != geom1_);
-            ensure(0 != geom2_);
+            ensure(nullptr != geom1_);
+            ensure(nullptr != geom2_);
             prepGeom1_ = GEOSPrepare(geom1_);
-            ensure(0 != prepGeom1_);
+            ensure(nullptr != prepGeom1_);
 
             int ret = GEOSPreparedContains(prepGeom1_, geom2_);
             ensure_equals(ret, 0);
@@ -328,38 +332,42 @@ namespace tut
         // A contains B if precision is limited to 1e+10
         {
             geos::geom::PrecisionModel pm(1e+10);
-            geos::geom::GeometryFactory::unique_ptr factory = geos::geom::GeometryFactory::create(&pm);
+            geos::geom::GeometryFactory::Ptr factory = geos::geom::GeometryFactory::create(&pm);
             geos::io::WKBReader reader(*factory);
 
             std::istringstream sOuter(outer);
             geom1_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sOuter));
             std::istringstream sInner(inner);
             geom2_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sInner));
-            ensure(0 != geom1_);
-            ensure(0 != geom2_);
+            ensure(nullptr != geom1_);
+            ensure(nullptr != geom2_);
             prepGeom1_ = GEOSPrepare(geom1_);
-            ensure(0 != prepGeom1_);
+            ensure(nullptr != prepGeom1_);
 
             int ret = GEOSPreparedContains(prepGeom1_, geom2_);
             ensure_equals(ret, 1);
             ret = GEOSPreparedContainsProperly(prepGeom1_, geom2_);
             ensure_equals(ret, 0);
+
+            GEOSGeom_destroy(geom1_);
+            GEOSGeom_destroy(geom2_);
+            GEOSPreparedGeom_destroy(prepGeom1_);
         }
 
         // A contains B if FLOATING PM is used with extended precision
         {
             geos::geom::PrecisionModel pm;
-            geos::geom::GeometryFactory::unique_ptr factory = geos::geom::GeometryFactory::create(&pm);
+            geos::geom::GeometryFactory::Ptr factory = geos::geom::GeometryFactory::create(&pm);
             geos::io::WKBReader reader(*factory);
 
             std::istringstream sOuter(outer);
             geom1_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sOuter));
             std::istringstream sInner(inner);
             geom2_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sInner));
-            ensure(0 != geom1_);
-            ensure(0 != geom2_);
+            ensure(nullptr != geom1_);
+            ensure(nullptr != geom2_);
             prepGeom1_ = GEOSPrepare(geom1_);
-            ensure(0 != prepGeom1_);
+            ensure(nullptr != prepGeom1_);
 
             int ret = GEOSPreparedContains(prepGeom1_, geom2_);
             ensure_equals(ret, 1);

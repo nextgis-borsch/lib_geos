@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -30,12 +30,12 @@ namespace geom { // geos::geom
 namespace util { // geos::geom::util
 
 /** \brief
- * Extracts a single representative {@link Coordinate} 
+ * Extracts a single representative {@link Coordinate}
  * from each connected component of a {@link Geometry}.
  *
  * @version 1.9
  */
-class ComponentCoordinateExtracter : public GeometryComponentFilter 
+class ComponentCoordinateExtracter : public GeometryComponentFilter
 {
 public:
 	/**
@@ -53,17 +53,17 @@ public:
 	 */
 	ComponentCoordinateExtracter( std::vector<const Coordinate*> &newComps);
 
-	void filter_rw( Geometry * geom);
+	void filter_rw( Geometry * geom) override;
 
-	void filter_ro( const Geometry * geom);
+	void filter_ro( const Geometry * geom) override;
 
 private:
 
 	Coordinate::ConstVect &comps;
 
     // Declare type as noncopyable
-    ComponentCoordinateExtracter(const ComponentCoordinateExtracter& other);
-    ComponentCoordinateExtracter& operator=(const ComponentCoordinateExtracter& rhs);
+    ComponentCoordinateExtracter(const ComponentCoordinateExtracter& other) = delete;
+    ComponentCoordinateExtracter& operator=(const ComponentCoordinateExtracter& rhs) = delete;
 };
 
 } // namespace geos.geom.util

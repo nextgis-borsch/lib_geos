@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::valid::IsValidOp class
 // Ported from JTS junit/operation/valid/IsValidTest.java rev. 1.1
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/platform.h>
 #include <geos/operation/valid/IsValidOp.h>
@@ -32,11 +32,11 @@ namespace tut
 
     struct test_isvalidop_data
     {
-	typedef std::auto_ptr<Geometry> GeomPtr;
+	typedef std::unique_ptr<Geometry> GeomPtr;
         typedef geos::geom::GeometryFactory GeometryFactory;
 
         geos::geom::PrecisionModel pm_;
-        GeometryFactory::unique_ptr factory_;
+        GeometryFactory::Ptr factory_;
 
         test_isvalidop_data()
 			: pm_(1), factory_(GeometryFactory::create(&pm_, 0))
@@ -67,7 +67,7 @@ namespace tut
 	bool valid = isValidOp.isValid();
 
 	TopologyValidationError* err = isValidOp.getValidationError();
-    ensure(0 != err);
+    ensure(nullptr != err);
     const Coordinate& errCoord = err->getCoordinate();
 
 	ensure_equals( err->getErrorType(),

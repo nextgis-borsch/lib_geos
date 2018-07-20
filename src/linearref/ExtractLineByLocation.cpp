@@ -80,7 +80,7 @@ Geometry *ExtractLineByLocation::reverse(const Geometry *linear)
 		else
 		{
 			assert(!static_cast<bool>("non-linear geometry encountered"));
-            return 0;
+            return nullptr;
 		}
 	}
 }
@@ -92,12 +92,12 @@ LineString* ExtractLineByLocation::computeLine(const LinearLocation& start, cons
 
     const unsigned int indexStep = 1;
 	unsigned int startSegmentIndex = start.getSegmentIndex();
-    
+
 	if (start.getSegmentFraction() > 0.0)
     {
 		startSegmentIndex += indexStep;
     }
-	
+
     unsigned int lastSegmentIndex = end.getSegmentIndex();
 	if (end.getSegmentFraction() == 1.0)
     {
@@ -107,7 +107,7 @@ LineString* ExtractLineByLocation::computeLine(const LinearLocation& start, cons
 	if (lastSegmentIndex >= coordinates->size())
     {
         assert(coordinates->size() > 0);
-        lastSegmentIndex = coordinates->size() - indexStep;
+        lastSegmentIndex = static_cast<unsigned int>(coordinates->size() - indexStep);
     }
 
 	if (! start.isVertex())

@@ -1,8 +1,8 @@
-// 
-// Test Suite for geos::io::ByteOrderValues 
+//
+// Test Suite for geos::io::ByteOrderValues
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/io/ByteOrderValues.h>
 #include <geos/platform.h> // for int64
@@ -31,11 +31,11 @@ namespace tut
 	// Test Cases
 	//
 
-	// 1 - Read/write an int 
+	// 1 - Read/write an int
 	template<>
 	template<>
 	void object::test<1>()
-	{         
+	{
 		using geos::io::ByteOrderValues;
 
 		unsigned char buf[4];
@@ -67,7 +67,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<2>()
-	{         
+	{
 		using geos::io::ByteOrderValues;
 
 		unsigned char buf[8];
@@ -109,7 +109,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<3>()
-	{         
+	{
 		using geos::io::ByteOrderValues;
 
 		unsigned char buf[8];

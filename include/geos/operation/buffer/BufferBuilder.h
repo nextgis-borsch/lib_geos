@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009-2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009-2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2008-2010 Safe Software Inc.
  * Copyright (C) 2006-2007 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -76,7 +76,7 @@ namespace buffer { // geos.operation.buffer
  *
  * Allows setting the level of approximation for circular arcs,
  * and the precision model in which to carry out the computation.
- * 
+ *
  * When computing buffers in floating point double-precision
  * it can happen that the process of iterated noding can fail to converge
  * (terminate).
@@ -101,11 +101,11 @@ public:
 	BufferBuilder(const BufferParameters& nBufParams)
 		:
 		bufParams(nBufParams),
-		workingPrecisionModel(NULL),
-		li(NULL),
-		intersectionAdder(NULL),
-		workingNoder(NULL),
-		geomFact(NULL),
+		workingPrecisionModel(nullptr),
+		li(nullptr),
+		intersectionAdder(nullptr),
+		workingNoder(nullptr),
+		geomFact(nullptr),
 		edgeList()
 	{}
 
@@ -167,7 +167,7 @@ private:
 	 */
 	static int depthDelta(const geomgraph::Label& label);
 
-	const BufferParameters& bufParams; 
+	const BufferParameters& bufParams;
 
 	const geom::PrecisionModel* workingPrecisionModel;
 
@@ -233,10 +233,10 @@ private:
 	 * @return the empty result geometry, transferring ownership to caller.
 	 */
 	geom::Geometry* createEmptyResultGeometry() const;
-    
+
     // Declare type as noncopyable
-    BufferBuilder(const BufferBuilder& other);
-    BufferBuilder& operator=(const BufferBuilder& rhs);
+    BufferBuilder(const BufferBuilder& other) = delete;
+    BufferBuilder& operator=(const BufferBuilder& rhs) = delete;
 };
 
 } // namespace geos::operation::buffer

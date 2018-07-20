@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -51,7 +51,7 @@ static bool yComparator(Boundable *a, Boundable *b)
     // NOTE - mloskot:
     // The problem of instability is directly related to mathematical definition of
     // "strict weak ordering" as a fundamental requirement for binary predicate:
-    // 
+    //
     // if a is less than b then b is not less than a,
     // if a is less than b and b is less than c
     // then a is less than c,
@@ -64,19 +64,19 @@ static bool yComparator(Boundable *a, Boundable *b)
 	// In particular, when inlines are on (for Envelope::getMinY and getMaxY)
 	// things are fine, but when they are off we can even get a memory corruption !!
 	//return STRtree::centreY(aEnv) < STRtree::centreY(bEnv);
-    
+
     // NOTE - mloskot:
     // This comparison does not answer if a is "lower" than b
     // what is required for sorting. This comparison only answeres
     // if a and b are "almost the same" or different
-    
+
     /*NOTE - cfis
-      In debug mode VC++ checks the predicate in both directions.  
-      
+      In debug mode VC++ checks the predicate in both directions.
+
       If !_Pred(_Left, _Right)
       Then an exception is thrown if _Pred(_Right, _Left).
       See xutility around line 320:
-      
+
       	bool __CLRCALL_OR_CDECL _Debug_lt_pred(_Pr _Pred, _Ty1& _Left, _Ty2& _Right,
 		const wchar_t *_Where, unsigned int _Line)*/
 
@@ -91,12 +91,12 @@ static bool yComparator(Boundable *a, Boundable *b)
 
 /*public*/
 STRtree::STRtree(size_t nodeCapacity): AbstractSTRtree(nodeCapacity)
-{ 
+{
 }
 
 /*public*/
 STRtree::~STRtree()
-{ 
+{
 }
 
 bool
@@ -106,19 +106,19 @@ STRtree::STRIntersectsOp::intersects(const void* aBounds, const void* bBounds)
 }
 
 /*private*/
-std::auto_ptr<BoundableList>
+std::unique_ptr<BoundableList>
 STRtree::createParentBoundables(BoundableList* childBoundables, int newLevel)
 {
 	assert(!childBoundables->empty());
 	int minLeafCount=(int) ceil((double)childBoundables->size()/(double)getNodeCapacity());
 
-	std::auto_ptr<BoundableList> sortedChildBoundables ( sortBoundables(childBoundables) );
+	std::unique_ptr<BoundableList> sortedChildBoundables ( sortBoundables(childBoundables) );
 
-	std::auto_ptr< vector<BoundableList*> > verticalSlicesV (
+	std::unique_ptr< vector<BoundableList*> > verticalSlicesV (
 			verticalSlices(sortedChildBoundables.get(), (int)ceil(sqrt((double)minLeafCount)))
 			);
 
-	std::auto_ptr<BoundableList> ret (
+	std::unique_ptr<BoundableList> ret (
 		createParentBoundablesFromVerticalSlices(verticalSlicesV.get(), newLevel)
 	);
 	for (size_t i=0, vssize=verticalSlicesV->size(); i<vssize; ++i)
@@ -131,15 +131,15 @@ STRtree::createParentBoundables(BoundableList* childBoundables, int newLevel)
 }
 
 /*private*/
-std::auto_ptr<BoundableList>
+std::unique_ptr<BoundableList>
 STRtree::createParentBoundablesFromVerticalSlices(std::vector<BoundableList*>* verticalSlices, int newLevel)
 {
 	assert(!verticalSlices->empty());
-	std::auto_ptr<BoundableList> parentBoundables( new BoundableList() );
+	std::unique_ptr<BoundableList> parentBoundables( new BoundableList() );
 
 	for (size_t i=0, vssize=verticalSlices->size(); i<vssize; ++i)
 	{
-		std::auto_ptr<BoundableList> toAdd (
+		std::unique_ptr<BoundableList> toAdd (
 			createParentBoundablesFromVerticalSlice(
 				(*verticalSlices)[i], newLevel)
 			);
@@ -154,7 +154,7 @@ STRtree::createParentBoundablesFromVerticalSlices(std::vector<BoundableList*>* v
 }
 
 /*protected*/
-std::auto_ptr<BoundableList>
+std::unique_ptr<BoundableList>
 STRtree::createParentBoundablesFromVerticalSlice(BoundableList* childBoundables, int newLevel)
 {
 	return AbstractSTRtree::createParentBoundables(childBoundables, newLevel);
@@ -171,8 +171,8 @@ STRtree::verticalSlices(BoundableList* childBoundables, size_t sliceCount)
 
 	for (size_t j=0; j<sliceCount; j++)
 	{
-		(*slices)[j]=new BoundableList(); 
-		(*slices)[j]->reserve(sliceCapacity); 
+		(*slices)[j]=new BoundableList();
+		(*slices)[j]->reserve(sliceCapacity);
 		size_t boundablesAddedToSlice = 0;
 		while (i<nchilds && boundablesAddedToSlice<sliceCapacity)
 		{
@@ -204,9 +204,14 @@ std::pair<const void*, const void*> STRtree::nearestNeighbour(ItemDistance * ite
 	return nearestNeighbour(&bp);
 }
 
+std::pair<const void*, const void*> STRtree::nearestNeighbour(STRtree* tree, ItemDistance* itemDist) {
+	BoundablePair bp(getRoot(), tree->getRoot(), itemDist);
+	return nearestNeighbour(&bp);
+}
+
 std::pair<const void*, const void*> STRtree::nearestNeighbour(BoundablePair* initBndPair, double maxDistance) {
 	double distanceLowerBound = maxDistance;
-	BoundablePair* minPair = NULL;
+	BoundablePair* minPair = nullptr;
 
 	BoundablePair::BoundablePairQueue priQ;
 	priQ.push(initBndPair);
@@ -277,19 +282,19 @@ public:
 		AbstractNode(level, capacity)
 	{}
 
-	~STRAbstractNode()
+	~STRAbstractNode() override
 	{
 		delete (Envelope *)bounds;
 	}
 
 protected:
 
-	void* computeBounds() const
+	void* computeBounds() const override
 	{
-		Envelope* bounds=NULL;
+		Envelope* bounds=nullptr;
 		const BoundableList& b = *getChildBoundables();
 
-		if ( b.empty() ) return NULL;
+		if ( b.empty() ) return nullptr;
 
 		BoundableList::const_iterator i=b.begin();
 		BoundableList::const_iterator e=b.end();
@@ -323,11 +328,11 @@ STRtree::insert(const Envelope *itemEnv, void* item)
 }
 
 /*private*/
-std::auto_ptr<BoundableList>
+std::unique_ptr<BoundableList>
 STRtree::sortBoundables(const BoundableList* input)
 {
 	assert(input);
-	std::auto_ptr<BoundableList> output ( new BoundableList(*input) );
+	std::unique_ptr<BoundableList> output ( new BoundableList(*input) );
 	assert(output->size() == input->size());
 
 	sort(output->begin(), output->end(), yComparator);

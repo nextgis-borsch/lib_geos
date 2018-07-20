@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -41,7 +41,7 @@ public:
 		TT_WORD
 	};
 	//StringTokenizer();
-	StringTokenizer(const std::string& txt);
+	explicit StringTokenizer(const std::string& txt);
 	~StringTokenizer() {}
 	int nextToken();
 	int peekNextToken();
@@ -54,8 +54,8 @@ private:
 	std::string::const_iterator iter;
 
     // Declare type as noncopyable
-    StringTokenizer(const StringTokenizer& other);
-    StringTokenizer& operator=(const StringTokenizer& rhs);
+    StringTokenizer(const StringTokenizer& other) = delete;
+    StringTokenizer& operator=(const StringTokenizer& rhs) = delete;
 };
 
 } // namespace io

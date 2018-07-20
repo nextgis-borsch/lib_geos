@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::valid::IsValidOp class
 // Ported from JTS junit/operation/valid/ValidSelfTouchingRingFormingHoleTest.java rev. 1.4
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/valid/IsValidOp.h>
 #include <geos/geom/Coordinate.h>
@@ -37,11 +37,11 @@ namespace tut
 
     struct test_ValidSelfTouchingRingFormingHole_data
     {
-	typedef std::auto_ptr<Geometry> GeomPtr;
+	typedef std::unique_ptr<Geometry> GeomPtr;
 
         geos::geom::PrecisionModel pm_;
         typedef geos::geom::GeometryFactory GeometryFactory;
-        geos::geom::GeometryFactory::unique_ptr factory_;
+        geos::geom::GeometryFactory::Ptr factory_;
         geos::io::WKTReader rdr;
 
         test_ValidSelfTouchingRingFormingHole_data()

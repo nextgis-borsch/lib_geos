@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::overlay::validate::OverlayResultValidator class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/overlay/OverlayOp.h>
 #include <geos/operation/overlay/validate/OverlayResultValidator.h>
@@ -30,7 +30,7 @@ namespace tut
 		geos::io::WKTReader wktreader;
 		geos::algorithm::PointLocator locator;
 
-		typedef geos::geom::Geometry::AutoPtr GeomPtr;
+		typedef geos::geom::Geometry::Ptr GeomPtr;
 
 		GeomPtr g0, g1, gres;
 
@@ -41,7 +41,7 @@ namespace tut
 		}
 
 	};
-	
+
 
 	typedef test_group<test_overlayresultvalidator_data> group;
 	typedef group::object object;
@@ -152,7 +152,7 @@ namespace tut
 
 	template<>
 	template<>
-	void object::test<6>() 
+	void object::test<6>()
 	{
 
 		std::string wkt0("POLYGON ((20.0 40.0, 20.0 200.0, 180.0 200.0, 180.0 120.0, 140.0 120.0, 180.0 119.0, 180.0 40.0, 20.0 40.0), (140.0 160.0, 80.0 120.0, 140.0 80.0, 140.0 160.0))");

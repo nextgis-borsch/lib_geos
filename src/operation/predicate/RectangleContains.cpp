@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -55,10 +55,10 @@ RectangleContains::isContainedInBoundary(const Geometry& geom)
 	if (const LineString *l=dynamic_cast<const LineString *>(&geom))
 		return isLineStringContainedInBoundary(*l);
 
-	for (unsigned i=0, n=geom.getNumGeometries(); i<n; ++i)
+	for (unsigned i=0, n=static_cast<unsigned>(geom.getNumGeometries()); i<n; ++i)
 	{
 		const Geometry &comp = *(geom.getGeometryN(i));
-		if ( !isContainedInBoundary(comp) ) 
+		if ( !isContainedInBoundary(comp) )
 			return false;
 	}
 
@@ -93,7 +93,7 @@ bool
 RectangleContains::isLineStringContainedInBoundary(const LineString& line)
 {
 	const CoordinateSequence &seq = *(line.getCoordinatesRO());
-	for (unsigned int i=0, n=seq.getSize()-1; i<n; ++i) {
+	for (unsigned int i=0, n=static_cast<unsigned int>(seq.getSize()-1); i<n; ++i) {
 		const Coordinate& p0=seq.getAt(i);
 		const Coordinate& p1=seq.getAt(i+1);
 		if (! isLineSegmentContainedInBoundary(p0, p1))

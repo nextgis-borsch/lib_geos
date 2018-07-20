@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::buffer::BufferOp class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/buffer/BufferOp.h>
 #include <geos/operation/buffer/BufferParameters.h>
@@ -31,8 +31,8 @@ namespace tut
         geos::io::WKTReader wktreader;
         int const default_quadrant_segments;
 
-        typedef geos::geom::Geometry::AutoPtr GeomPtr;
-        typedef std::auto_ptr<geos::geom::CoordinateSequence> CSPtr;
+        typedef geos::geom::Geometry::Ptr GeomPtr;
+        typedef std::unique_ptr<geos::geom::CoordinateSequence> CSPtr;
 
         test_bufferop_data()
             : gf(*geos::geom::GeometryFactory::getDefaultInstance())
@@ -43,8 +43,8 @@ namespace tut
         }
     private:
         // noncopyable
-        test_bufferop_data(test_bufferop_data const& other);
-        test_bufferop_data& operator=(test_bufferop_data const& rhs);
+        test_bufferop_data(test_bufferop_data const& other) = delete;
+        test_bufferop_data& operator=(test_bufferop_data const& rhs) = delete;
     };
 
     typedef test_group<test_bufferop_data> group;
@@ -107,7 +107,7 @@ namespace tut
         // Buffer point with custom parameters: 32 quadrant segments
         int const segments = 32;
         BufferParameters params(segments);
-        
+
         BufferOp op(g0.get(), params);
 
         double const distance = 1.0;
@@ -304,7 +304,7 @@ namespace tut
         ensure(gBuffer2->getNumPoints() >= std::size_t(5));
 
         ensure(gBuffer1->equals(gBuffer2.get()));
-        ensure(gBuffer2->equals(gBuffer1.get()));        
+        ensure(gBuffer2->equals(gBuffer1.get()));
     }
 
     // Test for ticket #473

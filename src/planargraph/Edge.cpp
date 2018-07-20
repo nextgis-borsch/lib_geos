@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -62,7 +62,7 @@ Edge::getDirEdge(Node *fromNode)
 	if (dirEdge[1]->getFromNode()==fromNode) return dirEdge[1];
 	// node not found
 	// possibly should throw an exception here?
-	return NULL;
+	return nullptr;
 }
 
 /**
@@ -76,7 +76,7 @@ Edge::getOppositeNode(Node *node)
 	if (dirEdge[1]->getFromNode()==node) return dirEdge[1]->getToNode();
 	// node not found
 	// possibly should throw an exception here?
-	return NULL;
+	return nullptr;
 }
 
 std::ostream& operator<<(std::ostream& os, const Edge& n) {

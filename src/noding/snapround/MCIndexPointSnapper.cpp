@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -23,8 +23,8 @@
 #include <geos/noding/NodedSegmentString.h>
 #include <geos/spatialIndex.h>
 #include <geos/geom/Envelope.h>
-#include <geos/index/chain/MonotoneChainSelectAction.h> 
-#include <geos/index/chain/MonotoneChain.h> 
+#include <geos/index/chain/MonotoneChainSelectAction.h>
+#include <geos/index/chain/MonotoneChain.h>
 #include <geos/util.h>
 
 #include <algorithm>
@@ -53,7 +53,7 @@ public:
 
 	bool isNodeAdded() const { return isNodeAddedVar; }
 
-	void select(chain::MonotoneChain& mc, unsigned int startIndex)
+	void select(chain::MonotoneChain& mc, unsigned int startIndex) override
 	{
 		// This is casting away 'constness'!
 		NodedSegmentString& ss = *(static_cast<NodedSegmentString*>(mc.getContext()));
@@ -68,7 +68,7 @@ public:
 		isNodeAddedVar = hotPixel.addSnappedNode(ss, startIndex);
 	}
 
-	void select(const LineSegment& ls)
+	void select(const LineSegment& ls) override
 	{
 		::geos::ignore_unused_variable_warning(ls);
 	}
@@ -80,8 +80,8 @@ private:
 	bool isNodeAddedVar;
 
     // Declare type as noncopyable
-    HotPixelSnapAction(const HotPixelSnapAction& other);
-    HotPixelSnapAction& operator=(const HotPixelSnapAction& rhs);
+    HotPixelSnapAction(const HotPixelSnapAction& other) = delete;
+    HotPixelSnapAction& operator=(const HotPixelSnapAction& rhs) = delete;
 };
 
 class MCIndexPointSnapperVisitor: public ItemVisitor {
@@ -93,9 +93,9 @@ public:
 		action(nAction)
 	{}
 
-	virtual ~MCIndexPointSnapperVisitor() {}
+	~MCIndexPointSnapperVisitor() override {}
 
-	void visitItem(void* item) {
+	void visitItem(void* item) override {
 		chain::MonotoneChain& testChain =
 			*(static_cast<chain::MonotoneChain*>(item));
 		testChain.select(pixelEnv, action);
@@ -124,7 +124,7 @@ MCIndexPointSnapper::snap(HotPixel& hotPixel,
 
 	return hotPixelSnapAction.isNodeAdded();
 }
- 
+
 } // namespace geos.noding.snapround
 } // namespace geos.noding
 } // namespace geos

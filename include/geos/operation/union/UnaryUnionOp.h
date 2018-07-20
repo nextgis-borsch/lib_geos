@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -56,9 +56,9 @@ namespace geounion {  // geos::operation::geounion
  * geometries it is possible to take advantage of various optimizations
  * to improve performance.
  * Heterogeneous {@link GeometryCollection}s are fully supported.
- * 
+ *
  * The result obeys the following contract:
- * 
+ *
  * - Unioning a set of overlapping {@link Polygons}s has the effect of
  *   merging the areas (i.e. the same effect as
  *   iteratively unioning all individual polygons together).
@@ -87,21 +87,21 @@ class GEOS_DLL UnaryUnionOp
 public:
 
   template <typename T>
-  static std::auto_ptr<geom::Geometry> Union(const T& geoms)
+  static std::unique_ptr<geom::Geometry> Union(const T& geoms)
   {
     UnaryUnionOp op(geoms);
     return op.Union();
   }
 
   template <class T>
-  static std::auto_ptr<geom::Geometry> Union(const T& geoms,
+  static std::unique_ptr<geom::Geometry> Union(const T& geoms,
       geom::GeometryFactory& geomFact)
   {
     UnaryUnionOp op(geoms, geomFact);
     return op.Union();
   }
 
-  static std::auto_ptr<geom::Geometry> Union(const geom::Geometry& geom)
+  static std::unique_ptr<geom::Geometry> Union(const geom::Geometry& geom)
   {
     UnaryUnionOp op(geom);
     return op.Union();
@@ -118,7 +118,7 @@ public:
   template <class T>
   UnaryUnionOp(const T& geoms)
       :
-      geomFact(0)
+      geomFact(nullptr)
   {
     extractGeoms(geoms);
   }
@@ -140,7 +140,7 @@ public:
    * @return an empty GEOMETRYCOLLECTION if no geometries were provided
    *         in the input
    */
-  std::auto_ptr<geom::Geometry> Union();
+  std::unique_ptr<geom::Geometry> Union();
 
 private:
 
@@ -181,7 +181,7 @@ private:
    * @param g0 a geometry
    * @return the union of the input geometry
    */
-  std::auto_ptr<geom::Geometry> unionNoOpt(const geom::Geometry& g0)
+  std::unique_ptr<geom::Geometry> unionNoOpt(const geom::Geometry& g0)
   {
     using geos::operation::overlay::OverlayOp;
     //using geos::operation::overlay::snap::SnapIfNeededOverlayOp;
@@ -202,8 +202,8 @@ private:
    * @return the union of the input(s)
    * @return null if both inputs are null
    */
-  std::auto_ptr<geom::Geometry> unionWithNull(std::auto_ptr<geom::Geometry> g0,
-                                              std::auto_ptr<geom::Geometry> g1);
+  std::unique_ptr<geom::Geometry> unionWithNull(std::unique_ptr<geom::Geometry> g0,
+                                              std::unique_ptr<geom::Geometry> g1);
 
   std::vector<const geom::Polygon*> polygons;
   std::vector<const geom::LineString*> lines;
@@ -211,9 +211,9 @@ private:
 
   const geom::GeometryFactory* geomFact;
 
-  std::auto_ptr<geom::Geometry> empty;
+  std::unique_ptr<geom::Geometry> empty;
 };
- 
+
 
 } // namespace geos::operation::union
 } // namespace geos::operation

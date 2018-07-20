@@ -32,9 +32,11 @@ if(GEOS_ENABLE_TESTS)
 
   add_executable(simplewkttester ${simplewkttester_SOURCES})
   target_link_libraries(simplewkttester ${PROJECT_NAME})
+  set_property(TARGET simplewkttester PROPERTY CXX_STANDARD 11)
 
   add_executable(xmltester ${xmltester_SOURCES})
   target_link_libraries(xmltester ${PROJECT_NAME})
+  set_property(TARGET xmltester PROPERTY CXX_STANDARD 11)
 
 
   set(XMLTESTS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/tests)
@@ -104,5 +106,5 @@ if(GEOS_ENABLE_TESTS)
 endif()
 
 if(NOT SUPPRESS_VERBOSE_OUTPUT)
-message(STATUS "${STATUS_MESSAGE} - ${STATUS_RESULT}")
+    message(STATUS "${STATUS_MESSAGE} - ${STATUS_RESULT}")
 endif()

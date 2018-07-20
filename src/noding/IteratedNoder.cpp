@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -21,7 +21,7 @@
 #include <vector>
 
 #include <geos/profiler.h>
-#include <geos/util/TopologyException.h> 
+#include <geos/util/TopologyException.h>
 #include <geos/noding/IteratedNoder.h>
 #include <geos/noding/SegmentString.h>
 #include <geos/noding/MCIndexNoder.h>
@@ -60,7 +60,7 @@ IteratedNoder::computeNodes(SegmentString::NonConstVect* segStrings)
 	nodedSegStrings = segStrings;
 	int nodingIterationCount = 0;
 	int lastNodesCreated = -1;
-	vector<SegmentString*> *lastStrings = 0;
+	vector<SegmentString*> *lastStrings = nullptr;
 	do {
 
 		// NOTE: will change this.nodedSegStrings
@@ -68,8 +68,8 @@ IteratedNoder::computeNodes(SegmentString::NonConstVect* segStrings)
 
 		// Delete noded strings from previous iteration
 		if ( lastStrings ) {
-			for ( unsigned int i = 0, n = lastStrings->size(); i < n; ++i )
-				delete (*lastStrings)[i];
+			for (auto &s : *lastStrings)
+				delete s;
 			delete lastStrings;
 		}
 		lastStrings = nodedSegStrings;

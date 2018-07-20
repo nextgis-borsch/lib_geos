@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -70,7 +70,7 @@ sqlPrint(const std::string& table, std::vector<SegmentString*>& ssv)
 }
 #endif // GEOS_DEBUG > 1
 
-} // anonym namespace 
+} // anonym namespace
 
 class ScaledNoder::Scaler : public geom::CoordinateFilter {
 public:
@@ -86,15 +86,15 @@ public:
 
 	//void filter_ro(const geom::Coordinate* c) { assert(0); }
 
-	void filter_rw(geom::Coordinate* c) const {
+	void filter_rw(geom::Coordinate* c) const override {
 		c->x = util::round( ( c->x - sn.offsetX ) * sn.scaleFactor );
 		c->y = util::round( ( c->y - sn.offsetY ) * sn.scaleFactor );
 	}
 
 private:
     // Declare type as noncopyable
-    Scaler(const Scaler& other);
-    Scaler& operator=(const Scaler& rhs);
+    Scaler(const Scaler& other) = delete;
+    Scaler& operator=(const Scaler& rhs) = delete;
 };
 
 class ScaledNoder::ReScaler: public geom::CoordinateFilter {
@@ -109,13 +109,13 @@ public:
 #endif
 	}
 
-	void filter_ro(const geom::Coordinate* c)
+	void filter_ro(const geom::Coordinate* c) override
     {
         ::geos::ignore_unused_variable_warning(c);
         assert(0);
     }
 
-	void filter_rw(geom::Coordinate* c) const {
+	void filter_rw(geom::Coordinate* c) const override {
 		c->x = c->x / sn.scaleFactor + sn.offsetX;
 		c->y = c->y / sn.scaleFactor + sn.offsetY;
 	}

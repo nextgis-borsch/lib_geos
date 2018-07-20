@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSSimplify
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -29,20 +29,20 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeouserdata_data()
-            : geom_(0)
+            : geom_(nullptr)
         {
             initGEOS(notice, notice);
-        }       
+        }
 
         ~test_capigeouserdata_data()
         {
             GEOSGeom_destroy(geom_);
-            geom_ = 0;
+            geom_ = nullptr;
             finishGEOS();
         }
 

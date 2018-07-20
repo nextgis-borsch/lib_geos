@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009  Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -74,7 +74,7 @@ SingleSidedBufferResultMatcher::isBoundaryHausdorffDistanceInTolerance(
 	const geom::Geometry& actualBuffer,
 	const geom::Geometry& expectedBuffer, double distance)
 {
-	typedef std::auto_ptr<geom::Geometry> GeomPtr;
+	typedef std::unique_ptr<geom::Geometry> GeomPtr;
 
 	using geos::algorithm::distance::DiscreteHausdorffDistance;
 

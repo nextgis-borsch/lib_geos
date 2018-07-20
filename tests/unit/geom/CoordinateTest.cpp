@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for geos::geom::Coordinate class.
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/platform.h>
 #include <geos/geom/Coordinate.h>
@@ -26,8 +26,8 @@ namespace tut
         {}
     private:
         // Declare type as noncopyable
-        test_coordinate_data(test_coordinate_data const& other);
-        test_coordinate_data& operator=(test_coordinate_data const& rhs);
+        test_coordinate_data(test_coordinate_data const& other) = delete;
+        test_coordinate_data& operator=(test_coordinate_data const& rhs) = delete;
     };
 
     typedef test_group<test_coordinate_data> group;
@@ -69,7 +69,7 @@ namespace tut
         ensure_equals( original.x, x );
         ensure_equals( original.y, y );
         ensure_equals( original.z, z );
-        
+
         // Use copy ctor
         geos::geom::Coordinate copy(original);
         ensure_equals( copy.x, x );
@@ -93,7 +93,7 @@ namespace tut
         ensure_equals( original.x, x );
         ensure_equals( original.y, y );
         ensure_equals( original.z, z );
-        
+
         // Use copy ctor
         geos::geom::Coordinate copy(original);
 

@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2012 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2012 Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -37,9 +37,9 @@ CoordinateSequence*
 PrecisionReducerCoordinateOperation::edit(const CoordinateSequence *cs,
                                           const Geometry *geom)
 {
-	unsigned int csSize = cs->getSize();
+	unsigned int csSize = static_cast<unsigned int>(cs->getSize());
 
-	if ( csSize == 0 ) return NULL;
+	if ( csSize == 0 ) return nullptr;
 
 	vector<Coordinate> *vc = new vector<Coordinate>(csSize);
 
@@ -56,7 +56,7 @@ PrecisionReducerCoordinateOperation::edit(const CoordinateSequence *cs,
 
 	// remove repeated points, to simplify returned geometry as
 	// much as possible.
-	// 
+	//
 	CoordinateSequence *noRepeatedCoords=CoordinateSequence::removeRepeatedPoints(reducedCoords);
 
 	/**
@@ -77,8 +77,8 @@ PrecisionReducerCoordinateOperation::edit(const CoordinateSequence *cs,
 	CoordinateSequence *collapsedCoords = reducedCoords;
 	if ( removeCollapsed )
 	{
-		delete reducedCoords; reducedCoords=0;
-		collapsedCoords=0;
+		delete reducedCoords; reducedCoords=nullptr;
+		collapsedCoords=nullptr;
 	}
 
 	// return null or orginal length coordinate array

@@ -1,8 +1,8 @@
-// 
-// Test Suite for geos::io::WKTWriter 
+//
+// Test Suite for geos::io::WKTWriter
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/io/WKTReader.h>
 #include <geos/io/WKTWriter.h>
@@ -27,10 +27,10 @@ namespace tut
 		typedef geos::geom::GeometryFactory GeometryFactory;
 		typedef geos::io::WKTReader WKTReader;
 		typedef geos::io::WKTWriter WKTWriter;
-		typedef std::auto_ptr<geos::geom::Geometry> GeomPtr;
+		typedef std::unique_ptr<geos::geom::Geometry> GeomPtr;
 
 		PrecisionModel pm;
-		GeometryFactory::unique_ptr gf;
+		GeometryFactory::Ptr gf;
 		WKTReader wktreader;
 		WKTWriter wktwriter;
 
@@ -57,7 +57,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<1>()
-	{         
+	{
         GeomPtr geom ( wktreader.read("POINT(-117 33)") );
         std::string  result;
 
@@ -76,7 +76,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<2>()
-	{         
+	{
         GeomPtr geom ( wktreader.read("POINT(-117.1234567 33.1234567)") );
         std::string  result;
 
@@ -91,12 +91,12 @@ namespace tut
         ensure_equals( result , "POINT (-117.12 33.12)" );
 
     }
-    
+
 	// 3 - Test 3D generation from a 3D geometry.
 	template<>
 	template<>
 	void object::test<3>()
-	{         
+	{
         GeomPtr geom ( wktreader.read("POINT Z (-117 33 120)") );
         std::string  result;
 
@@ -114,12 +114,12 @@ namespace tut
         ensure_equals( result, std::string("POINT (-117 33 120)") );
 
     }
-    
+
 	// 4 - Test 2D generation from a 3D geometry.
 	template<>
 	template<>
 	void object::test<4>()
-	{         
+	{
         GeomPtr geom ( wktreader.read("POINT(-117 33 120)") );
         std::string  result;
 
@@ -132,19 +132,19 @@ namespace tut
         ensure_equals( result, std::string("POINT (-117 33)") );
     }
 
-  // 5 - Test negative number of digits in precision model 
+  // 5 - Test negative number of digits in precision model
   template<>
   template<>
   void object::test<5>()
-  {         
+  {
     PrecisionModel pm3(0.001);
-    GeometryFactory::unique_ptr gf3(GeometryFactory::create(&pm3));
+    GeometryFactory::Ptr gf3(GeometryFactory::create(&pm3));
     WKTReader wktreader3(gf3.get());
     GeomPtr geom ( wktreader3.read("POINT(123456 654321)") );
 
     std::string  result = wktwriter.write( geom.get() );
     ensure_equals( result, std::string("POINT (123000 654000)") );
   }
-    
+
 } // namespace tut
 

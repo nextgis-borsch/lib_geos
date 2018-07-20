@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009 Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -54,8 +54,8 @@ public:
 		:
 		graph(newGraph),
 		//totalEnv(0),
-		index(0),
-		nestedPt(0)
+		index(nullptr),
+		nestedPt(nullptr)
 	{
 	}
 
@@ -83,19 +83,19 @@ public:
 private:
 
 	/// Externally owned
-	geomgraph::GeometryGraph* graph; 
+	geomgraph::GeometryGraph* graph;
 
 	/// Ownership of this vector elements are externally owned
 	std::vector<const geom::LinearRing*> rings;
 
 	// CHECK: Owned by (seems unused)?
-	//geom::Envelope* totalEnv; 
+	//geom::Envelope* totalEnv;
 
-	// Owned by us (use auto_ptr ?)
+	// Owned by us (use unique_ptr ?)
 	geos::index::SpatialIndex* index; // 'index' in JTS
 
 	// Externally owned, if not null
-	const geom::Coordinate *nestedPt; 
+	const geom::Coordinate *nestedPt;
 
 	void buildIndex();
 };

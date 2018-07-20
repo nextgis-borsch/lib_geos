@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::geom::util::GeometryExtracter class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/platform.h>
 #include <geos/geom/PrecisionModel.h>
@@ -26,11 +26,11 @@ namespace tut
     struct test_geometryextracter_data
     {
       geos::geom::PrecisionModel pm;
-      geos::geom::GeometryFactory::unique_ptr gf;
+      geos::geom::GeometryFactory::Ptr gf;
       geos::io::WKTReader wktreader;
       geos::io::WKTWriter wktwriter;
 
-		  typedef std::auto_ptr<geos::geom::Geometry> GeomPtr;
+		  typedef std::unique_ptr<geos::geom::Geometry> GeomPtr;
 
       typedef geos::io::WKTReader WKTReader;
       typedef geos::io::WKTWriter WKTWriter;
@@ -72,7 +72,7 @@ namespace tut
       ensure_equals( lst_lines.size(), 0u );
     }
 
-    // Test extraction of multiple types 
+    // Test extraction of multiple types
     template<>
     template<>
     void object::test<2>()

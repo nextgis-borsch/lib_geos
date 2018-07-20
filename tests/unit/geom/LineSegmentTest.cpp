@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for geos::geom::LineSegment class.
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/geom/LineSegment.h>
 #include <geos/geom/Coordinate.h>
@@ -60,7 +60,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<2>()
-	{         
+	{
 		ensure( h1.isHorizontal() );
 		v1.reverse();
 		ensure( h1.isHorizontal() );

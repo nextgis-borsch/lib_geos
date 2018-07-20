@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -22,7 +22,7 @@
 
 #include <geos/export.h>
 #include <geos/geom/Envelope.h> // for inline
-//#include <geos/indexSweepline.h> // for inline and inheritance 
+//#include <geos/indexSweepline.h> // for inline and inheritance
 #include <geos/index/sweepline/SweepLineOverlapAction.h> // for inheritance
 #include <geos/index/sweepline/SweepLineIndex.h> // for inlines
 
@@ -75,7 +75,7 @@ public:
 		graph(newGraph),
 		rings(),
 		sweepLine(new index::sweepline::SweepLineIndex()),
-		nestedPt(NULL)
+		nestedPt(nullptr)
 	{}
 
 	~SweeplineNestedRingTester()
@@ -102,7 +102,7 @@ public:
 		bool isNonNested;
 		OverlapAction(SweeplineNestedRingTester *p);
 		void overlap(index::sweepline::SweepLineInterval *s0,
-				index::sweepline::SweepLineInterval *s1);
+				index::sweepline::SweepLineInterval *s1) override;
 	private:
 		SweeplineNestedRingTester *parent;
 	};

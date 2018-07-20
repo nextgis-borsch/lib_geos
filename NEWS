@@ -1,17 +1,34 @@
-Changes in 3.6.2
-2017-07-25
+Changes in 3.7.0beta1
+2018-06-25
 
-- Bug fixes / improvements
-  - Fix exception in UnaryUnion of collection of touching polygons (#837)
-  - Allow building against python 3 (#774)
-  - Fix build with android-ndk and other compilers (#799)
-  - Allows compiling with -Wpointer-bool-conversion (#638)
-  - Fix unhandled exception on invalid fp operation (#811)
-  - Fix overloaded virtual print in DirectedEdge* (#812)
-  - AppVeyor CI build added (#813)
-  - Clean up numerous MSVC warnings, notably C4275 and C4589 (#814)
-  - Bump CMake version to 3.0.0 (#817)
-  - Fix leaks in WKT parser (#830)
+- New things:
+  - CAPI: GEOSDistanceIndexed (#795, Dan Baston)
+  - CAPI: GEOSCoordSeq_isCCW (#870, Dan Baston)
+  - CAPI: GEOSGeom_getXMin, GEOSGeom_getXMax,
+          GEOSGeom_getYMin, GEOSGeom_getYMax (#871, Dan Baston)
+  - CAPI: GEOSFrechetDistance (#797, Shinichi SUGIYAMA)
+  - CAPI: GEOSReverse (#872, Dan Baston)
+  - CAPI: GEOSGeomGetZ (#581, J Smith)
+
+- Improvements
+  - Interruptible snap operation (Paul Ramsey)
+  - Numerous packaging, doc, and build changes
+    (Debian group: Bas Couwenberg, Francesco Paolo Lovergine)
+
+- C++ API changes:
+  - Require defining USE_UNSTABLE_GEOS_CPP_API for use without
+    warnings.
+  - Make C++11 required (Mateusz Loskot)
+  - Use C++11 unique_ptr, nullptr, and override constructs
+    (Mateusz Loskot)
+  - C++11 standard delete on noncopyable
+    (#851, Vicky Vergara)
+  - Fix CommonBits::getBit to correctly handle i >= 32
+    (#834, Kurt Schwehr)
+
+Changes in 3.7.0alpha
+2018-06-14
+See 3.7.0 notes
 
 Changes in 3.6.1
 2016-12-24
@@ -224,7 +241,7 @@ Changes in 3.3.1
   - Fix memory leak on invalid geometry in InteriorPointArea (#475)
   - ValidOp abort in presence of 2 touching holes forming an island (#449)
   - Enable prepared intersects operation for points
-  - Fortify suspicious code found by static analisys tools
+  - Fortify suspicious code found by static analysis tools
   - Fix for SOLARIS build (#461)
   - Fix EMPTY result from GEOSOffsetCurve with distance 0 (#454)
   - Fix Geometry::clone to copy SRID (#464)

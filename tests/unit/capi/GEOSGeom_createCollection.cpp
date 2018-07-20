@@ -1,7 +1,7 @@
 //
 // Test Suite for C-API GEOSGeom_createCollection
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -41,13 +41,13 @@ namespace tut
         }
 
         test_capigeosgeom_createcollection_data()
-            : handle_(initGEOS_r(notice, notice)), geom_(0)
+            : handle_(initGEOS_r(notice, notice)), geom_(nullptr)
         {
         }
 
         ~test_capigeosgeom_createcollection_data()
         {
-            GEOSGeom_destroy(geom_); geom_ = 0;
+            GEOSGeom_destroy(geom_); geom_ = nullptr;
             finishGEOS_r(handle_);
         }
     };
@@ -72,7 +72,7 @@ namespace tut
         geoms[2] = GEOSGeom_createEmptyPoint_r(handle_);
         // takes ownership of individual geometries
         geom_ = GEOSGeom_createCollection_r(handle_, GEOS_MULTIPOINT, geoms, geom_size);
-        ensure_equals(GEOSGetNumGeometries_r(handle_, geom_), geom_size);
+        ensure_equals(GEOSGetNumGeometries_r(handle_, geom_), (int)geom_size);
     }
 
 #if (defined(_MSC_VER) && _MSC_VER >= 1600) || __cplusplus > 199711L || defined(__GXX_EXPERIMENTAL_CXX0X__)
@@ -107,7 +107,7 @@ namespace tut
         // takes ownership of individual geometries
         geom_ = GEOSGeom_createCollection_r(handle_, GEOS_MULTIPOINT,
             geoms.data(), static_cast<int>(geoms.size()));
-        ensure_equals(GEOSGetNumGeometries_r(handle_, geom_), geoms.size());
+        ensure_equals(static_cast<size_t>(GEOSGetNumGeometries_r(handle_, geom_)), geoms.size());
     }
 
 } // namespace tut

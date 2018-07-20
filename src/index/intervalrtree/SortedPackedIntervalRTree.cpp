@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -31,15 +31,15 @@ namespace intervalrtree {
 //
 // private:
 //
-void 
+void
 SortedPackedIntervalRTree::init()
 {
-	if (root != NULL) return;
+	if (root != nullptr) return;
 
 	root = buildTree();
 }
 
-const IntervalRTreeNode * 
+const IntervalRTreeNode *
 SortedPackedIntervalRTree::buildTree()
 {
 	// sort the leaf nodes
@@ -49,10 +49,10 @@ SortedPackedIntervalRTree::buildTree()
 	IntervalRTreeNode::ConstVect * src = leaves;
 	IntervalRTreeNode::ConstVect * dest = new IntervalRTreeNode::ConstVect();
 
-	while (true) 
+	while (true)
 	{
 		buildLevel( src, dest);
-	
+
 		if (dest->size() == 1)
 		{
 			const IntervalRTreeNode * r = (*dest)[ 0 ];
@@ -68,14 +68,14 @@ SortedPackedIntervalRTree::buildTree()
 	}
 }
 
-void 
-SortedPackedIntervalRTree::buildLevel( IntervalRTreeNode::ConstVect * src, IntervalRTreeNode::ConstVect * dest) 
+void
+SortedPackedIntervalRTree::buildLevel( IntervalRTreeNode::ConstVect * src, IntervalRTreeNode::ConstVect * dest)
 {
 	level++;
 
 	dest->clear();
-	
-	for (size_t i = 0, ni = src->size(); i < ni; i += 2) 
+
+	for (size_t i = 0, ni = src->size(); i < ni; i += 2)
 	{
 		const IntervalRTreeNode * n1 = (*src)[ i ];
 
@@ -104,13 +104,13 @@ SortedPackedIntervalRTree::buildLevel( IntervalRTreeNode::ConstVect * src, Inter
 SortedPackedIntervalRTree::SortedPackedIntervalRTree()
 	:
 	leaves( new IntervalRTreeNode::ConstVect()),
-	root( NULL),
+	root( nullptr),
 	level( 0)
 { }
 
 SortedPackedIntervalRTree::~SortedPackedIntervalRTree()
 {
-	if ( root != NULL )
+	if ( root != nullptr )
 	{
 		// deleting root cascades to all IntervalRTreeNode's
 		delete root;
@@ -125,16 +125,16 @@ SortedPackedIntervalRTree::~SortedPackedIntervalRTree()
 }
 
 
-void 
+void
 SortedPackedIntervalRTree::insert( double min, double max, void * item)
 {
-	if (root != NULL)
+	if (root != nullptr)
 		throw new util::UnsupportedOperationException( "Index cannot be added to once it has been queried");
 
 	leaves->push_back( new IntervalRTreeLeafNode( min, max, item));
 }
 
-void 
+void
 SortedPackedIntervalRTree::query( double min, double max, index::ItemVisitor * visitor)
 {
 	init();

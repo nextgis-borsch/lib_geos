@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::buffer::BufferParameters class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/buffer/BufferParameters.h>
 #include <geos/platform.h>
@@ -24,8 +24,8 @@ namespace tut
 
     private:
         // noncopyable
-        test_bufferparameters_data(test_bufferparameters_data const& other);
-        test_bufferparameters_data& operator=(test_bufferparameters_data const& rhs);
+        test_bufferparameters_data(test_bufferparameters_data const& other) = delete;
+        test_bufferparameters_data& operator=(test_bufferparameters_data const& rhs) = delete;
     };
 
     typedef test_group<test_bufferparameters_data> group;

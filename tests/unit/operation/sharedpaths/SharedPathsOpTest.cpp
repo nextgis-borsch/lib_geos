@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::sharedpaths::SharedPathsOp class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/sharedpaths/SharedPathsOp.h>
 #include <geos/platform.h>
@@ -31,7 +31,7 @@ namespace tut
     geos::io::WKTReader wktreader;
     geos::io::WKTWriter wktwriter;
 
-    typedef geos::geom::Geometry::AutoPtr GeomPtr;
+    typedef geos::geom::Geometry::Ptr GeomPtr;
 
     SharedPathsOp::PathList forwDir;
     SharedPathsOp::PathList backDir;
@@ -44,8 +44,8 @@ namespace tut
 
   private:
     // noncopyable
-    test_shpathop_data(test_shpathop_data const& other);
-    test_shpathop_data& operator=(test_shpathop_data const& rhs);
+    test_shpathop_data(test_shpathop_data const& other) = delete;
+    test_shpathop_data& operator=(test_shpathop_data const& rhs) = delete;
   };
 
   typedef test_group<test_shpathop_data> group;
@@ -297,7 +297,7 @@ namespace tut
     forwDir.clear(); backDir.clear();
     SharedPathsOp::sharedPathsOp(*g0, *g1, forwDir, backDir);
     ensure_equals(forwDir.size(), 2u);
-    ensure_equals(wktwriter.write(forwDir[0]), "LINESTRING (0 0, 5 10)"); 
+    ensure_equals(wktwriter.write(forwDir[0]), "LINESTRING (0 0, 5 10)");
     ensure_equals(wktwriter.write(forwDir[1]), "LINESTRING (5 10, 10 10)");
     SharedPathsOp::clearEdges(forwDir);
 
@@ -314,7 +314,7 @@ namespace tut
     forwDir.clear(); backDir.clear();
     SharedPathsOp::sharedPathsOp(*g0, *g1, forwDir, backDir);
     ensure_equals(backDir.size(), 2u);
-    ensure_equals(wktwriter.write(backDir[0]), "LINESTRING (0 0, 5 10)"); 
+    ensure_equals(wktwriter.write(backDir[0]), "LINESTRING (0 0, 5 10)");
     ensure_equals(wktwriter.write(backDir[1]), "LINESTRING (5 10, 10 10)");
     SharedPathsOp::clearEdges(backDir);
 
@@ -331,7 +331,7 @@ namespace tut
     forwDir.clear(); backDir.clear();
     SharedPathsOp::sharedPathsOp(*g0, *g1, forwDir, backDir);
     ensure_equals(forwDir.size(), 1u);
-    ensure_equals(wktwriter.write(forwDir[0]), "LINESTRING (0 0, 10 0)"); 
+    ensure_equals(wktwriter.write(forwDir[0]), "LINESTRING (0 0, 10 0)");
     SharedPathsOp::clearEdges(forwDir);
 
     ensure(backDir.empty());
@@ -347,7 +347,7 @@ namespace tut
     forwDir.clear(); backDir.clear();
     SharedPathsOp::sharedPathsOp(*g0, *g1, forwDir, backDir);
     ensure_equals(forwDir.size(), 1u);
-    ensure_equals(wktwriter.write(forwDir[0]), "LINESTRING (0 0, 10 0)"); 
+    ensure_equals(wktwriter.write(forwDir[0]), "LINESTRING (0 0, 10 0)");
     SharedPathsOp::clearEdges(forwDir);
 
     ensure(backDir.empty());
@@ -363,13 +363,13 @@ namespace tut
     forwDir.clear(); backDir.clear();
     SharedPathsOp::sharedPathsOp(*g0, *g1, forwDir, backDir);
     ensure_equals(backDir.size(), 1u);
-    ensure_equals(wktwriter.write(backDir[0]), "LINESTRING (0 0, 10 0)"); 
+    ensure_equals(wktwriter.write(backDir[0]), "LINESTRING (0 0, 10 0)");
     SharedPathsOp::clearEdges(backDir);
 
     ensure(forwDir.empty());
   }
 
-  // line_closed_rhr - line 
+  // line_closed_rhr - line
   template<> template<>
   void object::test<21>()
   {
@@ -379,7 +379,7 @@ namespace tut
     forwDir.clear(); backDir.clear();
     SharedPathsOp::sharedPathsOp(*g0, *g1, forwDir, backDir);
     ensure_equals(backDir.size(), 1u);
-    ensure_equals(wktwriter.write(backDir[0]), "LINESTRING (10 0, 0 0)"); 
+    ensure_equals(wktwriter.write(backDir[0]), "LINESTRING (10 0, 0 0)");
     SharedPathsOp::clearEdges(backDir);
 
     ensure(forwDir.empty());

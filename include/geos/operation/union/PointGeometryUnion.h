@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -37,18 +37,18 @@ namespace operation { // geos::operation
 namespace geounion {  // geos::operation::geounion
 
 /**
- * \brief 
+ * \brief
  * Computes the union of a {@link Puntal} geometry with
  * another arbitrary {@link Geometry}.
  *
  * Does not copy any component geometries.
  *
  */
-class GEOS_DLL PointGeometryUnion 
+class GEOS_DLL PointGeometryUnion
 {
 public:
 
-  static std::auto_ptr<geom::Geometry> Union(
+  static std::unique_ptr<geom::Geometry> Union(
       const geom::Puntal& pointGeom,
       const geom::Geometry& otherGeom);
 
@@ -56,7 +56,7 @@ public:
   PointGeometryUnion(const geom::Puntal& pointGeom,
                      const geom::Geometry& otherGeom);
 
-  std::auto_ptr<geom::Geometry> Union() const;
+  std::unique_ptr<geom::Geometry> Union() const;
 
 private:
   const geom::Geometry& pointGeom;

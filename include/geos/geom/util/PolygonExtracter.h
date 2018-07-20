@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -48,9 +48,9 @@ public:
 	 */
 	PolygonExtracter(std::vector<const Polygon*>& newComps);
 
-	void filter_rw(Geometry *geom);
+	void filter_rw(Geometry *geom) override;
 
-	void filter_ro(const Geometry *geom);
+	void filter_ro(const Geometry *geom) override;
 
 private:
 
@@ -58,8 +58,8 @@ private:
     std::vector<const Polygon*>& comps;
 
     // Declare type as noncopyable
-    PolygonExtracter(const PolygonExtracter& other);
-    PolygonExtracter& operator=(const PolygonExtracter& rhs);
+    PolygonExtracter(const PolygonExtracter& other) = delete;
+    PolygonExtracter& operator=(const PolygonExtracter& rhs) = delete;
 };
 
 } // namespace geos.geom.util

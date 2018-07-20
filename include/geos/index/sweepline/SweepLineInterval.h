@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -23,7 +23,7 @@ namespace sweepline { // geos:index:sweepline
 
 class GEOS_DLL SweepLineInterval {
 public:
-	SweepLineInterval(double newMin, double newMax, void* newItem=0);
+	SweepLineInterval(double newMin, double newMax, void* newItem=nullptr);
 	double getMin();
 	double getMax();
 	void* getItem();

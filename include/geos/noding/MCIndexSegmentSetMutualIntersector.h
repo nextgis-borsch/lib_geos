@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  *
@@ -51,32 +51,32 @@ namespace noding { // geos::noding
  *
  * @version 1.7
  */
-class MCIndexSegmentSetMutualIntersector : public SegmentSetMutualIntersector 
+class MCIndexSegmentSetMutualIntersector : public SegmentSetMutualIntersector
 {
 public:
 
 	MCIndexSegmentSetMutualIntersector();
 
-	~MCIndexSegmentSetMutualIntersector();
+	~MCIndexSegmentSetMutualIntersector() override;
 
 	/* Returns a reference to a vector of MonotoneChain objects owned
 	 * by this class and destroyed on next call to ::process.
 	 * Copy them if you need them alive for longer.
 	 */
-	std::vector<index::chain::MonotoneChain *>& getMonotoneChains() 
-	{ 
-		return monoChains; 
+	std::vector<index::chain::MonotoneChain *>& getMonotoneChains()
+	{
+		return monoChains;
 	}
 
-	index::SpatialIndex* getIndex() 
-	{ 
-		return index; 
+	index::SpatialIndex* getIndex()
+	{
+		return index;
 	}
 
-	void setBaseSegments(SegmentString::ConstVect* segStrings);
-  
+	void setBaseSegments(SegmentString::ConstVect* segStrings) override;
+
 	// NOTE: re-populates the MonotoneChain vector with newly created chains
-	void process(SegmentString::ConstVect* segStrings);
+	void process(SegmentString::ConstVect* segStrings) override;
 
     class SegmentOverlapAction : public index::chain::MonotoneChainOverlapAction
     {
@@ -84,8 +84,8 @@ public:
         SegmentIntersector & si;
 
         // Declare type as noncopyable
-        SegmentOverlapAction(const SegmentOverlapAction& other);
-        SegmentOverlapAction& operator=(const SegmentOverlapAction& rhs);
+        SegmentOverlapAction(const SegmentOverlapAction& other) = delete;
+        SegmentOverlapAction& operator=(const SegmentOverlapAction& rhs) = delete;
 
     public:
         SegmentOverlapAction(SegmentIntersector & si) :
@@ -93,7 +93,7 @@ public:
           {}
 
           void overlap(index::chain::MonotoneChain& mc1, std::size_t start1,
-              index::chain::MonotoneChain& mc2, std::size_t start2);
+              index::chain::MonotoneChain& mc2, std::size_t start2) override;
     };
 
 private:
@@ -111,12 +111,12 @@ private:
 	int processCounter;
 	// statistics
 	int nOverlaps;
-	
+
 	/* memory management helper, holds MonotoneChain objects used
 	 * in the SpatialIndex. It's cleared when the SpatialIndex is
 	 */
 	MonoChains chainStore;
-      
+
 	void addToIndex( SegmentString * segStr);
 
 	void intersectChains();

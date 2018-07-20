@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -83,12 +83,12 @@ SimpleEdgeSetIntersector::computeIntersects(Edge *e0, Edge *e1,
 	const CoordinateSequence *pts0=e0->getCoordinates();
 	const CoordinateSequence *pts1=e1->getCoordinates();
 
-	size_t npts0=pts0->getSize();
-	size_t npts1=pts1->getSize();
+	auto npts0 = static_cast<int>(pts0->getSize());
+	auto npts1 = static_cast<int>(pts1->getSize());
 
-	for(size_t i0=0; i0<npts0-1; ++i0)
+	for(int i0=0; i0<npts0-1; ++i0)
 	{
-		for(size_t i1=0; i1<npts1-1; ++i1)
+		for(int i1=0; i1<npts1-1; ++i1)
 		{
 			si->addIntersections(e0, i0, e1, i1);
 		}

@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSBuffer and GEOSBufferWithStyle
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -34,17 +34,17 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeosbuffer_data()
-            : geom1_(0), geom2_(0), wkt_(0), bp_(0)
+            : geom1_(nullptr), geom2_(nullptr), wkt_(nullptr), bp_(nullptr)
         {
             initGEOS(notice, notice);
             wktw_ = GEOSWKTWriter_create();
             GEOSWKTWriter_setTrim(wktw_, 1);
-        }       
+        }
 
         ~test_capigeosbuffer_data()
         {
@@ -53,9 +53,9 @@ namespace tut
             GEOSWKTWriter_destroy(wktw_);
             GEOSBufferParams_destroy(bp_);
             GEOSFree(wkt_);
-            geom1_ = 0;
-            geom2_ = 0;
-            wkt_ = 0;
+            geom1_ = nullptr;
+            geom2_ = nullptr;
+            wkt_ = nullptr;
             finishGEOS();
         }
 
@@ -78,14 +78,14 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("POINT EMPTY");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 1, 8,
                                      GEOSBUF_CAP_ROUND,
                                      GEOSBUF_JOIN_BEVEL,
                                      5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -99,14 +99,14 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING EMPTY");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 1, 8,
                                      GEOSBUF_CAP_ROUND,
                                      GEOSBUF_JOIN_BEVEL,
                                      5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -120,14 +120,14 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("POLYGON EMPTY");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 1, 8,
                                      GEOSBUF_CAP_ROUND,
                                      GEOSBUF_JOIN_BEVEL,
                                      5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -141,11 +141,11 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 20)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBuffer(geom1_, 5, 1);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -163,11 +163,11 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 20)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBuffer(geom1_, 5, 2);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -184,12 +184,12 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 20)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 5, 20, GEOSBUF_CAP_SQUARE,
                                      GEOSBUF_JOIN_ROUND, 5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -207,12 +207,12 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 20)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 5, 20, GEOSBUF_CAP_FLAT,
                                      GEOSBUF_JOIN_ROUND, 5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -222,19 +222,19 @@ namespace tut
         ensure_distance(area_, 111.803, 0.001);
     }
 
-    // Buffer with flat end cap on a 2-vertices horizontal line 
+    // Buffer with flat end cap on a 2-vertices horizontal line
     template<>
     template<>
     void object::test<8>()
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 10)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 5, 20, GEOSBUF_CAP_FLAT,
                                      GEOSBUF_JOIN_ROUND, 5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -248,19 +248,19 @@ namespace tut
         ));
     }
 
-    // Buffer with square end cap on a 2-vertices horizontal line 
+    // Buffer with square end cap on a 2-vertices horizontal line
     template<>
     template<>
     void object::test<9>()
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 10)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 5, 20, GEOSBUF_CAP_SQUARE,
                                      GEOSBUF_JOIN_ROUND, 5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -282,12 +282,12 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 10, 10 20)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 5, 20, GEOSBUF_CAP_SQUARE,
                                      GEOSBUF_JOIN_ROUND, 5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -306,12 +306,12 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 10, 10 20)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 5, 20, GEOSBUF_CAP_SQUARE,
                                      GEOSBUF_JOIN_MITRE, 5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -333,12 +333,12 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 10, 10 20)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 5, 20, GEOSBUF_CAP_SQUARE,
                                      GEOSBUF_JOIN_BEVEL, 5.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -361,12 +361,12 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 10, 10 20)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 5, 200, GEOSBUF_CAP_SQUARE,
                                      GEOSBUF_JOIN_BEVEL, 10.0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -387,12 +387,12 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("POLYGON((0 0, 10 0, 10 10, 0 0))");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 2, 200, GEOSBUF_CAP_FLAT,
                                      GEOSBUF_JOIN_MITRE, 1);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -410,12 +410,12 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("POLYGON((0 0, 10 0, 10 10, 0 0))");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 2, 200, GEOSBUF_CAP_FLAT,
                                      GEOSBUF_JOIN_MITRE, 2);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -433,12 +433,12 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("POLYGON((0 0, 10 0, 10 10, 0 0))");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSBufferWithStyle(geom1_, 2, 200, GEOSBUF_CAP_FLAT,
                                      GEOSBUF_JOIN_MITRE, 3);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 
@@ -457,14 +457,14 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 10)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         bp_ = GEOSBufferParams_create();
 
         GEOSBufferParams_setEndCapStyle(bp_, GEOSBUF_CAP_SQUARE);
         geom2_ = GEOSBufferWithParams(geom1_, bp_, 2);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSWKTWriter_write(wktw_, geom2_);
 
@@ -482,7 +482,7 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 10)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         bp_ = GEOSBufferParams_create();
 
@@ -490,7 +490,7 @@ namespace tut
         GEOSBufferParams_setSingleSided(bp_, 1);
         geom2_ = GEOSBufferWithParams(geom1_, bp_, 2);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSWKTWriter_write(wktw_, geom2_);
 
@@ -508,7 +508,7 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(5 10, 10 10)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         bp_ = GEOSBufferParams_create();
 
@@ -516,7 +516,7 @@ namespace tut
         GEOSBufferParams_setSingleSided(bp_, 1);
         geom2_ = GEOSBufferWithParams(geom1_, bp_, -2);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSWKTWriter_write(wktw_, geom2_);
 
@@ -533,11 +533,11 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(0 0, 10 0, 10 10)', -10)");
 
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         geom2_ = GEOSSingleSidedBuffer(geom1_, 10, 8, GEOSBUF_JOIN_BEVEL, 0, 0);
 
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom2_ );
 
         wkt_ = GEOSGeomToWKT(geom2_);
 

@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -32,7 +32,7 @@ namespace strtree { // geos.index.strtree
  */
 AbstractNode::AbstractNode(int newLevel, int capacity) {
 	childBoundables.reserve(capacity);
-	bounds=NULL;
+	bounds=nullptr;
 	level=newLevel;
 }
 
@@ -42,7 +42,7 @@ AbstractNode::~AbstractNode() {
 const void *
 AbstractNode::getBounds() const
 {
-	if (bounds==NULL) {
+	if (bounds==nullptr) {
 		bounds = computeBounds();
 	}
 	return bounds;
@@ -61,7 +61,7 @@ int AbstractNode::getLevel() {
  * (wrapped in an ItemBoundable)
  */
 void AbstractNode::addChildBoundable(Boundable *childBoundable) {
-	assert(bounds==NULL);
+	assert(bounds==nullptr);
 	childBoundables.push_back(childBoundable);
 }
 

@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -167,7 +167,7 @@ LineBuilder::collectBoundaryTouchEdge(DirectedEdge *de,
 	if (de->isInteriorAreaEdge()) return;
 
 	// if the edge linework is already included, don't include it again
-	if (de->getEdge()->isInResult()) return; 
+	if (de->getEdge()->isInResult()) return;
 
 	// sanity check for labelling of result edgerings
 	assert( ! ( de->isInResult() || de->getSym()->isInResult() )
@@ -177,7 +177,7 @@ LineBuilder::collectBoundaryTouchEdge(DirectedEdge *de,
 
 	// include the linework if it's in the result of the operation
 	const Label& label = de->getLabel();
-	if ( OverlayOp::isResultOfOp(label, opCode) 
+	if ( OverlayOp::isResultOfOp(label, opCode)
 		&& opCode == OverlayOp::opINTERSECTION )
 	{
 		edges->push_back(de->getEdge());
@@ -210,14 +210,13 @@ LineBuilder::buildLines(OverlayOp::OpCode /* opCode */)
 void
 LineBuilder::propagateZ(CoordinateSequence *cs)
 {
-	size_t i;
 #if GEOS_DEBUG
 	cerr<<"LineBuilder::propagateZ() called"<<endl;
 #endif
 
-	vector<int>v3d; // vertex 3d
+	vector<size_t> v3d; // vertex 3d
 	size_t cssize = cs->getSize();
-	for (i=0; i<cssize; i++)
+	for (size_t i = 0; i < cssize; ++i)
 	{
 		if ( !ISNAN(cs->getAt(i).z) ) v3d.push_back(i);
 	}
@@ -225,7 +224,7 @@ LineBuilder::propagateZ(CoordinateSequence *cs)
 #if GEOS_DEBUG
 	cerr<<"  found "<<v3d.size()<<" 3d vertexes"<<endl;
 #endif
-	
+
 	if ( v3d.size() == 0 )
 	{
 #if GEOS_DEBUG
@@ -240,7 +239,7 @@ LineBuilder::propagateZ(CoordinateSequence *cs)
 	if ( v3d[0] != 0 )
 	{
 		double z = cs->getAt(v3d[0]).z;
-		for (int j=0; j<v3d[0]; j++)
+		for (size_t j = 0; j < v3d[0]; ++j)
 		{
 			buf = cs->getAt(j);
 			buf.z = z;
@@ -250,18 +249,18 @@ LineBuilder::propagateZ(CoordinateSequence *cs)
 
 	// interpolate inbetweens
 	size_t prev=v3d[0];
-	for (i=1; i<v3d.size(); i++)
+	for (size_t i = 1; i < v3d.size(); ++i)
 	{
-		int curr=v3d[i];
-		int dist = curr-prev;
+		auto curr = v3d[i];
+		auto dist = curr - prev;
 		if (dist > 1)
 		{
 			const Coordinate &cto = cs->getAt(curr);
 			const Coordinate &cfrom = cs->getAt(prev);
-			double gap = cto.z-cfrom.z;
-			double zstep = gap/dist;
+			double gap = cto.z - cfrom.z;
+			double zstep = gap / static_cast<double>(dist);
 			double z = cfrom.z;
-			for (int j=prev+1; j<curr; j++)
+			for (size_t j = prev+1; j < curr; ++j)
 			{
 				buf = cs->getAt(j);
 				z+=zstep;

@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -33,7 +33,7 @@
 
 // Forward declarations
 namespace geos {
-	namespace geom { 
+	namespace geom {
 		class Coordinate;
 		class Envelope;
 		class Polygon;
@@ -59,7 +59,7 @@ namespace util { // geos::util
  *  gsf.setSize(100);
  *  gsf.setNumPoints(100);
  *  gsf.setBase(Coordinate(0, 0));
- *  std::auto_ptr<Polygon> rect ( gsf.createRectangle() );
+ *  std::unique_ptr<Polygon> rect ( gsf.createRectangle() );
  * </pre>
  *
  */
@@ -98,7 +98,7 @@ public:
 	 * @param factory the factory to use. You need to keep the
 	 *	factory alive for the whole GeometricShapeFactory
 	 *	life time.
-	 * 
+	 *
 	 */
 	GeometricShapeFactory(const geom::GeometryFactory *factory);
 

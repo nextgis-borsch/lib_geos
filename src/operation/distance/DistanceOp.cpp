@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -21,8 +21,8 @@
 #include <geos/operation/distance/DistanceOp.h>
 #include <geos/operation/distance/GeometryLocation.h>
 #include <geos/operation/distance/ConnectedElementLocationFilter.h>
-#include <geos/algorithm/PointLocator.h> 
-#include <geos/algorithm/CGAlgorithms.h> 
+#include <geos/algorithm/PointLocator.h>
+#include <geos/algorithm/CGAlgorithms.h>
 #include <geos/geom/Coordinate.h>
 #include <geos/geom/CoordinateSequence.h>
 #include <geos/geom/CoordinateArraySequence.h>
@@ -89,7 +89,7 @@ DistanceOp::nearestPoints(const Geometry *g0, const Geometry *g1)
 DistanceOp::DistanceOp(const Geometry *g0, const Geometry *g1):
 	geom(2),
 	terminateDistance(0.0),
-	minDistanceLocation(0),
+	minDistanceLocation(nullptr),
 	minDistance(DoubleMax)
 {
 	geom[0] = g0;
@@ -99,7 +99,7 @@ DistanceOp::DistanceOp(const Geometry *g0, const Geometry *g1):
 DistanceOp::DistanceOp(const Geometry& g0, const Geometry& g1):
 	geom(2),
 	terminateDistance(0.0),
-	minDistanceLocation(0),
+	minDistanceLocation(nullptr),
 	minDistance(DoubleMax)
 {
 	geom[0] = &g0;
@@ -110,7 +110,7 @@ DistanceOp::DistanceOp(const Geometry& g0, const Geometry& g1, double tdist)
 	:
 	geom(2),
 	terminateDistance(tdist),
-	minDistanceLocation(0),
+	minDistanceLocation(nullptr),
 	minDistance(DoubleMax)
 {
 	geom[0] = &g0;
@@ -141,7 +141,7 @@ DistanceOp::distance()
 {
 	using geos::util::IllegalArgumentException;
 
-	if ( geom[0] == 0 || geom[1] == 0 )
+	if ( geom[0] == nullptr || geom[1] == nullptr )
 		throw IllegalArgumentException("null geometries are not supported");
 	if ( geom[0]->isEmpty() || geom[1]->isEmpty() ) return 0.0;
 	computeMinDistance();
@@ -163,16 +163,16 @@ DistanceOp::nearestPoints()
 	// lazily creates minDistanceLocation
 	computeMinDistance();
 
-	assert(0 != minDistanceLocation);
+	assert(nullptr != minDistanceLocation);
 	std::vector<GeometryLocation*>& locs = *minDistanceLocation;
 
 	// Empty input geometries result in this behaviour
-	if ( locs[0] == 0 || locs[1] == 0 )
+	if ( locs[0] == nullptr || locs[1] == nullptr )
 	{
 		// either both or none are set..
-		assert(locs[0] == 0 && locs[1] == 0);
+		assert(locs[0] == nullptr && locs[1] == nullptr);
 
-		return 0;
+		return nullptr;
 	}
 
 	GeometryLocation* loc0 = locs[0];
@@ -199,12 +199,12 @@ DistanceOp::updateMinDistance(vector<GeometryLocation*>& locGeom, bool flip)
 	assert(minDistanceLocation);
 
 	// if not set then don't update
-	if (locGeom[0]==NULL)
+	if (locGeom[0]==nullptr)
 	{
 #if GEOS_DEBUG
 std::cerr << "updateMinDistance called with loc[0] == null and loc[1] == " << locGeom[1] << std::endl;
 #endif
-		assert(locGeom[1] == NULL);
+		assert(locGeom[1] == nullptr);
 		return;
 	}
 
@@ -423,8 +423,8 @@ DistanceOp::computeFacetDistance()
 		return;
 	};
 
-	locGeom[0]=NULL;
-	locGeom[1]=NULL;
+	locGeom[0]=nullptr;
+	locGeom[1]=nullptr;
 	computeMinDistanceLinesPoints(lines0, pts1, locGeom);
 	updateMinDistance(locGeom, false);
 	if (minDistance <= terminateDistance) {
@@ -434,8 +434,8 @@ DistanceOp::computeFacetDistance()
 		return;
 	};
 
-	locGeom[0]=NULL;
-	locGeom[1]=NULL;
+	locGeom[0]=nullptr;
+	locGeom[1]=nullptr;
 	computeMinDistanceLinesPoints(lines1, pts0, locGeom);
 	updateMinDistance(locGeom, true);
 	if (minDistance <= terminateDistance){
@@ -445,8 +445,8 @@ DistanceOp::computeFacetDistance()
 		return;
 	};
 
-	locGeom[0]=NULL;
-	locGeom[1]=NULL;
+	locGeom[0]=nullptr;
+	locGeom[1]=nullptr;
 	computeMinDistancePoints(pts0, pts1, locGeom);
 	updateMinDistance(locGeom, false);
 
@@ -569,9 +569,9 @@ DistanceOp::computeMinDistance(
 				delete closestPt;
 
 				delete locGeom[0];
-				locGeom[0] = new GeometryLocation(line0, i, *c1);
+				locGeom[0] = new GeometryLocation(line0, static_cast<int>(i), *c1);
 				delete locGeom[1];
-				locGeom[1] = new GeometryLocation(line1, j, *c2);
+				locGeom[1] = new GeometryLocation(line1, static_cast<int>(j), *c2);
 			}
 			if (minDistance<=terminateDistance) return;
 		}
@@ -607,7 +607,7 @@ DistanceOp::computeMinDistance(const LineString *line,
 			seg.closestPoint(*coord, segClosestPoint);
 
 			delete locGeom[0];
-			locGeom[0] = new GeometryLocation(line, i, segClosestPoint);
+			locGeom[0] = new GeometryLocation(line, static_cast<int>(i), segClosestPoint);
 			delete locGeom[1];
 			locGeom[1] = new GeometryLocation(pt, 0, *coord);
         	}

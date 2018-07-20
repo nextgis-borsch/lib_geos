@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::geom::Envelope class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/geom/Envelope.h>
 #include <geos/geom/Coordinate.h>
@@ -29,7 +29,7 @@ namespace tut
     template<>
     template<>
     void object::test<1>()
-    {         
+    {
         geos::geom::Envelope empty;
 
         ensure( empty.isNull() );

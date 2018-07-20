@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSConvexHull
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -29,22 +29,22 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeosconvexhull_data()
-            : input_(0), expected_(0)
+            : input_(nullptr), expected_(nullptr)
         {
             initGEOS(notice, notice);
-        }       
+        }
 
         ~test_capigeosconvexhull_data()
         {
             GEOSGeom_destroy(input_);
             GEOSGeom_destroy(expected_);
-            input_ = 0;
-            expected_ = 0;
+            input_ = nullptr;
+            expected_ = nullptr;
             finishGEOS();
         }
 
@@ -64,18 +64,18 @@ namespace tut
     void object::test<1>()
     {
         input_ = GEOSGeomFromWKT("MULTIPOINT (130 240, 130 240, 130 240, 570 240, 570 240, 570 240, 650 240)");
-        ensure( 0 != input_ );
+        ensure( nullptr != input_ );
 
-        expected_ = GEOSGeomFromWKT("LINESTRING (130 240, 650 240, 130 240)");   
-        ensure( 0 != expected_ );
+        expected_ = GEOSGeomFromWKT("LINESTRING (130 240, 650 240, 130 240)");
+        ensure( nullptr != expected_ );
 
         GEOSGeometry* output = GEOSConvexHull(input_);
-        ensure( 0 != output );
+        ensure( nullptr != output );
         ensure( 0 == GEOSisEmpty(output) );
         // TODO
         //ensure( 0 != GEOSEquals(output, expected_));
         GEOSGeom_destroy(output);
     }
- 
+
 } // namespace tut
 

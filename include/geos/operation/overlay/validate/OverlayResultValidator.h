@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -117,8 +117,8 @@ private:
 		const geom::Geometry& g0, const geom::Geometry& g1);
 
     // Declare type as noncopyable
-    OverlayResultValidator(const OverlayResultValidator& other);
-    OverlayResultValidator& operator=(const OverlayResultValidator& rhs);
+    OverlayResultValidator(const OverlayResultValidator& other) = delete;
+    OverlayResultValidator& operator=(const OverlayResultValidator& rhs) = delete;
 };
 
 } // namespace geos::operation::overlay::validate

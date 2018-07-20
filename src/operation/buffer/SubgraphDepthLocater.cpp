@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -68,7 +68,7 @@ private:
 	 * @param seg1 a segment to compare
 	 * @return
 	 */
-	static int compareX(const geom::LineSegment *seg0, const geom::LineSegment *seg1) 
+	static int compareX(const geom::LineSegment *seg0, const geom::LineSegment *seg1)
 	{
 		int compare0=seg0->p0.compareTo(seg1->p0);
 		if (compare0!=0) return compare0;
@@ -234,7 +234,7 @@ SubgraphDepthLocater::findStabbedSegments(
 //
 #define SKIP_LS 1
 
-	int n = pts->getSize()-1;
+	int n = static_cast<int>(pts->getSize())-1;
 	for (int i=0; i<n; ++i) {
 #ifndef SKIP_LS
 		seg.p0=pts->getAt(i);
@@ -247,7 +247,7 @@ SubgraphDepthLocater::findStabbedSegments(
 #else
 		const Coordinate *low=&(pts->getAt(i));
 		const Coordinate *high=&(pts->getAt(i+1));
-		const Coordinate *swap=NULL;
+		const Coordinate *swap=nullptr;
 
 #endif
 
@@ -307,7 +307,7 @@ SubgraphDepthLocater::findStabbedSegments(
 			stabbingRayLeftPt.y > high->y)
 #endif
 		{
-#if GEOS_DEBUG 
+#if GEOS_DEBUG
 			cerr<<" segment above or below stabbing line, skipping "<<endl;
 #endif
 			continue;

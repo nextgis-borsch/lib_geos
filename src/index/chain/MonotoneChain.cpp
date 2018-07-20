@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -34,7 +34,7 @@ MonotoneChain::MonotoneChain(const geom::CoordinateSequence& newPts,
                              size_t nstart, size_t nend, void* nContext)
 	:
 	pts(newPts),
-	env(0),
+	env(nullptr),
 	context(nContext),
 	start(nstart),
 	end(nend),
@@ -43,14 +43,14 @@ MonotoneChain::MonotoneChain(const geom::CoordinateSequence& newPts,
 }
 
 MonotoneChain::~MonotoneChain()
-{ 
+{
     delete env;
 }
 
 const Envelope&
 MonotoneChain::getEnvelope() const
 {
-    if (0 == env)
+    if (nullptr == env)
     {
         const Coordinate& p0 = pts[start];
         const Coordinate& p1 = pts[end];
@@ -66,10 +66,10 @@ MonotoneChain::getLineSegment(size_t index, LineSegment& ls) const
     ls.p1 = pts[index+1];
 }
 
-std::auto_ptr<CoordinateSequence>
+std::unique_ptr<CoordinateSequence>
 MonotoneChain::getCoordinates() const
 {
-    return std::auto_ptr<CoordinateSequence>(pts.clone());
+    return std::unique_ptr<CoordinateSequence>(pts.clone());
 }
 
 void
@@ -92,14 +92,14 @@ MonotoneChain::computeSelect(const Envelope& searchEnv,
     if(end0-start0==1)
     {
         //Debug.println("computeSelect:"+p0+p1);
-        mcs.select(*this,start0);
+        mcs.select(*this, static_cast<unsigned int>(start0));
         return;
     }
     // nothing to do if the envelopes don't overlap
     if (!searchEnv.intersects(mcs.tempEnv1))
         return;
     // the chains overlap,so split each in half and iterate (binary search)
-    unsigned int mid=(start0+end0)/2;
+    unsigned int mid= static_cast<unsigned int>((start0 + end0) / 2);
 
     // Assert: mid != start or end (since we checked above for end-start <= 1)
     // check terminating conditions before recursing
@@ -107,7 +107,7 @@ MonotoneChain::computeSelect(const Envelope& searchEnv,
     {
         computeSelect(searchEnv,start0,mid,mcs);
     }
-    
+
     if (mid < end0)
     {
         computeSelect(searchEnv,mid,end0,mcs);
@@ -161,7 +161,7 @@ MonotoneChain::computeOverlaps(size_t start0, size_t end0,
         if (mid1<end1)
             computeOverlaps(start0, mid0, mc, mid1, end1, mco);
     }
-    
+
     if (mid0<end0)
     {
         if (start1<mid1)

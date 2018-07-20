@@ -1,9 +1,9 @@
 
-// 
+//
 // Test Suite for geos::triangulate::quadedge::Vertex
 //
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/triangulate/quadedge/Vertex.h>
 //#include <geos/io/WKTWriter.h>
@@ -37,7 +37,7 @@ namespace tut
 	// Test Cases
 	//
 
-	// 1 - Test for operator< 
+	// 1 - Test for operator<
 	template<>
 	template<>
 	void object::test<1>()

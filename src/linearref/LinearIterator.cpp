@@ -42,7 +42,7 @@ LinearIterator::LinearIterator(const Geometry* linear) :
 		vertexIndex(0),
 		componentIndex(0),
 		linear(linear),
-		numLines(linear->getNumGeometries())
+		numLines(static_cast<unsigned int>(linear->getNumGeometries()))
 {
 	loadCurrentLine();
 }
@@ -52,7 +52,7 @@ LinearIterator::LinearIterator(const Geometry* linear, const LinearLocation& sta
 		vertexIndex(segmentEndVertexIndex(start)),
 		componentIndex(start.getComponentIndex()),
 		linear(linear),
-		numLines(linear->getNumGeometries())
+		numLines(static_cast<unsigned int>(linear->getNumGeometries()))
 {
 	loadCurrentLine();
 }
@@ -61,7 +61,7 @@ LinearIterator::LinearIterator(const Geometry* linear, unsigned int componentInd
 		vertexIndex(vertexIndex),
 		componentIndex(componentIndex),
 		linear(linear),
-		numLines(linear->getNumGeometries())
+		numLines(static_cast<unsigned int>(linear->getNumGeometries()))
 {
 	loadCurrentLine();
 }
@@ -70,7 +70,7 @@ void LinearIterator::loadCurrentLine()
 {
 	if (componentIndex >= numLines)
 	{
-		currentLine = 0;
+		currentLine = nullptr;
 		return;
 	}
 	currentLine = dynamic_cast<const LineString *> (linear->getGeometryN(componentIndex));

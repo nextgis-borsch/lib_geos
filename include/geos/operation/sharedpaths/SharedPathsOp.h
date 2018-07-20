@@ -3,18 +3,18 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2010      Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2010      Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
  *
  * Last port: original work
  *
- * Developed by Sandro Santilli (strk@keybit.net)
+ * Developed by Sandro Santilli (strk@kbt.io)
  * for Faunalia (http://www.faunalia.it)
  * with funding from Regione Toscana - Settore SISTEMA INFORMATIVO
  * TERRITORIALE ED AMBIENTALE - for the project: "Sviluppo strumenti
@@ -28,7 +28,7 @@
 
 #include <geos/export.h> // for GEOS_DLL
 
-#include <vector> 
+#include <vector>
 
 // Forward declarations
 namespace geos {
@@ -53,7 +53,7 @@ namespace sharedpaths { // geos.operation.sharedpaths
  * Paths reported as shared are given in the direction they
  * appear in the first geometry.
  *
- * Developed by Sandro Santilli (strk@keybit.net)
+ * Developed by Sandro Santilli (strk@kbt.io)
  * for Faunalia (http://www.faunalia.it)
  * with funding from Regione Toscana - Settore SISTEMA INFORMATIVO
  * TERRITORIALE ED AMBIENTALE - for the project: "Sviluppo strumenti
@@ -101,7 +101,7 @@ public:
   ///
   SharedPathsOp(const geom::Geometry& g1, const geom::Geometry& g2);
 
-  /// Get shared paths 
+  /// Get shared paths
   //
   /// @param sameDir
   ///   Shared edges having the same direction are pushed
@@ -149,8 +149,8 @@ private:
   const geom::GeometryFactory& _gf;
 
   // Declare type as noncopyable
-  SharedPathsOp(const SharedPathsOp& other);
-  SharedPathsOp& operator=(const SharedPathsOp& rhs);
+  SharedPathsOp(const SharedPathsOp& other) = delete;
+  SharedPathsOp& operator=(const SharedPathsOp& rhs) = delete;
 
 };
 

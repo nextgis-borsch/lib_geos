@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::geounion::UnaryUnionOp class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/union/UnaryUnionOp.h>
 #include <geos/geom/GeometryFactory.h>
@@ -27,11 +27,11 @@ namespace tut
     struct test_unaryuniontest_data
     {
         typedef geos::geom::GeometryFactory GeometryFactory;
-        GeometryFactory::unique_ptr gf;
+        GeometryFactory::Ptr gf;
         geos::io::WKTReader wktreader;
         geos::io::WKTWriter wktwriter;
 
-        typedef geos::geom::Geometry::AutoPtr GeomPtr;
+        typedef geos::geom::Geometry::Ptr GeomPtr;
         typedef geos::geom::Geometry Geom;
         typedef geos::operation::geounion::UnaryUnionOp UnaryUnionOp;
 
@@ -107,7 +107,7 @@ namespace tut
     template<>
     void object::test<1>()
     {
-        static char const* const geoms[] = { NULL };
+        static char const* const geoms[] = { nullptr };
         doTest(geoms, "GEOMETRYCOLLECTION EMPTY");
     }
 
@@ -117,7 +117,7 @@ namespace tut
     {
         static char const* const geoms[] = {
           "POINT (1 1)", "POINT (2 2)",
-          NULL
+          nullptr
         };
         doTest(geoms, "MULTIPOINT ((1 1), (2 2))");
     }
@@ -128,7 +128,7 @@ namespace tut
     {
         static char const* const geoms[] = {
           "GEOMETRYCOLLECTION (POLYGON ((0 0, 0 90, 90 90, 90 0, 0 0)),   POLYGON ((120 0, 120 90, 210 90, 210 0, 120 0)),  LINESTRING (40 50, 40 140),  LINESTRING (160 50, 160 140),  POINT (60 50),  POINT (60 140),  POINT (40 140))",
-          NULL
+          nullptr
         };
         doTest(geoms, "GEOMETRYCOLLECTION (POINT (60 140),   LINESTRING (40 90, 40 140), LINESTRING (160 90, 160 140), POLYGON ((0 0, 0 90, 40 90, 90 90, 90 0, 0 0)), POLYGON ((120 0, 120 90, 160 90, 210 90, 210 0, 120 0)))");
     }
@@ -137,7 +137,7 @@ namespace tut
     template<>
     void object::test<4>()
     {
-        static char const* const geoms[] = 
+        static char const* const geoms[] =
         {
             "POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))",
             "MULTIPOLYGON (((20 0, 20 10, 40 10, 40 0, 20 0)),((5 5, 5 8, 8 8, 8 5, 5 5)))",
@@ -145,7 +145,7 @@ namespace tut
             "POINT (-5 5)",
             "LINESTRING (-10 -10, -10 0, -10 20)",
             "LINESTRING (-10 2, 10 2)",
-            NULL
+            nullptr
         };
         doTest(geoms, "GEOMETRYCOLLECTION (POLYGON ((0 0, 0 2, 0 10, 10 10, 10 2, 10 0, 0 0)), POLYGON ((20 0, 20 10, 40 10, 40 0, 20 0)), LINESTRING (-10 -10, -10 0, -10 2), LINESTRING (-10 2, 0 2), LINESTRING (-10 2, -10 20), POINT (-5 5))");
 
@@ -155,14 +155,14 @@ namespace tut
     template<>
     void object::test<5>()
     {
-        static char const* const geoms[] = 
+        static char const* const geoms[] =
         {
             "LINESTRING (40 60, 120 110)",
             "POINT (120 110)",
             "POINT (40 60)",
             "POINT (100 70)",
             "POINT (80 50)",
-            NULL
+            nullptr
         };
         doTest(geoms, "GEOMETRYCOLLECTION (POINT (80 50), POINT (100 70), LINESTRING (40 60, 120 110))");
     }
@@ -171,10 +171,10 @@ namespace tut
     template<>
     void object::test<6>()
     {
-        static char const* const geoms[] = 
+        static char const* const geoms[] =
         {
             "LINESTRING (0 0, 10 0, 5 -5, 5 5)",
-            NULL
+            nullptr
         };
         doTest(geoms, "MULTILINESTRING ((0 0, 5 0), (5 0, 10 0, 5 -5, 5 0), (5 0, 5 5))");
     }

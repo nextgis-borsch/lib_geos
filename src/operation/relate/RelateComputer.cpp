@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -88,7 +88,7 @@ RelateComputer::computeIM()
             << std::endl;
 #endif
 
-	std::auto_ptr<SegmentIntersector> si1 (
+	std::unique_ptr<SegmentIntersector> si1 (
 		(*arg)[0]->computeSelfNodes(&li,false)
 	);
 
@@ -100,7 +100,7 @@ RelateComputer::computeIM()
             << std::endl;
 #endif
 
-	std::auto_ptr<SegmentIntersector> si2 (
+	std::unique_ptr<SegmentIntersector> si2 (
 		(*arg)[1]->computeSelfNodes(&li,false)
 	);
 
@@ -113,7 +113,7 @@ RelateComputer::computeIM()
 #endif
 
 	// compute intersections between edges of the two input geometries
-	std::auto_ptr< SegmentIntersector> intersector (
+	std::unique_ptr< SegmentIntersector> intersector (
     (*arg)[0]->computeEdgeIntersections((*arg)[1], &li,false)
   );
 
@@ -189,11 +189,11 @@ RelateComputer::computeIM()
 	 */
 	// build EdgeEnds for all intersections
 	EdgeEndBuilder eeBuilder;
-	std::auto_ptr< std::vector<EdgeEnd*> > ee0 (
+	std::unique_ptr< std::vector<EdgeEnd*> > ee0 (
 		eeBuilder.computeEdgeEnds((*arg)[0]->getEdges())
   );
 	insertEdgeEnds(ee0.get());
-	std::auto_ptr< std::vector<EdgeEnd*> > ee1 (
+	std::unique_ptr< std::vector<EdgeEnd*> > ee1 (
 		eeBuilder.computeEdgeEnds((*arg)[1]->getEdges())
   );
 
@@ -374,7 +374,7 @@ RelateComputer::labelIntersectionNodes(int argIndex)
 		EdgeIntersectionList &eiL=e->getEdgeIntersectionList();
 		EdgeIntersectionList::iterator eiIt=eiL.begin();
 		EdgeIntersectionList::iterator eiEnd=eiL.end();
-		
+
 		for( ; eiIt!=eiEnd; ++eiIt)
 		{
 			EdgeIntersection *ei=*eiIt;

@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for CGAlgorithms::computeOrientation() function
 // Ported from JTS junit/algorithm/ComputeOrientationTest.java
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/algorithm/CGAlgorithms.h>
 #include <geos/geom/Coordinate.h>
@@ -46,9 +46,9 @@ namespace tut
     void object::test<1>()
     {
         const std::string wkt("LINESTRING ( 0 0, 0 1, 1 1)");
-        Geometry::AutoPtr geom(reader_.read(wkt));
+        Geometry::Ptr geom(reader_.read(wkt));
 
-        CoordinateSequence::AutoPtr pts(geom->getCoordinates());
+        CoordinateSequence::Ptr pts(geom->getCoordinates());
 
         int const a = CGAlgorithms::computeOrientation(pts->getAt(0), pts->getAt(1), pts->getAt(2));
         int const b = CGAlgorithms::computeOrientation(pts->getAt(0), pts->getAt(1), pts->getAt(2));
@@ -62,7 +62,7 @@ namespace tut
     template<>
     template<>
     void object::test<2>()
-    {    
+    {
         Coordinate c1(1.0000000000004998, -7.989685402102996);
         Coordinate c2(10.0, -7.004368924503866);
         Coordinate c3(1.0000000000005, -7.989685402102996);

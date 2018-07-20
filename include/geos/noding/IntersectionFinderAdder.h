@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -80,28 +80,28 @@ public:
 	 */
 	void processIntersections(
 		SegmentString* e0,  int segIndex0,
-		SegmentString* e1,  int segIndex1);
+		SegmentString* e1,  int segIndex1) override;
 
 	std::vector<geom::Coordinate>& getInteriorIntersections() {
 		return interiorIntersections;
 	}
-	
+
 	/**
 	 * Always process all intersections
 	 *
 	 * @return false always
 	 */
-	virtual bool isDone() const {
+	bool isDone() const override {
 		return false;
 	}
 
 private:
 	algorithm::LineIntersector& li;
 	std::vector<geom::Coordinate>& interiorIntersections;
-     
+
     // Declare type as noncopyable
-    IntersectionFinderAdder(const IntersectionFinderAdder& other);
-    IntersectionFinderAdder& operator=(const IntersectionFinderAdder& rhs);
+    IntersectionFinderAdder(const IntersectionFinderAdder& other) = delete;
+    IntersectionFinderAdder& operator=(const IntersectionFinderAdder& rhs) = delete;
 };
 
 } // namespace geos.noding

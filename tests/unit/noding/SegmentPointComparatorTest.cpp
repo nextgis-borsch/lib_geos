@@ -1,10 +1,10 @@
-// 
+//
 // Test Suite for geos::noding::SegmentPointComparator class.
 //
 // Ports tests found in jts/junit/noding/SegmentPointComparatorTest.java
 // and jts/junit/noding/SegmentPointComparatorFullTest.java
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/noding/SegmentNode.h>
 #include <geos/noding/SegmentPointComparator.h>
@@ -28,16 +28,16 @@ namespace tut
     struct test_segmentpointcomparator_data
     {
 
-        typedef std::auto_ptr<geos::geom::CoordinateSequence>
+        typedef std::unique_ptr<geos::geom::CoordinateSequence>
             CoordinateSequenceAutoPtr;
 
-        typedef std::auto_ptr<geos::noding::SegmentString>
+        typedef std::unique_ptr<geos::noding::SegmentString>
             SegmentStringAutoPtr;
 
         typedef geos::geom::Coordinate Coordinate;
         typedef geos::geom::LineSegment LineSegment;
         typedef geos::geom::PrecisionModel PrecisionModel;
-	
+
         PrecisionModel pm;
 
         test_segmentpointcomparator_data()
@@ -133,7 +133,7 @@ namespace tut
         checkNodePosition(0, 1, 0, 1, 1, -1);
     }
 
-    // testQuadrant0 
+    // testQuadrant0
     template<>
     template<>
     void object::test<2>()

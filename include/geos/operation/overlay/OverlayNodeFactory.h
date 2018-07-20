@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -46,7 +46,7 @@ namespace overlay { // geos::operation::overlay
 class GEOS_DLL OverlayNodeFactory: public geomgraph::NodeFactory {
 public:
 	OverlayNodeFactory():geomgraph::NodeFactory() {}
-	geomgraph::Node* createNode(const geom::Coordinate &coord) const;
+	geomgraph::Node* createNode(const geom::Coordinate &coord) const override;
 	static const geomgraph::NodeFactory &instance();
 };
 

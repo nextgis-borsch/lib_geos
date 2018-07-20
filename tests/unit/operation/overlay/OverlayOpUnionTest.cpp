@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for geos::operation::OverlayOp class for UNION
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/overlay/OverlayOp.h>
 #include <geos/geom/Geometry.h>
@@ -24,9 +24,9 @@ namespace tut
 
     struct test_overlayopunion_data
     {
-        typedef geos::geom::Geometry::AutoPtr GeometryPtr;
+        typedef geos::geom::Geometry::Ptr GeometryPtr;
         typedef geos::geom::GeometryFactory GeometryFactory;
-        typedef geos::geom::GeometryFactory::unique_ptr GeometryFactoryPtr;
+        typedef geos::geom::GeometryFactory::Ptr GeometryFactoryPtr;
     };
 
     typedef test_group<test_overlayopunion_data> group;
@@ -52,11 +52,11 @@ namespace tut
 
         // union segments incrementally
         GeometryPtr lines12(line1->Union(line2.get()));
-        GeometryPtr lines123(lines12->Union(line3.get())); 
+        GeometryPtr lines123(lines12->Union(line3.get()));
         GeometryPtr lines1234(lines123->Union(line4.get()));
 
         ensure_equals(lines1234->getGeometryTypeId(), geos::geom::GEOS_MULTILINESTRING);
-        
+
         // NOTE: Since the union operation makes no effort to simplify and
         // drop nodes of degree 2 from the built topology,
         // do not expect GEOS_LINESTRING.

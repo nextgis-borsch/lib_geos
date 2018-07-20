@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::triangulate::quadedge::QuadEdge
 //
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/triangulate/quadedge/Vertex.h>
 #include <geos/triangulate/quadedge/QuadEdge.h>
@@ -39,16 +39,16 @@ namespace tut
 	template<>
 	template<>
 	void object::test<1>()
-	{		 
+	{
 		Vertex v1(0, 0);
 		Vertex v2(0, 1);
 
 		Vertex v3(1, 0);
 		Vertex v4(1, 1);
 
-		std::auto_ptr<QuadEdge> q0;
-		std::auto_ptr<QuadEdge> r0;
-		std::auto_ptr<QuadEdge> s0;
+		std::unique_ptr<QuadEdge> q0;
+		std::unique_ptr<QuadEdge> r0;
+		std::unique_ptr<QuadEdge> s0;
 
 		q0 = QuadEdge::makeEdge(v1, v2);
 		r0 = QuadEdge::makeEdge(v3, v4);
@@ -71,16 +71,16 @@ namespace tut
 	template<>
 	template<>
 	void object::test<2>()
-	{		 
+	{
 		Vertex v1(0, 0);
 		Vertex v2(0, 1);
 
 		Vertex v3(1, 0);
 		Vertex v4(1, 1);
 
-		std::auto_ptr<QuadEdge> q0;
-		std::auto_ptr<QuadEdge> r0;
-		std::auto_ptr<QuadEdge> s0;
+		std::unique_ptr<QuadEdge> q0;
+		std::unique_ptr<QuadEdge> r0;
+		std::unique_ptr<QuadEdge> s0;
 
 		q0 = QuadEdge::makeEdge(v1, v2);
 		r0 = QuadEdge::makeEdge(v2, v3);
@@ -103,18 +103,18 @@ namespace tut
 	template<>
 	template<>
 	void object::test<3>()
-	{		 
+	{
 		Vertex v1(0, 0);
 		Vertex v2(0, 1);
 
 		Vertex v3(1, 0);
 		Vertex v4(1, 1);
 
-		std::auto_ptr<QuadEdge> q0;
-		std::auto_ptr<QuadEdge> r0;
-		std::auto_ptr<QuadEdge> s0;
-		std::auto_ptr<QuadEdge> t0;
-		std::auto_ptr<QuadEdge> u0;
+		std::unique_ptr<QuadEdge> q0;
+		std::unique_ptr<QuadEdge> r0;
+		std::unique_ptr<QuadEdge> s0;
+		std::unique_ptr<QuadEdge> t0;
+		std::unique_ptr<QuadEdge> u0;
 
 		//make a quadilateral
 		q0 = QuadEdge::makeEdge(v1, v2);

@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -42,10 +42,10 @@ public:
 	SimpleEdgeSetIntersector();
 
 	void computeIntersections(std::vector<Edge*> *edges,
-			SegmentIntersector *si, bool testAllSegments);
+			SegmentIntersector *si, bool testAllSegments) override;
 
 	void computeIntersections(std::vector<Edge*> *edges0,
-			std::vector<Edge*> *edges1, SegmentIntersector *si);
+			std::vector<Edge*> *edges1, SegmentIntersector *si) override;
 
 private:
 

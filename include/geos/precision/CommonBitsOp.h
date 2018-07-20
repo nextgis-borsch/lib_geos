@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -16,7 +16,7 @@
 #define GEOS_PRECISION_COMMONBITSOP_H
 
 #include <geos/export.h>
-#include <geos/precision/CommonBitsRemover.h> // for auto_ptr composition
+#include <geos/precision/CommonBitsRemover.h> // for unique_ptr composition
 
 #include <vector>
 #include <memory>
@@ -41,7 +41,7 @@ namespace precision { // geos.precision
 /** \brief
  * Provides versions of Geometry spatial functions which use
  * common bit removal to reduce the likelihood of robustness problems.
- * 
+ *
  * In the current implementation no rounding is performed on the
  * reshifted result geometry, which means that it is possible
  * that the returned Geometry is invalid.
@@ -53,7 +53,7 @@ private:
 
 	bool returnToOriginalPrecision;
 
-	std::auto_ptr<CommonBitsRemover> cbr;
+	std::unique_ptr<CommonBitsRemover> cbr;
 
 	/** \brief
 	 * Computes a copy of the input Geometry with the calculated
@@ -71,8 +71,8 @@ private:
 	void removeCommonBits(
 			const geom::Geometry* geom0,
 			const geom::Geometry* geom1,
-			std::auto_ptr<geom::Geometry>& rgeom0,
-			std::auto_ptr<geom::Geometry>& rgeom1);
+			std::unique_ptr<geom::Geometry>& rgeom0,
+			std::unique_ptr<geom::Geometry>& rgeom1);
 
 
 public:
@@ -152,7 +152,7 @@ public:
 	/**
 	 * If required, returning the result to the orginal precision
 	 * if required.
-	 * 
+	 *
 	 * In this current implementation, no rounding is performed on the
 	 * reshifted result geometry, which means that it is possible
 	 * that the returned Geometry is invalid.

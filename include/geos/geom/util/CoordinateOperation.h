@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -45,8 +45,8 @@ public:
 	/**
 	 * Return a newly created geometry, ownership to caller
 	 */
-	virtual Geometry* edit(const Geometry *geometry,
-			const GeometryFactory *factory);
+	Geometry* edit(const Geometry *geometry,
+			const GeometryFactory *factory) override;
 
 	/**
 	 * Edits the array of Coordinate from a Geometry.
@@ -60,7 +60,7 @@ public:
 			const Geometry *geometry)=0;
 
 
-	virtual ~CoordinateOperation() {}
+	~CoordinateOperation() override {}
 };
 
 

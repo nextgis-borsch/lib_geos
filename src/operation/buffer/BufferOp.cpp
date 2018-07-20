@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009-2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009-2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2007 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -132,7 +132,7 @@ BufferOp::computeGeometry()
 
 	bufferOriginalPrecision();
 
-	if (resultGeometry!=NULL) return;
+	if (resultGeometry!=nullptr) return;
 
 #if GEOS_DEBUG
 	std::cerr << "bufferOriginalPrecision failed (" << saveException.what() << "), trying with reduced precision"
@@ -165,9 +165,9 @@ BufferOp::bufferReducedPrecision()
 		} catch (const util::TopologyException& ex) {
 			saveException=ex;
 			// don't propagate the exception - it will be detected by fact that resultGeometry is null
-		} 
+		}
 
-		if (resultGeometry!=NULL) {
+		if (resultGeometry!=nullptr) {
 			// debug
 			//if ( saveException ) std::cerr<<saveException->toString()<<std::endl;
 			return;
@@ -195,7 +195,7 @@ BufferOp::bufferOriginalPrecision()
 		saveException=ex;
 
 		//std::cerr<<ex->toString()<<std::endl;
-	} 
+	}
 	//std::cerr<<"done"<<std::endl;
 }
 
@@ -240,7 +240,7 @@ BufferOp::bufferFixedPrecision(const PrecisionModel& fixedPM)
 
 	// Reduce precision of the input geometry
 	//
-	// NOTE: this reduction is not in JTS and should supposedly 
+	// NOTE: this reduction is not in JTS and should supposedly
 	//       not be needed because the PrecisionModel we pass
 	//       to the BufferBuilder above (with setWorkingPrecisionModel)
 	//       should be used to round coordinates emitted by the
@@ -254,7 +254,7 @@ BufferOp::bufferFixedPrecision(const PrecisionModel& fixedPM)
 	//
 	const Geometry *workGeom = argGeom;
 	const PrecisionModel& argPM = *(argGeom->getFactory()->getPrecisionModel());
-	std::auto_ptr<Geometry> fixedGeom;
+	std::unique_ptr<Geometry> fixedGeom;
 	if ( argPM.getType() != PrecisionModel::FIXED || argPM.getScale() != fixedPM.getScale() )
 	{
 		using precision::GeometryPrecisionReducer;

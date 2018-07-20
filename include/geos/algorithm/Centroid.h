@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2013 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2013 Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -21,7 +21,7 @@
 
 #include <geos/export.h>
 #include <geos/geom/Coordinate.h> // for composition
-#include <memory> // for std::auto_ptr
+#include <memory> // for std::unique_ptr
 
 // Forward declarations
 namespace geos {
@@ -97,7 +97,7 @@ public:
 
 private:
 
-  std::auto_ptr<geom::Coordinate> areaBasePt;
+  std::unique_ptr<geom::Coordinate> areaBasePt;
   geom::Coordinate triangleCent3;
   geom::Coordinate cg3;
   geom::Coordinate lineCentSum;
@@ -105,14 +105,14 @@ private:
   double areasum2;
   double totalLength;
   int ptCount;
-  
+
   /**
    * Adds a Geometry to the centroid total.
    *
    * @param geom the geometry to add
    */
   void add(const geom::Geometry& geom);
-  
+
   void setBasePoint(const geom::Coordinate& basePt);
 
   void add(const geom::Polygon& poly);

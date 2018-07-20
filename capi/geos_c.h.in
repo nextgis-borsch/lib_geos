@@ -3,7 +3,7 @@
  *
  * C-Wrapper for GEOS library
  *
- * Copyright (C) 2010 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2010 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
@@ -11,7 +11,7 @@
  * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
- * Author: Sandro Santilli <strk@keybit.net>
+ * Author: Sandro Santilli <strk@kbt.io>
  *
  ***********************************************************************
  *
@@ -21,7 +21,7 @@
  *	  functions, and call finishGEOS() when done.
  *
  *	- Currently you have to explicitly GEOSGeom_destroy() all
- *	  GEOSGeom objects to avoid memory leaks, and to GEOSFree()
+ *	  GEOSGeom objects to avoid memory leaks, and GEOSFree()
  *	  all returned char * (unless const).
  *
  *	- Functions ending with _r are thread safe; see details in RFC 3
@@ -59,9 +59,9 @@ extern "C" {
 #if defined(_MSC_VER)
 #include <geos/version.h>
 #define GEOS_CAPI_VERSION_MAJOR 1
-#define GEOS_CAPI_VERSION_MINOR 10
-#define GEOS_CAPI_VERSION_PATCH 2
-#define GEOS_CAPI_VERSION "3.6.2-CAPI-1.10.2"
+#define GEOS_CAPI_VERSION_MINOR 11
+#define GEOS_CAPI_VERSION_PATCH 0
+#define GEOS_CAPI_VERSION "3.7.0-CAPI-1.11.0"
 #else
 #ifndef GEOS_VERSION_MAJOR
 #define GEOS_VERSION_MAJOR @VERSION_MAJOR@
@@ -146,7 +146,7 @@ enum GEOSGeomTypes {
     GEOS_GEOMETRYCOLLECTION
 };
 
-/* Byte oders exposed via the c api */
+/* Byte orders exposed via the C API */
 enum GEOSByteOrders {
     GEOS_WKB_XDR = 0, /* Big Endian */
     GEOS_WKB_NDR = 1 /* Little Endian */
@@ -346,6 +346,14 @@ extern int GEOS_DLL GEOSCoordSeq_getSize_r(GEOSContextHandle_t handle,
 extern int GEOS_DLL GEOSCoordSeq_getDimensions_r(GEOSContextHandle_t handle,
                                                  const GEOSCoordSequence* s,
                                                  unsigned int *dims);
+/*
+ * Check orientation of a CoordinateSequence and set 'is_ccw' to 1
+ * if it has counter-clockwise orientation, 0 otherwise.
+ * Return 0 on exception, 1 on success.
+ */
+extern int GEOS_DLL GEOSCoordSeq_isCCW_r(GEOSContextHandle_t handle,
+                                         const GEOSCoordSequence* s,
+                                         char* is_ccw);
 
 /************************************************************************
  *
@@ -638,6 +646,8 @@ extern GEOSGeometry GEOS_DLL *GEOSPolygonize_full_r(GEOSContextHandle_t handle,
 
 extern GEOSGeometry GEOS_DLL *GEOSLineMerge_r(GEOSContextHandle_t handle,
                                               const GEOSGeometry* g);
+extern GEOSGeometry GEOS_DLL *GEOSReverse_r(GEOSContextHandle_t handle,
+                                            const GEOSGeometry* g);
 extern GEOSGeometry GEOS_DLL *GEOSSimplify_r(GEOSContextHandle_t handle,
                                              const GEOSGeometry* g,
                                              double tolerance);
@@ -696,7 +706,7 @@ extern GEOSGeometry GEOS_DLL * GEOSDelaunayTriangulation_r(
  *
  * @param g the input geometry whose vertex will be used as sites.
  * @param tolerance snapping tolerance to use for improved robustness
- * @param onlyEdges whether to return only edges of the voronoi cells
+ * @param onlyEdges whether to return only edges of the Voronoi cells
  * @param env clipping envelope for the returned diagram, automatically
  *            determined if NULL.
  *            The diagram will be clipped to the larger
@@ -711,6 +721,30 @@ extern GEOSGeometry GEOS_DLL * GEOSVoronoiDiagram_r(
 				double tolerance,
 				int onlyEdges);
 
+/*
+ * Computes the coordinate where two line segments intersect, if any
+ *
+ * @param ax0 x-coordinate of first point in first segment
+ * @param ay0 y-coordinate of first point in first segment
+ * @param ax1 x-coordinate of second point in first segment
+ * @param ay1 y-coordinate of second point in first segment
+ * @param bx0 x-coordinate of first point in second segment
+ * @param by0 y-coordinate of first point in second segment
+ * @param bx1 x-coordinate of second point in second segment
+ * @param by1 y-coordinate of second point in second segment
+ * @param cx x-coordinate of intersection point
+ * @param cy y-coordinate of intersection point
+ *
+ * @return 0 on error, 1 on success, -1 if segments do not intersect
+ */
+
+extern int GEOS_DLL GEOSSegmentIntersection_r(
+       GEOSContextHandle_t extHandle,
+       double ax0, double ay0,
+       double ax1, double ay1,
+       double bx0, double by0,
+       double bx1, double by1,
+       double* cx, double* cy);
 
 /************************************************************************
  *
@@ -1035,6 +1069,7 @@ extern int GEOS_DLL GEOSGeomGetNumPoints_r(GEOSContextHandle_t handle,
 /* Return -1 on exception, Geometry must be a Point. */
 extern int GEOS_DLL GEOSGeomGetX_r(GEOSContextHandle_t handle, const GEOSGeometry *g, double *x);
 extern int GEOS_DLL GEOSGeomGetY_r(GEOSContextHandle_t handle, const GEOSGeometry *g, double *y);
+extern int GEOS_DLL GEOSGeomGetZ_r(GEOSContextHandle_t handle, const GEOSGeometry *g, double *z);
 
 /*
  * Return NULL on exception, Geometry must be a Polygon.
@@ -1077,6 +1112,13 @@ extern int GEOS_DLL GEOSGeom_getDimensions_r(GEOSContextHandle_t handle,
  */
 extern int GEOS_DLL GEOSGeom_getCoordinateDimension_r(GEOSContextHandle_t handle,
                                                       const GEOSGeometry* g);
+/*
+ * Return 0 on exception
+ */
+extern int GEOS_DLL GEOSGeom_getXMin_r(GEOSContextHandle_t handle, const GEOSGeometry* g, double* value);
+extern int GEOS_DLL GEOSGeom_getYMin_r(GEOSContextHandle_t handle, const GEOSGeometry* g, double* value);
+extern int GEOS_DLL GEOSGeom_getXMax_r(GEOSContextHandle_t handle, const GEOSGeometry* g, double* value);
+extern int GEOS_DLL GEOSGeom_getYMax_r(GEOSContextHandle_t handle, const GEOSGeometry* g, double* value);
 
 /*
  * Return NULL on exception.
@@ -1100,11 +1142,22 @@ extern int GEOS_DLL GEOSLength_r(GEOSContextHandle_t handle,
 extern int GEOS_DLL GEOSDistance_r(GEOSContextHandle_t handle,
                                    const GEOSGeometry* g1,
                                    const GEOSGeometry* g2, double *dist);
+extern int GEOS_DLL GEOSDistanceIndexed_r(GEOSContextHandle_t handle,
+                                   const GEOSGeometry* g1,
+                                   const GEOSGeometry* g2, double *dist);
 extern int GEOS_DLL GEOSHausdorffDistance_r(GEOSContextHandle_t handle,
                                    const GEOSGeometry *g1,
                                    const GEOSGeometry *g2,
                                    double *dist);
 extern int GEOS_DLL GEOSHausdorffDistanceDensify_r(GEOSContextHandle_t handle,
+                                   const GEOSGeometry *g1,
+                                   const GEOSGeometry *g2,
+                                   double densifyFrac, double *dist);
+extern int GEOS_DLL GEOSFrechetDistance_r(GEOSContextHandle_t handle,
+                                   const GEOSGeometry *g1,
+                                   const GEOSGeometry *g2,
+                                   double *dist);
+extern int GEOS_DLL GEOSFrechetDistanceDensify_r(GEOSContextHandle_t handle,
                                    const GEOSGeometry *g1,
                                    const GEOSGeometry *g2,
                                    double densifyFrac, double *dist);
@@ -1352,6 +1405,13 @@ extern int GEOS_DLL GEOSCoordSeq_getSize(const GEOSCoordSequence* s,
 extern int GEOS_DLL GEOSCoordSeq_getDimensions(const GEOSCoordSequence* s,
     unsigned int *dims);
 
+/*
+ * Check orientation of a CoordinateSequence and set 'is_ccw' to 1
+ * if it has counter-clockwise orientation, 0 otherwise.
+ * Return 0 on exception, 1 on success.
+ */
+extern int GEOS_DLL GEOSCoordSeq_isCCW(const GEOSCoordSequence* s, char* is_ccw);
+
 /************************************************************************
  *
  *  Linear referencing functions -- there are more, but these are
@@ -1585,6 +1645,7 @@ extern GEOSGeometry GEOS_DLL *GEOSPolygonize_full(const GEOSGeometry* input,
     GEOSGeometry** cuts, GEOSGeometry** dangles, GEOSGeometry** invalid);
 
 extern GEOSGeometry GEOS_DLL *GEOSLineMerge(const GEOSGeometry* g);
+extern GEOSGeometry GEOS_DLL *GEOSReverse(const GEOSGeometry* g);
 extern GEOSGeometry GEOS_DLL *GEOSSimplify(const GEOSGeometry* g, double tolerance);
 extern GEOSGeometry GEOS_DLL *GEOSTopologyPreserveSimplify(const GEOSGeometry* g,
     double tolerance);
@@ -1651,6 +1712,29 @@ extern GEOSGeometry GEOS_DLL * GEOSVoronoiDiagram(
                 const GEOSGeometry *env,
                 double tolerance,
                 int onlyEdges);
+/*
+ * Computes the coordinate where two line segments intersect, if any
+ *
+ * @param ax0 x-coordinate of first point in first segment
+ * @param ay0 y-coordinate of first point in first segment
+ * @param ax1 x-coordinate of second point in first segment
+ * @param ay1 y-coordinate of second point in first segment
+ * @param bx0 x-coordinate of first point in second segment
+ * @param by0 y-coordinate of first point in second segment
+ * @param bx1 x-coordinate of second point in second segment
+ * @param by1 y-coordinate of second point in second segment
+ * @param cx x-coordinate of intersection point
+ * @param cy y-coordinate of intersection point
+ *
+ * @return 0 on error, 1 on success, -1 if segments do not intersect
+ */
+
+extern int GEOS_DLL GEOSSegmentIntersection(
+       double ax0, double ay0,
+       double ax1, double ay1,
+       double bx0, double by0,
+       double bx1, double by1,
+       double* cx, double* cy);
 
 /************************************************************************
  *
@@ -1910,6 +1994,7 @@ extern int GEOS_DLL GEOSGeomGetNumPoints(const GEOSGeometry* g);
 /* Return -1 on exception, Geometry must be a Point. */
 extern int GEOS_DLL GEOSGeomGetX(const GEOSGeometry *g, double *x);
 extern int GEOS_DLL GEOSGeomGetY(const GEOSGeometry *g, double *y);
+extern int GEOS_DLL GEOSGeomGetZ(const GEOSGeometry *g, double *z);
 
 /*
  * Return NULL on exception, Geometry must be a Polygon.
@@ -1945,6 +2030,14 @@ extern int GEOS_DLL GEOSGeom_getDimensions(const GEOSGeometry* g);
 extern int GEOS_DLL GEOSGeom_getCoordinateDimension(const GEOSGeometry* g);
 
 /*
+ * Return 0 on exception
+ */
+extern int GEOS_DLL GEOSGeom_getXMin(const GEOSGeometry* g, double* value);
+extern int GEOS_DLL GEOSGeom_getYMin(const GEOSGeometry* g, double* value);
+extern int GEOS_DLL GEOSGeom_getXMax(const GEOSGeometry* g, double* value);
+extern int GEOS_DLL GEOSGeom_getYMax(const GEOSGeometry* g, double* value);
+
+/*
  * Return NULL on exception.
  * Must be LineString and must be freed by called.
  */
@@ -1963,9 +2056,15 @@ extern int GEOS_DLL GEOSArea(const GEOSGeometry* g, double *area);
 extern int GEOS_DLL GEOSLength(const GEOSGeometry* g, double *length);
 extern int GEOS_DLL GEOSDistance(const GEOSGeometry* g1, const GEOSGeometry* g2,
     double *dist);
+extern int GEOS_DLL GEOSDistanceIndexed(const GEOSGeometry* g1, const GEOSGeometry* g2,
+    double *dist);
 extern int GEOS_DLL GEOSHausdorffDistance(const GEOSGeometry *g1,
         const GEOSGeometry *g2, double *dist);
 extern int GEOS_DLL GEOSHausdorffDistanceDensify(const GEOSGeometry *g1,
+        const GEOSGeometry *g2, double densifyFrac, double *dist);
+extern int GEOS_DLL GEOSFrechetDistance(const GEOSGeometry *g1,
+        const GEOSGeometry *g2, double *dist);
+extern int GEOS_DLL GEOSFrechetDistanceDensify(const GEOSGeometry *g1,
         const GEOSGeometry *g2, double densifyFrac, double *dist);
 extern int GEOS_DLL GEOSGeomGetLength(const GEOSGeometry *g, double *length);
 

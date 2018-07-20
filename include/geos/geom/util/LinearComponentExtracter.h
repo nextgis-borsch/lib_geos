@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -39,8 +39,8 @@ private:
 	LineString::ConstVect &comps;
 
     // Declare type as noncopyable
-    LinearComponentExtracter(const LinearComponentExtracter& other);
-    LinearComponentExtracter& operator=(const LinearComponentExtracter& rhs);
+    LinearComponentExtracter(const LinearComponentExtracter& other) = delete;
+    LinearComponentExtracter& operator=(const LinearComponentExtracter& rhs) = delete;
 
 public:
 	/**
@@ -57,9 +57,9 @@ public:
 	 */
 	LinearComponentExtracter(std::vector<const LineString*> &newComps);
 
-	void filter_rw(Geometry *geom);
+	void filter_rw(Geometry *geom) override;
 
-	void filter_ro(const Geometry *geom);
+	void filter_ro(const Geometry *geom) override;
 
 };
 

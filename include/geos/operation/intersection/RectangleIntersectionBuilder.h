@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -74,7 +74,7 @@ private:
   /**
    * \brief Build the result geometry from partial results and clean up
    */
-  std::auto_ptr<geom::Geometry> build();
+  std::unique_ptr<geom::Geometry> build();
 
   /**
    * \brief Build polygons from parts left by clipping one

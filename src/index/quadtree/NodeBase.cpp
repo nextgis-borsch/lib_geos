@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -17,9 +17,9 @@
  *
  **********************************************************************/
 
-#include <geos/index/quadtree/NodeBase.h> 
-#include <geos/index/quadtree/Node.h> 
-#include <geos/index/ItemVisitor.h> 
+#include <geos/index/quadtree/NodeBase.h>
+#include <geos/index/quadtree/Node.h>
+#include <geos/index/ItemVisitor.h>
 #include <geos/geom/Envelope.h>
 #include <geos/geom/Coordinate.h>
 #include <geos/util.h>
@@ -63,10 +63,10 @@ NodeBase::getSubnodeIndex(const Envelope *env, const Coordinate& centre)
 
 NodeBase::NodeBase()
 {
-	subnode[0]=0;
-	subnode[1]=0;
-	subnode[2]=0;
-	subnode[3]=0;
+	subnode[0]=nullptr;
+	subnode[1]=nullptr;
+	subnode[2]=nullptr;
+	subnode[3]=nullptr;
 }
 
 NodeBase::~NodeBase()
@@ -75,10 +75,10 @@ NodeBase::~NodeBase()
 	delete subnode[1];
 	delete subnode[2];
 	delete subnode[3];
-	subnode[0]=NULL;
-	subnode[1]=NULL;
-	subnode[2]=NULL;
-	subnode[3]=NULL;
+	subnode[0]=nullptr;
+	subnode[1]=nullptr;
+	subnode[2]=nullptr;
+	subnode[3]=nullptr;
 }
 
 vector<void*>&
@@ -141,7 +141,7 @@ NodeBase::depth() const
 	unsigned int maxSubDepth=0;
 	for (int i=0; i<4; ++i)
 	{
-		if (subnode[i] != NULL)
+		if (subnode[i] != nullptr)
 		{
 			unsigned int sqd=subnode[i]->depth();
 			if ( sqd > maxSubDepth )
@@ -157,12 +157,12 @@ NodeBase::size() const
 	unsigned int subSize=0;
 	for(int i=0; i<4; i++)
 	{
-		if (subnode[i] != NULL)
+		if (subnode[i] != nullptr)
 		{
 			subSize += subnode[i]->size();
 		}
 	}
-	return subSize + items.size();
+	return subSize + static_cast<unsigned int>(items.size());
 }
 
 unsigned int
@@ -171,7 +171,7 @@ NodeBase::getNodeCount() const
 	unsigned int subSize=0;
 	for(int i=0; i<4; ++i)
 	{
-		if (subnode[i] != NULL)
+		if (subnode[i] != nullptr)
 		{
 			subSize += subnode[i]->size();
 		}
@@ -188,7 +188,7 @@ NodeBase::toString() const
 	for (int i=0; i<4; i++)
 	{
 		s<<"subnode["<<i<<"] ";
-		if ( subnode[i] == NULL ) s<<"NULL";
+		if ( subnode[i] == nullptr ) s<<"NULL";
 		else s<<subnode[i]->toString();
 		s<<endl;
 	}
@@ -206,7 +206,7 @@ NodeBase::visit(const Envelope* searchEnv, ItemVisitor& visitor)
 	visitItems(searchEnv, visitor);
 
 	for (int i = 0; i < 4; i++) {
-		if (subnode[i] != NULL) {
+		if (subnode[i] != nullptr) {
 			subnode[i]->visit(searchEnv, visitor);
 		}
 	}
@@ -246,7 +246,7 @@ NodeBase::remove(const Envelope* itemEnv, void* item)
 				if (subnode[i]->isPrunable())
 				{
 					delete subnode[i];
-					subnode[i] = NULL;
+					subnode[i] = nullptr;
 				}
 				break;
 			}
@@ -257,7 +257,7 @@ NodeBase::remove(const Envelope* itemEnv, void* item)
 
 	// otherwise, try and remove the item from the list of items
 	// in this node
-	vector<void*>::iterator foundIter = 
+	vector<void*>::iterator foundIter =
 		find(items.begin(), items.end(), item);
 	if ( foundIter != items.end() ) {
 		items.erase(foundIter);

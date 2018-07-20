@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -49,13 +49,13 @@ public:
 		trans(newTrans)
 	{}
 
-	void filter_ro(const geom::Coordinate *coord)  //Not used
+	void filter_ro(const geom::Coordinate *coord) override  //Not used
     {
         ::geos::ignore_unused_variable_warning(coord);
         assert(0);
     }
 
-	void filter_rw(geom::Coordinate *coord) const
+	void filter_rw(geom::Coordinate *coord) const override
 	{
 		coord->x += trans.x;
 		coord->y += trans.y;
@@ -69,14 +69,14 @@ private:
 	CommonBits commonBitsY;
 public:
 
-	void filter_rw(geom::Coordinate *coord) const
+	void filter_rw(geom::Coordinate *coord) const override
 	{
         // CommonCoordinateFilter is a read-only filter
         ::geos::ignore_unused_variable_warning(coord);
 		assert(0);
 	}
 
-	void filter_ro(const geom::Coordinate *coord)
+	void filter_ro(const geom::Coordinate *coord) override
 	{
 		commonBitsX.add(coord->x);
 		commonBitsY.add(coord->y);
@@ -121,7 +121,7 @@ CommonBitsRemover::add(const Geometry *geom)
  */
 Coordinate&
 CommonBitsRemover::getCommonCoordinate()
-{ 
+{
 	return commonCoord;
 }
 

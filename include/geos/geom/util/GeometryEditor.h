@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -63,7 +63,7 @@ namespace util { // geos.geom.util
  *   (e.g. holes may be removed from a Polygon, or LineStrings removed
  *   from a MultiLineString). Deletions will be propagated up the component
  *   tree appropriately.
- * 
+ *
  * Note that all changes must be consistent with the original Geometry's
  * structure
  * (e.g. a Polygon cannot be collapsed into a LineString).

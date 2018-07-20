@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -38,7 +38,7 @@ using namespace geos::geom;
 
 
 VoronoiDiagramBuilder::VoronoiDiagramBuilder() :
-	tolerance(0.0), clipEnv(0)
+	tolerance(0.0), clipEnv(nullptr)
 {
 }
 
@@ -46,32 +46,32 @@ VoronoiDiagramBuilder::~VoronoiDiagramBuilder()
 {
 }
 
-void 
+void
 VoronoiDiagramBuilder::setSites(const geom::Geometry& geom)
 {
 	siteCoords.reset( DelaunayTriangulationBuilder::extractUniqueCoordinates(geom) );
 }
 
-void 
+void
 VoronoiDiagramBuilder::setSites(const geom::CoordinateSequence& coords)
 {
 	siteCoords.reset( coords.clone() );
 	DelaunayTriangulationBuilder::unique(*siteCoords);
 }
 
-void 
+void
 VoronoiDiagramBuilder::setClipEnvelope(const geom::Envelope* nClipEnv)
 {
 	clipEnv = nClipEnv;
 }
 
-void 
+void
 VoronoiDiagramBuilder::setTolerance(double nTolerance)
 {
 	tolerance = nTolerance;
 }
 
-void 
+void
 VoronoiDiagramBuilder::create()
 {
 	if( subdiv.get() ) return;
@@ -83,7 +83,7 @@ VoronoiDiagramBuilder::create()
 	if(clipEnv)
 		diagramEnv.expandToInclude(clipEnv);
 
-	std::auto_ptr<IncrementalDelaunayTriangulator::VertexList> vertices (
+	std::unique_ptr<IncrementalDelaunayTriangulator::VertexList> vertices (
     DelaunayTriangulationBuilder::toVertices(*siteCoords)
   );
 
@@ -92,41 +92,42 @@ VoronoiDiagramBuilder::create()
 	triangulator.insertSites(*vertices);
 }
 
-std::auto_ptr<quadedge::QuadEdgeSubdivision> 
+std::unique_ptr<quadedge::QuadEdgeSubdivision>
 VoronoiDiagramBuilder::getSubdivision()
 {
 	create();
-	return subdiv;
+	// NOTE: Apparently, this is 'source' method giving up the object resource.
+	return std::move(subdiv);
 }
 
-std::auto_ptr<geom::GeometryCollection>
+std::unique_ptr<geom::GeometryCollection>
 VoronoiDiagramBuilder::getDiagram(const geom::GeometryFactory& geomFact)
 {
 	create();
-	std::auto_ptr<geom::GeometryCollection> polys = subdiv->getVoronoiDiagram(geomFact);
+	std::unique_ptr<geom::GeometryCollection> polys = subdiv->getVoronoiDiagram(geomFact);
 	return clipGeometryCollection(*polys,diagramEnv);
 }
 
-std::auto_ptr<geom::Geometry>
+std::unique_ptr<geom::Geometry>
 VoronoiDiagramBuilder::getDiagramEdges(const geom::GeometryFactory& geomFact)
 {
 	create();
-	std::auto_ptr<geom::MultiLineString> edges = subdiv->getVoronoiDiagramEdges(geomFact);
-  if ( edges->isEmpty() ) return std::auto_ptr<Geometry>(edges.release());
-  std::auto_ptr<geom::Geometry> clipPoly ( geomFact.toGeometry(&diagramEnv) );
-  std::auto_ptr<Geometry> clipped( clipPoly->intersection(edges.get()) );
+	std::unique_ptr<geom::MultiLineString> edges = subdiv->getVoronoiDiagramEdges(geomFact);
+  if ( edges->isEmpty() ) return std::unique_ptr<Geometry>(edges.release());
+  std::unique_ptr<geom::Geometry> clipPoly ( geomFact.toGeometry(&diagramEnv) );
+  std::unique_ptr<Geometry> clipped( clipPoly->intersection(edges.get()) );
 	return clipped;
 }
 
-std::auto_ptr<geom::GeometryCollection> 
+std::unique_ptr<geom::GeometryCollection>
 VoronoiDiagramBuilder::clipGeometryCollection(const geom::GeometryCollection& geom, const geom::Envelope& clipEnv)
 {
-	std::auto_ptr<geom::Geometry> clipPoly ( geom.getFactory()->toGeometry(&clipEnv) );
-	std::auto_ptr< std::vector<Geometry*> >clipped(new std::vector<Geometry*>);
+	std::unique_ptr<geom::Geometry> clipPoly ( geom.getFactory()->toGeometry(&clipEnv) );
+	std::unique_ptr< std::vector<Geometry*> >clipped(new std::vector<Geometry*>);
 	for(std::size_t i=0 ; i < geom.getNumGeometries() ; i++)
 	{
 		const Geometry* g = geom.getGeometryN(i);
-		std::auto_ptr<Geometry> result;
+		std::unique_ptr<Geometry> result;
 		// don't clip unless necessary
 		if(clipEnv.contains(g->getEnvelopeInternal()))
 		{
@@ -144,7 +145,7 @@ VoronoiDiagramBuilder::clipGeometryCollection(const geom::GeometryCollection& ge
 			clipped->push_back(result.release());
 		}
 	}
-	return std::auto_ptr<GeometryCollection>(geom.getFactory()->createGeometryCollection(clipped.release()));
+	return std::unique_ptr<GeometryCollection>(geom.getFactory()->createGeometryCollection(clipped.release()));
 }
 
 } //namespace geos.triangulate

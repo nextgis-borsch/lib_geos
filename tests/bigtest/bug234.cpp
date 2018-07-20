@@ -12,7 +12,7 @@ using namespace geos::geom;
 using namespace std;
 
 int main() {
- GeometryFactory::unique_ptr factory = GeometryFactory::create();
+ GeometryFactory::Ptr factory = GeometryFactory::create();
 
  vector< Geometry * > *polys1 = new vector<Geometry*>();
  vector< Geometry * > *polys2 = new vector<Geometry*>();
@@ -46,4 +46,4 @@ int main() {
  delete mpoly1;
  delete mpoly2;
  delete intersection;
-} 
+}

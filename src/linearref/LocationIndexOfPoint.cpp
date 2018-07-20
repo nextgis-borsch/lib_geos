@@ -3,7 +3,7 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
@@ -97,7 +97,7 @@ LocationIndexOfPoint::LocationIndexOfPoint(const Geometry *linearGeom) :
 
 LinearLocation LocationIndexOfPoint::indexOf(const Coordinate& inputPt) const
 {
-	return indexOfFromStart(inputPt, 0);
+	return indexOfFromStart(inputPt, nullptr);
 }
 
 LinearLocation

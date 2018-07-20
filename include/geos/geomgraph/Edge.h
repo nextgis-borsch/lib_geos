@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -107,7 +107,7 @@ public:
 	/// Takes ownership of CoordinateSequence
 	Edge(geom::CoordinateSequence* newPts);
 
-	virtual ~Edge();
+	~Edge() override;
 
 	virtual int getNumPoints() const {
 		return static_cast<int>(pts->getSize());
@@ -133,7 +133,7 @@ public:
 	}
 
 
-	virtual Depth &getDepth() { 
+	virtual Depth &getDepth() {
 		testInvariant();
 		return depth;
 	}
@@ -187,7 +187,7 @@ public:
 		testInvariant();
 	}
 
-	virtual bool isIsolated() const {
+	bool isIsolated() const override {
 		testInvariant();
 		return isIsolatedVar;
 	}
@@ -212,7 +212,7 @@ public:
 	/// A component only contributes if it has a labelling for both
 	/// parent geometries
 	///
-	virtual void computeIM(geom::IntersectionMatrix& im) {
+	void computeIM(geom::IntersectionMatrix& im) override {
 		updateIM(label, im);
 		testInvariant();
 	}
@@ -226,7 +226,7 @@ public:
 
 	/**
 	 * equals is defined to be:
-	 * 
+	 *
 	 * e1 equals e2
 	 * <b>iff</b>
 	 * the coordinates of e1 are the same or the reverse of the coordinates in e2

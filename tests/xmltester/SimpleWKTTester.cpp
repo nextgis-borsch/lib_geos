@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -33,14 +33,14 @@ using namespace geos::util;
 
 int main(int /*argc*/, char** /*argv*/)
 {
-    
+
 	try {
 		ofstream out("WKTOut");
 		ifstream in("WKTIn");
 		string instr;
 		string outstr;
 		PrecisionModel pm;
-    GeometryFactory::unique_ptr gf = GeometryFactory::create(&pm, 10);
+    GeometryFactory::Ptr gf = GeometryFactory::create(&pm, 10);
 		WKTReader *r = new WKTReader(gf.get());
 		WKTWriter *w = new WKTWriter();
 		Geometry *g;

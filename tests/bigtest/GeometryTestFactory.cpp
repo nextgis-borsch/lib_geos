@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -25,7 +25,7 @@ using namespace geos::geom;
 
 Polygon* GeometryTestFactory::createBox(GeometryFactory *fact,double minx,double miny,int nSide,double segLen) {
 	CoordinateSequence *pts=createBox(minx, miny, nSide, segLen);
-    return fact->createPolygon(fact->createLinearRing(pts),NULL);
+    return fact->createPolygon(fact->createLinearRing(pts),nullptr);
 }
 
 CoordinateSequence* GeometryTestFactory::createBox(double minx, double miny,int nSide,double segLen) {
@@ -66,7 +66,7 @@ CoordinateSequence* GeometryTestFactory::createBox(double minx, double miny,int 
 	* @param nPts the number of points in the star
 	*/
 CoordinateSequence* GeometryTestFactory::createCircle(double basex,double basey,double size,int nPts) {
-	CoordinateSequence *pts=new CoordinateArraySequence(nPts+1); 
+	CoordinateSequence *pts=new CoordinateArraySequence(nPts+1);
 	double len=size/2.0;
 
 	for(int i=0;i<nPts;i++) {
@@ -81,7 +81,7 @@ CoordinateSequence* GeometryTestFactory::createCircle(double basex,double basey,
 
 Polygon* GeometryTestFactory::createCircle(GeometryFactory *fact,double basex,double basey,double size,int nPts) {
 	CoordinateSequence *pts=createCircle(basex, basey, size, nPts);
-    return fact->createPolygon(fact->createLinearRing(pts),NULL);
+    return fact->createPolygon(fact->createLinearRing(pts),nullptr);
 }
 
 	/**
@@ -102,7 +102,7 @@ CoordinateSequence* GeometryTestFactory::createSineStar(double basex,double base
 	if (nArmPt<5) nArmPt=5;
 
 	//int nPts2=nArmPt*nArms;
-	CoordinateSequence *pts=new CoordinateArraySequence(); 
+	CoordinateSequence *pts=new CoordinateArraySequence();
 
 	double starAng=0.0;
 
@@ -128,5 +128,5 @@ CoordinateSequence* GeometryTestFactory::createSineStar(double basex,double base
 
 Polygon* GeometryTestFactory::createSineStar(GeometryFactory *fact,double basex,double basey,double size,double armLen,int nArms,int nPts){
 	CoordinateSequence *pts=createSineStar(basex, basey, size, armLen, nArms, nPts);
-	return fact->createPolygon(fact->createLinearRing(pts),NULL);
+	return fact->createPolygon(fact->createLinearRing(pts),nullptr);
 }

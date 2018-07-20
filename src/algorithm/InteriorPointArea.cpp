@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2013 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2013 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -30,7 +30,7 @@
 
 #include <vector>
 #include <typeinfo>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 using namespace std;
 using namespace geos::geom;
@@ -49,11 +49,11 @@ namespace {
    * and finding the Y-ordinate interval
    * which contains the centre of the Y extent.
    * The centre of this interval is returned as the bisector Y-ordinate.
-   * 
+   *
    * @author mdavis
    *
    */
-  class SafeBisectorFinder 
+  class SafeBisectorFinder
   {
   public:
 	  static double getBisectorY(const Polygon& poly)
@@ -80,14 +80,14 @@ namespace {
 		  return bisectY;
 	  }
 
-	  
-	private:  
+
+	private:
 	  const Polygon& poly;
-	  
+
 	  double centreY;
 	  double hiY;
 	  double loY;
-	  
+
 	  void process(const LineString& line) {
       const CoordinateSequence* seq = line.getCoordinatesRO();
       for (std::size_t i = 0, s = seq->size(); i < s; i++) {
@@ -130,7 +130,7 @@ InteriorPointArea::~InteriorPointArea()
 }
 
 /*public*/
-bool 
+bool
 InteriorPointArea::getInteriorPoint(Coordinate& ret) const
 {
 	if ( ! foundInterior ) return false;
@@ -167,13 +167,13 @@ InteriorPointArea::addPolygon(const Geometry *geometry)
   Coordinate intPt;
   double width;
 
-  auto_ptr<LineString> bisector ( horizontalBisector(geometry) );
+  unique_ptr<LineString> bisector ( horizontalBisector(geometry) );
   if ( bisector->getLength() == 0.0 ) {
     width = 0;
     intPt = bisector->getCoordinateN(0);
   }
   else {
-    auto_ptr<Geometry> intersections ( bisector->intersection(geometry) );
+    unique_ptr<Geometry> intersections ( bisector->intersection(geometry) );
     const Geometry *widestIntersection = widestGeometry(intersections.get());
     const Envelope *env = widestIntersection->getEnvelopeInternal();
     width=env->getWidth();

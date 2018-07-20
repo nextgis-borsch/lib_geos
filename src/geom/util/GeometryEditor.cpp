@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -48,7 +48,7 @@ namespace util { // geos.geom.util
  * an edited Geometry with the same GeometryFactory as the input Geometry.
  */
 GeometryEditor::GeometryEditor(){
-	factory=NULL;
+	factory=nullptr;
 }
 
 /**
@@ -74,7 +74,7 @@ Geometry*
 GeometryEditor::edit(const Geometry *geometry, GeometryEditorOperation *operation)
 {
 	// if client did not supply a GeometryFactory, use the one from the input Geometry
-	if (factory == NULL)
+	if (factory == nullptr)
 		factory=geometry->getFactory();
 
   if ( const GeometryCollection *gc =
@@ -100,7 +100,7 @@ GeometryEditor::edit(const Geometry *geometry, GeometryEditorOperation *operatio
 
     // Unsupported Geometry classes should be caught in the GeometryEditorOperation.
     assert(!static_cast<bool>("SHOULD NEVER GET HERE"));
-    return NULL;
+    return nullptr;
 }
 
 Polygon*
@@ -112,7 +112,7 @@ GeometryEditor::editPolygon(const Polygon *polygon,GeometryEditorOperation *oper
 	if (newPolygon->isEmpty()) {
 		//RemoveSelectedPlugIn relies on this behaviour. [Jon Aquino]
 		if ( newPolygon->getFactory() != factory ) {
-		  Polygon *ret = factory->createPolygon(NULL, NULL);
+		  Polygon *ret = factory->createPolygon(nullptr, nullptr);
 		  delete newPolygon;
 		  return ret;
 		} else {
@@ -127,7 +127,7 @@ GeometryEditor::editPolygon(const Polygon *polygon,GeometryEditorOperation *oper
 		//RemoveSelectedPlugIn relies on this behaviour. [Jon Aquino]
 		delete shell;
 		delete newPolygon;
-		return factory->createPolygon(NULL,NULL);
+		return factory->createPolygon(nullptr,nullptr);
 	}
 
 	vector<Geometry*> *holes=new vector<Geometry*>;
@@ -155,7 +155,7 @@ GeometryEditor::editGeometryCollection(const GeometryCollection *collection, Geo
 {
 	GeometryCollection *newCollection = dynamic_cast<GeometryCollection*>( operation->edit(collection,factory) );
 	vector<Geometry*> *geometries = new vector<Geometry*>();
-	for (unsigned int i=0, n=newCollection->getNumGeometries(); i<n; i++)
+	for (std::size_t i=0, n=newCollection->getNumGeometries(); i<n; i++)
 	{
 		Geometry *geometry = edit(newCollection->getGeometryN(i),
 			operation);

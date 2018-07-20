@@ -1,6 +1,6 @@
 //
 // Test Suite for C-API GEOSMinimumClearance
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -66,7 +66,7 @@ namespace tut
             }
 
             GEOSGeometry* result = GEOSMinimumClearanceLine(input);
-            ensure(result != NULL);
+            ensure(result != nullptr);
             ensure_equals(1, GEOSEquals(result, expected_result));
 
             GEOSGeom_destroy(input);

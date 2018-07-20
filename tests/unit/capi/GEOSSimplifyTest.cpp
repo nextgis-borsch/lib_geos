@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSSimplify
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -30,22 +30,22 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeossimplify_data()
-            : geom1_(0), geom2_(0)
+            : geom1_(nullptr), geom2_(nullptr)
         {
             initGEOS(notice, notice);
-        }       
+        }
 
         ~test_capigeossimplify_data()
         {
             GEOSGeom_destroy(geom1_);
             GEOSGeom_destroy(geom2_);
-            geom1_ = 0;
-            geom2_ = 0;
+            geom1_ = nullptr;
+            geom2_ = nullptr;
             finishGEOS();
         }
 
@@ -73,6 +73,6 @@ namespace tut
 
         ensure ( 0 != GEOSisEmpty(geom2_) );
     }
-    
+
 } // namespace tut
 

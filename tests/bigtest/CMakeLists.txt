@@ -16,24 +16,26 @@ set(STATUS_RESULT "OFF")
 
 if(GEOS_ENABLE_TESTS)
 
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/io/markup)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/io/markup)
 
-  add_executable(bug234 bug234.cpp)
-  target_link_libraries(bug234 ${PROJECT_NAME})
+    add_executable(bug234 bug234.cpp)
+    target_link_libraries(bug234 ${PROJECT_NAME})
+    set_property(TARGET bug234 PROPERTY CXX_STANDARD 11)
 
-  add_executable(TestSweepLineSpeed
+    add_executable(TestSweepLineSpeed
 	TestSweepLineSpeed.cpp
 	GeometryTestFactory.cpp
 	bigtest.h)
     target_link_libraries(TestSweepLineSpeed ${PROJECT_NAME})
+    set_property(TARGET TestSweepLineSpeed PROPERTY CXX_STANDARD 11)
 
-  add_test(bug234 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/bug234)
-  add_test(TestSweepLineSpeed ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TestSweepLineSpeed)
+    add_test(bug234 ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/bug234)
+    add_test(TestSweepLineSpeed ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/TestSweepLineSpeed)
 
-  set(STATUS_RESULT "ON")
+    set(STATUS_RESULT "ON")
 endif()
 
 if(NOT SUPPRESS_VERBOSE_OUTPUT)
-message(STATUS "${STATUS_MESSAGE} - ${STATUS_RESULT}")
+    message(STATUS "${STATUS_MESSAGE} - ${STATUS_RESULT}")
 endif()

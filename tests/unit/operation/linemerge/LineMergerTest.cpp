@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::linemerge::LineMerger class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/linemerge/LineMerger.h>
 #include <geos/platform.h>
@@ -34,14 +34,14 @@ namespace tut
     geos::io::WKTWriter wktwriter;
 
     typedef geos::geom::Geometry Geom;
-    typedef geos::geom::Geometry::AutoPtr GeomPtr;
+    typedef geos::geom::Geometry::Ptr GeomPtr;
 
     GeomVect inpGeoms;
     GeomVect expGeoms;
     LineVect* mrgGeoms;
 
     test_linemerger_data()
-      : wktreader(), wktwriter(), mrgGeoms(0)
+      : wktreader(), wktwriter(), mrgGeoms(nullptr)
     {
       wktwriter.setTrim(true);
     }
@@ -128,13 +128,13 @@ namespace tut
 
       return false;
     }
- 
+
 
 
   private:
     // noncopyable
-    test_linemerger_data(test_linemerger_data const& other);
-    test_linemerger_data& operator=(test_linemerger_data const& rhs);
+    test_linemerger_data(test_linemerger_data const& other) = delete;
+    test_linemerger_data& operator=(test_linemerger_data const& rhs) = delete;
   };
 
   typedef test_group<test_linemerger_data> group;
@@ -152,10 +152,10 @@ namespace tut
     const char* inpWKT[] = {
       "LINESTRING (120 120, 180 140)", "LINESTRING (200 180, 180 140)",
       "LINESTRING (200 180, 240 180)",
-      NULL };
+      nullptr };
     const char* expWKT[] = {
       "LINESTRING (120 120, 180 140, 200 180, 240 180)",
-      NULL };
+      nullptr };
 
     doTest(inpWKT, expWKT);
   }
@@ -172,12 +172,12 @@ namespace tut
       "LINESTRING (40 320, 60 320, 80 340)",
       "LINESTRING (160 320, 180 340, 200 320)",
       "LINESTRING (200 320, 180 300, 160 320)",
-      NULL };
+      nullptr };
     const char* expWKT[] = {
       "LINESTRING (160 320, 180 340, 200 320, 180 300, 160 320)",
       "LINESTRING (40 320, 20 340, 0 320, 20 300, 40 320)",
       "LINESTRING (40 320, 60 320, 80 340, 120 300, 140 320, 160 320)",
-      NULL };
+      nullptr };
 
     doTest(inpWKT, expWKT);
   }
@@ -188,10 +188,10 @@ namespace tut
   {
     const char* inpWKT[] = {
       "LINESTRING (0 0, 100 100)", "LINESTRING (0 100, 100 0)",
-      NULL };
+      nullptr };
     const char* expWKT[] = {
       "LINESTRING (0 0, 100 100)", "LINESTRING (0 100, 100 0)",
-      NULL };
+      nullptr };
 
     doTest(inpWKT, expWKT);
   }
@@ -202,9 +202,9 @@ namespace tut
     const char* inpWKT[] = {
       "LINESTRING EMPTY",
       "LINESTRING EMPTY",
-      NULL };
+      nullptr };
     const char* expWKT[] = {
-      NULL };
+      nullptr };
 
     doTest(inpWKT, expWKT);
   }
@@ -214,9 +214,9 @@ namespace tut
   void object::test<5>()
   {
     const char* inpWKT[] = {
-      NULL };
+      nullptr };
     const char* expWKT[] = {
-      NULL };
+      nullptr };
 
     doTest(inpWKT, expWKT);
   }
@@ -227,9 +227,9 @@ namespace tut
   {
     const char* inpWKT[] = {
       "LINESTRING (10642 31441, 10642 31441)",
-      NULL };
+      nullptr };
     const char* expWKT[] = {
-      NULL };
+      nullptr };
 
     doTest(inpWKT, expWKT);
   }
@@ -243,10 +243,10 @@ namespace tut
         "LINESTRING(0 5, 5 5)",
         "LINESTRING(5 5, 5 0)",
         "LINESTRING(5 0, 0 0)",
-        NULL };
+        nullptr };
       const char* expWKT[] = {
         "LINESTRING(0 0, 0 5, 5 5, 5 0, 0 0)",
-          NULL };
+          nullptr };
 
       doTest(inpWKT, expWKT);
   }
@@ -261,7 +261,7 @@ namespace tut
       GeomPtr line4(readWKT("LINESTRING(5 0, 0 0)"));
       // Union segments incrementally
       GeomPtr lines12(line1->Union(line2.get()));
-      GeomPtr lines123(lines12->Union(line3.get())); 
+      GeomPtr lines123(lines12->Union(line3.get()));
       GeomPtr lines1234(lines123->Union(line4.get()));
 
       // MultiLineString expected by design, see corresponding test in OverlayOpUnionTest

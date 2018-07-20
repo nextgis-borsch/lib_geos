@@ -80,6 +80,25 @@ if(NOT SUPPRESS_VERBOSE_OUTPUT)
     message(STATUS "Setting GEOS C API soversion ${CAPI_SOVERSION}")
 endif()
 
+if(NOT MSVC)
+  include(CheckCXXCompilerFlag)
+  CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else()
+    if(MSVC_VERSION LESS 1700)
+        set(COMPILER_SUPPORTS_CXX11 FALSE)
+    else()
+        set(COMPILER_SUPPORTS_CXX11 TRUE)
+    endif()
+endif()
+
+if(NOT COMPILER_SUPPORTS_CXX11)
+    message(FATAL_ERROR "C++11 support required.")
+endif()
+
+# Remove annoying messages
+add_definitions(-DUSE_UNSTABLE_GEOS_CPP_API)
+
 #################################################################################
 # Check custom global options
 #################################################################################

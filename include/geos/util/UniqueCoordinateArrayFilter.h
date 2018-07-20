@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -45,7 +45,7 @@ public:
 	/**
 	 * Constructs a CoordinateArrayFilter.
 	 *
-	 * @param target The destination set. 
+	 * @param target The destination set.
 	 */
 	UniqueCoordinateArrayFilter(geom::Coordinate::ConstVect &target)
 		: pts(target)
@@ -57,14 +57,14 @@ public:
 	 * delete a derived-class object via a base-class pointer.
 	 * http://www.parashift.com/c++-faq-lite/virtual-functions.html#faq-20.7
 	 */
-	virtual ~UniqueCoordinateArrayFilter() {}
+	~UniqueCoordinateArrayFilter() override {}
 
 	/**
 	 * Performs a filtering operation with or on coord in "read-only" mode.
 	 * @param coord The "read-only" Coordinate to which
 	 * 				the filter is applied.
 	 */
-	virtual void filter_ro(const geom::Coordinate *coord)
+	void filter_ro(const geom::Coordinate *coord) override
 	{
 		if ( uniqPts.insert(coord).second )
 		{
@@ -77,8 +77,8 @@ private:
 	geom::Coordinate::ConstSet uniqPts; 	// unique points set
 
     // Declare type as noncopyable
-    UniqueCoordinateArrayFilter(const UniqueCoordinateArrayFilter& other);
-    UniqueCoordinateArrayFilter& operator=(const UniqueCoordinateArrayFilter& rhs);
+    UniqueCoordinateArrayFilter(const UniqueCoordinateArrayFilter& other) = delete;
+    UniqueCoordinateArrayFilter& operator=(const UniqueCoordinateArrayFilter& rhs) = delete;
 };
 
 } // namespace geos::util

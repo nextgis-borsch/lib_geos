@@ -3,7 +3,7 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
@@ -132,7 +132,7 @@ LengthLocationMap::resolveHigher(const LinearLocation& loc) const
   unsigned int compIndex = loc.getComponentIndex();
   // if last component can't resolve any higher
   if (compIndex >= linearGeom->getNumGeometries() - 1) return loc;
-  
+
   do {
     compIndex++;
   } while (compIndex < linearGeom->getNumGeometries() - 1

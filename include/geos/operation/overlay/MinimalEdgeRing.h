@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -45,7 +45,7 @@ namespace overlay { // geos::operation::overlay
 
 /** \brief
  * A ring of {@link Edge}s with the property that no node
- * has degree greater than 2. 
+ * has degree greater than 2.
  *
  * These are the form of rings required
  * to represent polygons under the OGC SFS spatial data model.
@@ -61,12 +61,12 @@ public:
 	MinimalEdgeRing(geomgraph::DirectedEdge *start,
 		const geom::GeometryFactory *geometryFactory);
 
-	virtual ~MinimalEdgeRing();
+	~MinimalEdgeRing() override;
 
-	geomgraph::DirectedEdge* getNext(geomgraph::DirectedEdge *de);
+	geomgraph::DirectedEdge* getNext(geomgraph::DirectedEdge *de) override;
 
 	void setEdgeRing(geomgraph::DirectedEdge *de,
-			geomgraph::EdgeRing *er);
+			geomgraph::EdgeRing *er) override;
 };
 
 

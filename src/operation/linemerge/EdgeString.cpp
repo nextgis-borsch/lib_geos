@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -43,7 +43,7 @@ namespace linemerge { // geos.operation.linemerge
 EdgeString::EdgeString(const GeometryFactory *newFactory):
 	factory(newFactory),
 	directedEdges(),
-	coordinates(NULL)
+	coordinates(nullptr)
 {
 }
 
@@ -62,7 +62,7 @@ EdgeString::add(LineMergeDirectedEdge *directedEdge)
 CoordinateSequence *
 EdgeString::getCoordinates()
 {
-	if (coordinates==NULL) {
+	if (coordinates==nullptr) {
 		int forwardDirectedEdges = 0;
 		int reverseDirectedEdges = 0;
 		coordinates=factory->getCoordinateSequenceFactory()->create();

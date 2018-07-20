@@ -1,11 +1,11 @@
-// 
+//
 // GEOS Unit Test utilities, extension of TUT Framework namespace
 //
 #ifndef GEOS_TUT_UTILITY_H_INCLUDED
-#define GEOS_TUT_UTILITY_H_INCLUDED 
+#define GEOS_TUT_UTILITY_H_INCLUDED
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/geom/Geometry.h>
 #include <geos/geom/GeometryCollection.h>
@@ -79,32 +79,15 @@ typedef geos::geom::prep::PreparedGeometry const* PreparedGeometryPtr;
 template<typename Type, typename InstanceType>
 inline bool isInstanceOf(InstanceType const* instance)
 {
-    assert(0 != instance);
-    return (0 != dynamic_cast<Type const*>(instance) );
+    assert(nullptr != instance);
+    return (nullptr != dynamic_cast<Type const*>(instance) );
 }
 
 template<typename Type, typename InstanceType>
 inline Type const* instanceOf(InstanceType const* instance)
 {
-    assert(0 != instance);
+    assert(nullptr != instance);
     return dynamic_cast<Type const*>(instance);
-}
-
-template <typename Dst, typename Src>
-std::auto_ptr<Dst> dynamic_cast_auto_ptr(std::auto_ptr<Src>& ptr)
-{
-    Dst* res = dynamic_cast<Dst*>(ptr.get());
-    if (0 != res)
-    {
-        ptr.release();
-    }
-    return std::auto_ptr<Dst>(res);
-}
-
-template <typename Dst, typename Src>
-std::auto_ptr<Dst> static_cast_auto_ptr(std::auto_ptr<Src>& ptr)
-{
-    return std::auto_ptr<Dst>(static_cast<Dst*>(ptr.release()));
 }
 
 //
@@ -123,12 +106,12 @@ inline void ensure_equals_geometry(T1 const* lhs, T2 const* rhs)
 template <typename T>
 inline void ensure_equals_geometry(T const* lhs, T const* rhs)
 {
-    assert(0 != lhs);
-    assert(0 != rhs);
+    assert(nullptr != lhs);
+    assert(nullptr != rhs);
 
     using geos::geom::Polygon;
     using geos::geom::GeometryCollection;
-    
+
     ensure_equals("is-valid do not match",
                   lhs->isValid(), rhs->isValid());
 
@@ -178,8 +161,8 @@ template <>
 inline void ensure_equals_geometry(geos::geom::Polygon const* lhs,
                                    geos::geom::Polygon const* rhs)
 {
-    assert(0 != lhs);
-    assert(0 != rhs);
+    assert(nullptr != lhs);
+    assert(nullptr != rhs);
 
     ensure_equals("number of interior ring do not match",
                   lhs->getNumInteriorRing(), rhs->getNumInteriorRing());
@@ -189,8 +172,8 @@ template <>
 inline void ensure_equals_geometry(geos::geom::GeometryCollection const* lhs,
                                    geos::geom::GeometryCollection const* rhs)
 {
-    assert(0 != lhs);
-    assert(0 != rhs);
+    assert(nullptr != lhs);
+    assert(nullptr != rhs);
 
     using geos::geom::Geometry;
 
@@ -201,7 +184,7 @@ inline void ensure_equals_geometry(geos::geom::GeometryCollection const* lhs,
     {
         Geometry const* g1 = lhs->getGeometryN(i);
         Geometry const* g2 = rhs->getGeometryN(i);
-        ensure_equals_geometry(g1, g2); // breaks on failure 
+        ensure_equals_geometry(g1, g2); // breaks on failure
     }
 }
 
@@ -209,9 +192,9 @@ template <>
 inline void ensure_equals_geometry(geos::geom::Geometry const* lhs,
                                    geos::geom::prep::PreparedGeometry const* rhs)
 {
-    assert(0 != lhs);
-    assert(0 != rhs);
-    
+    assert(nullptr != lhs);
+    assert(nullptr != rhs);
+
     geos::geom::Geometry const& pg = rhs->getGeometry();
     ensure_equals_geometry(lhs, &pg);
 }

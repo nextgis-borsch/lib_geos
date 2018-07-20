@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -24,7 +24,7 @@ namespace triangulate { //geos.triangulate
 namespace quadedge { //geos.triangulate.quadedge
 
 LastFoundQuadEdgeLocator::LastFoundQuadEdgeLocator(QuadEdgeSubdivision *subdiv) :
-	subdiv(subdiv), lastEdge(NULL)
+	subdiv(subdiv), lastEdge(nullptr)
 {
 }
 
@@ -37,7 +37,7 @@ LastFoundQuadEdgeLocator::init()
 QuadEdge*
 LastFoundQuadEdgeLocator::findEdge()
 {
-	// assume there is an edge 
+	// assume there is an edge
 	return *(subdiv->getEdges().begin());
 }
 

@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::operation::intersection::RectangleIntersection class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/operation/intersection/Rectangle.h>
 #include <geos/operation/intersection/RectangleIntersection.h>
@@ -29,7 +29,7 @@ namespace tut
         geos::io::WKTReader wktreader;
         geos::io::WKTWriter wktwriter;
 
-        typedef geos::geom::Geometry::AutoPtr GeomPtr;
+        typedef geos::geom::Geometry::Ptr GeomPtr;
         typedef geos::geom::Geometry Geom;
         typedef geos::operation::intersection::Rectangle Rectangle;
         typedef geos::operation::intersection::RectangleIntersection RectangleIntersection;

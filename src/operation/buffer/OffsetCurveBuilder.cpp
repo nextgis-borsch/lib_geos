@@ -3,7 +3,7 @@
  * GEOS-Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009-2011  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009-2011  Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
@@ -67,7 +67,7 @@ OffsetCurveBuilder::getLineCurve(const CoordinateSequence *inputPts,
 
   double posDistance = std::abs(distance);
 
-  std::auto_ptr<OffsetSegmentGenerator> segGen = getSegGen(posDistance);
+  std::unique_ptr<OffsetSegmentGenerator> segGen = getSegGen(posDistance);
   if (inputPts->getSize() <= 1) {
     computePointCurve(inputPts->getAt(0), *segGen);
   } else {
@@ -118,18 +118,18 @@ OffsetCurveBuilder::getSingleSidedLineCurve(const CoordinateSequence* inputPts,
 
 	double distTol = simplifyTolerance(distance);
 
-  std::auto_ptr<OffsetSegmentGenerator> segGen = getSegGen(distance);
+  std::unique_ptr<OffsetSegmentGenerator> segGen = getSegGen(distance);
 
   if ( leftSide ) {
 	  //--------- compute points for left side of line
     // Simplify the appropriate side of the line before generating
-    std::auto_ptr<CoordinateSequence> simp1_ =
+    std::unique_ptr<CoordinateSequence> simp1_ =
       BufferInputLineSimplifier::simplify( *inputPts, distTol );
     const CoordinateSequence& simp1 = *simp1_;
 
 
-    int n1 = simp1.size() - 1;
-    if ( ! n1 ) 
+    int n1 = static_cast<int>(simp1.size()) - 1;
+    if ( ! n1 )
       throw util::IllegalArgumentException("Cannot get offset of single-vertex line");
     segGen->initSideSegments(simp1[0], simp1[1], Position::LEFT);
     segGen->addFirstSegment();
@@ -143,12 +143,12 @@ OffsetCurveBuilder::getSingleSidedLineCurve(const CoordinateSequence* inputPts,
 
     //---------- compute points for right side of line
     // Simplify the appropriate side of the line before generating
-    std::auto_ptr<CoordinateSequence> simp2_ =
+    std::unique_ptr<CoordinateSequence> simp2_ =
       BufferInputLineSimplifier::simplify( *inputPts, -distTol );
     const CoordinateSequence& simp2 = *simp2_;
 
-    int n2 = simp2.size() - 1;
-    if ( ! n2 ) 
+    int n2 = static_cast<int>(simp2.size()) - 1;
+    if ( ! n2 )
       throw util::IllegalArgumentException("Cannot get offset of single-vertex line");
     segGen->initSideSegments(simp2[n2], simp2[n2-1], Position::LEFT);
     segGen->addFirstSegment();
@@ -181,7 +181,7 @@ OffsetCurveBuilder::getRingCurve(const CoordinateSequence *inputPts,
 		return;
 	}
 
-  std::auto_ptr<OffsetSegmentGenerator> segGen = getSegGen(std::abs(distance));
+  std::unique_ptr<OffsetSegmentGenerator> segGen = getSegGen(std::abs(distance));
 	computeRingBufferCurve(*inputPts, side, *segGen);
   segGen->getCoordinates(lineList);
 }
@@ -202,12 +202,12 @@ OffsetCurveBuilder::computeLineBufferCurve(const CoordinateSequence& inputPts,
 
 	//--------- compute points for left side of line
 	// Simplify the appropriate side of the line before generating
-	std::auto_ptr<CoordinateSequence> simp1_ =
+	std::unique_ptr<CoordinateSequence> simp1_ =
 		BufferInputLineSimplifier::simplify(inputPts, distTol);
 	const CoordinateSequence& simp1 = *simp1_;
 
 
-	int n1 = simp1.size() - 1;
+	int n1 = static_cast<int>(simp1.size()) - 1;
 	segGen.initSideSegments(simp1[0], simp1[1], Position::LEFT);
 	for (int i = 2; i <= n1; ++i) {
 		segGen.addNextSegment(simp1[i], true);
@@ -218,11 +218,11 @@ OffsetCurveBuilder::computeLineBufferCurve(const CoordinateSequence& inputPts,
 
 	//---------- compute points for right side of line
 	// Simplify the appropriate side of the line before generating
-	std::auto_ptr<CoordinateSequence> simp2_ =
+	std::unique_ptr<CoordinateSequence> simp2_ =
 		BufferInputLineSimplifier::simplify(inputPts, -distTol);
 	const CoordinateSequence& simp2 = *simp2_;
 
-	int n2 = simp2.size() - 1;
+	int n2 = static_cast<int>(simp2.size()) - 1;
 	segGen.initSideSegments(simp2[n2], simp2[n2-1], Position::LEFT);
 	for (int i = n2-2; i >= 0; --i) {
 		segGen.addNextSegment(simp2[i], true);
@@ -244,11 +244,11 @@ OffsetCurveBuilder::computeRingBufferCurve(const CoordinateSequence& inputPts,
 	// ensure that correct side is simplified
 	if (side == Position::RIGHT)
 		distTol = -distTol;
-	std::auto_ptr<CoordinateSequence> simp_ =
+	std::unique_ptr<CoordinateSequence> simp_ =
 		BufferInputLineSimplifier::simplify(inputPts, distTol);
 	const CoordinateSequence& simp = *simp_;
 
-	int n = simp.size()-1;
+	int n = static_cast<int>(simp.size())-1;
 	segGen.initSideSegments(simp[n-1], simp[0], side);
 	for (int i = 1; i <= n; i++) {
 		bool addStartPoint = i != 1;
@@ -272,11 +272,11 @@ OffsetCurveBuilder::computeSingleSidedBufferCurve(
 
     //---------- compute points for right side of line
     // Simplify the appropriate side of the line before generating
-    std::auto_ptr<CoordinateSequence> simp2_ =
+    std::unique_ptr<CoordinateSequence> simp2_ =
       BufferInputLineSimplifier::simplify(inputPts, -distTol);
     const CoordinateSequence& simp2 = *simp2_;
 
-    int n2 = simp2.size() - 1;
+    int n2 = static_cast<int>(simp2.size()) - 1;
     segGen.initSideSegments(simp2[n2], simp2[n2-1], Position::LEFT);
     segGen.addFirstSegment();
     for (int i = n2-2; i >= 0; --i) {
@@ -290,11 +290,11 @@ OffsetCurveBuilder::computeSingleSidedBufferCurve(
 
     //--------- compute points for left side of line
     // Simplify the appropriate side of the line before generating
-    std::auto_ptr<CoordinateSequence> simp1_ =
+    std::unique_ptr<CoordinateSequence> simp1_ =
       BufferInputLineSimplifier::simplify(inputPts, distTol);
     const CoordinateSequence& simp1 = *simp1_;
 
-    int n1 = simp1.size() - 1;
+    int n1 = static_cast<int>(simp1.size()) - 1;
     segGen.initSideSegments(simp1[0], simp1[1], Position::LEFT);
     segGen.addFirstSegment();
     for (int i = 2; i <= n1; ++i) {
@@ -307,10 +307,10 @@ OffsetCurveBuilder::computeSingleSidedBufferCurve(
 }
 
 /*private*/
-std::auto_ptr<OffsetSegmentGenerator>
+std::unique_ptr<OffsetSegmentGenerator>
 OffsetCurveBuilder::getSegGen(double dist)
 {
-  std::auto_ptr<OffsetSegmentGenerator> osg(
+  std::unique_ptr<OffsetSegmentGenerator> osg(
     new OffsetSegmentGenerator(precisionModel, bufParams, dist)
   );
   return osg;

@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSGeom_extractUniquePoints_r
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -31,15 +31,15 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeosextractuniquepoints_data()
-                : geom1_(0), geom2_(0), geom3_(0)
+                : geom1_(nullptr), geom2_(nullptr), geom3_(nullptr)
         {
             handle_ = initGEOS_r(notice, notice);
-        }       
+        }
 
         ~test_capigeosextractuniquepoints_data()
         {
@@ -48,9 +48,9 @@ namespace tut
             if( geom3_ )
                 GEOSGeom_destroy_r(handle_, geom3_);
 
-            geom1_ = 0;
-            geom2_ = 0;
-            geom3_ = 0;
+            geom1_ = nullptr;
+            geom2_ = nullptr;
+            geom3_ = nullptr;
             finishGEOS_r(handle_);
         }
 
@@ -97,6 +97,6 @@ namespace tut
         ensure(0 != GEOSEquals_r(handle_, geom3_, geom2_));
     }
 
- 
+
 } // namespace tut
 

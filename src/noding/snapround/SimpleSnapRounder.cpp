@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -108,7 +108,7 @@ SimpleSnapRounder::checkCorrectness(
   {
     delete *i;
   }
- 
+
 }
 
 /*private*/
@@ -149,12 +149,12 @@ SimpleSnapRounder::computeVertexSnaps(NodedSegmentString* e0, NodedSegmentString
 	const CoordinateSequence* pts0 = e0->getCoordinates();
 	const CoordinateSequence* pts1 = e1->getCoordinates();
 
-	for (unsigned int i0=0, n0=pts0->getSize()-1; i0<n0; i0++)
+	for (unsigned int i0=0, n0=static_cast<unsigned int>(pts0->getSize()-1); i0<n0; i0++)
 	{
 		const Coordinate& p0 = pts0->getAt(i0);
 
 		HotPixel hotPixel(p0, scaleFactor, li);
-		for (unsigned int i1=1, n1=pts1->getSize()-1; i1<n1; i1++)
+		for (unsigned int i1=1, n1=static_cast<unsigned int>(pts1->getSize()-1); i1<n1; i1++)
 		{
         		// don't snap a vertex to itself
 			if (i0 == i1 && e0 == e1) {
@@ -168,7 +168,7 @@ SimpleSnapRounder::computeVertexSnaps(NodedSegmentString* e0, NodedSegmentString
 			}
 		}
 	}
- 
+
 }
 
 /*public*/

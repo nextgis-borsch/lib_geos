@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -47,7 +47,7 @@ SimpleSweepLineIntersector::computeIntersections(vector<Edge*> *edges,
 	SegmentIntersector *si, bool testAllSegments)
 {
 	if (testAllSegments)
-		add(edges,NULL);
+		add(edges,nullptr);
 	else
 		add(edges);
 	computeIntersections(si);
@@ -89,8 +89,8 @@ SimpleSweepLineIntersector::add(Edge *edge, void* edgeSet)
 	std::size_t n=pts->getSize()-1;
 	for(std::size_t i=0; i<n; ++i)
 	{
-		SweepLineSegment *ss=new SweepLineSegment(edge, i);
-		SweepLineEvent *insertEvent=new SweepLineEvent(edgeSet, ss->getMinX(), NULL, ss);
+		SweepLineSegment *ss=new SweepLineSegment(edge, static_cast<int>(i));
+		SweepLineEvent *insertEvent=new SweepLineEvent(edgeSet, ss->getMinX(), nullptr, ss);
 		events.push_back(insertEvent);
 		events.push_back(new SweepLineEvent(edgeSet, ss->getMaxX(), insertEvent, ss));
 	}
@@ -148,7 +148,7 @@ SimpleSweepLineIntersector::processOverlaps(int start,int end,SweepLineEvent *ev
 		if (ev1->isInsert())
 		{
 			SweepLineSegment *ss1=(SweepLineSegment*) ev1->getObject();
-			if (ev0->edgeSet==NULL || (ev0->edgeSet!=ev1->edgeSet))
+			if (ev0->edgeSet==nullptr || (ev0->edgeSet!=ev1->edgeSet))
 			{
 				ss0->computeIntersections(ss1,si);
 				nOverlaps++;

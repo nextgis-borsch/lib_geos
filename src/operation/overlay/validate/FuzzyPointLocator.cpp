@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -27,7 +27,7 @@
 #include <functional>
 #include <vector>
 #include <sstream>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 #ifndef GEOS_DEBUG
 #define GEOS_DEBUG 0
@@ -57,7 +57,7 @@ FuzzyPointLocator::FuzzyPointLocator(const geom::Geometry& geom,
 }
 
 /*private*/
-std::auto_ptr<Geometry>
+std::unique_ptr<Geometry>
 FuzzyPointLocator::extractLineWork(const geom::Geometry& geom)
 {
     ::geos::ignore_unused_variable_warning(geom);
@@ -68,7 +68,7 @@ FuzzyPointLocator::extractLineWork(const geom::Geometry& geom)
 	for (size_t i=0, n=g.getNumGeometries(); i<n; ++i)
 	{
 		const Geometry* gComp = g.getGeometryN(i);
-		Geometry* lineGeom = NULL;
+		Geometry* lineGeom = nullptr;
 
 		// only get linework for polygonal components
 		if (gComp->getDimension() == 2) {
@@ -76,7 +76,7 @@ FuzzyPointLocator::extractLineWork(const geom::Geometry& geom)
 			lineGeoms->push_back(lineGeom);
 		}
 	}
-	return std::auto_ptr<Geometry>(g.getFactory()->buildGeometry(lineGeoms));
+	return std::unique_ptr<Geometry>(g.getFactory()->buildGeometry(lineGeoms));
 
 	} catch (...) { // avoid leaks
 		for (size_t i=0, n=lineGeoms->size(); i<n; ++i)
@@ -86,11 +86,11 @@ FuzzyPointLocator::extractLineWork(const geom::Geometry& geom)
 		delete lineGeoms;
 		throw;
 	}
- 
+
 }
 
 /*private*/
-std::auto_ptr<Geometry>
+std::unique_ptr<Geometry>
 FuzzyPointLocator::getLineWork(const geom::Geometry& geom)
 {
     ::geos::ignore_unused_variable_warning(geom);
@@ -110,7 +110,7 @@ FuzzyPointLocator::getLineWork(const geom::Geometry& geom)
 		}
 		lineGeoms->push_back(lineGeom);
 	}
-	return std::auto_ptr<Geometry>(g.getFactory()->buildGeometry(lineGeoms));
+	return std::unique_ptr<Geometry>(g.getFactory()->buildGeometry(lineGeoms));
 
 	} catch (...) { // avoid leaks
 		for (size_t i=0, n=lineGeoms->size(); i<n; ++i)
@@ -121,14 +121,14 @@ FuzzyPointLocator::getLineWork(const geom::Geometry& geom)
 		delete lineGeoms;
 		throw;
 	}
- 
+
 }
 
 /* public */
 Location::Value
 FuzzyPointLocator::getLocation(const Coordinate& pt)
 {
-	auto_ptr<Geometry> point(g.getFactory()->createPoint(pt));
+	unique_ptr<Geometry> point(g.getFactory()->createPoint(pt));
 
 	double dist = linework->distance(point.get());
 

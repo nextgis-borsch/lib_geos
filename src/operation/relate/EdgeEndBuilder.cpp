@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -61,24 +61,24 @@ EdgeEndBuilder::computeEdgeEnds(Edge *edge, vector<EdgeEnd*> *l)
 	// no intersections, so there is nothing to do
 	if (it==eiList.end()) return;
 
-	EdgeIntersection *eiPrev=NULL;
-	EdgeIntersection *eiCurr=NULL;
+	EdgeIntersection *eiPrev=nullptr;
+	EdgeIntersection *eiCurr=nullptr;
 
 	EdgeIntersection *eiNext=*it;
 	it++;
 	do {
 		eiPrev=eiCurr;
 		eiCurr=eiNext;
-		eiNext=NULL;
+		eiNext=nullptr;
 		if (it!=eiList.end()) {
 			eiNext=*it;
 			it++;
 		}
-		if (eiCurr!=NULL) {
+		if (eiCurr!=nullptr) {
 			createEdgeEndForPrev(edge,l,eiCurr,eiPrev);
 			createEdgeEndForNext(edge,l,eiCurr,eiNext);
 		}
-	} while (eiCurr!=NULL);
+	} while (eiCurr!=nullptr);
 }
 
 /**
@@ -86,7 +86,7 @@ EdgeEndBuilder::computeEdgeEnds(Edge *edge, vector<EdgeEnd*> *l)
  * The previous intersection is provided
  * in case it is the endpoint for the stub edge.
  * Otherwise, the previous point from the parent edge will be the endpoint.
- * 
+ *
  * eiCurr will always be an EdgeIntersection, but eiPrev may be null.
  */
 void
@@ -101,8 +101,8 @@ EdgeEndBuilder::createEdgeEndForPrev(Edge *edge, vector<EdgeEnd*> *l,
 	}
 	Coordinate pPrev(edge->getCoordinate(iPrev));
 	// if prev intersection is past the previous vertex, use it instead
-	if (eiPrev!=NULL && eiPrev->segmentIndex>=iPrev)
-		pPrev=eiPrev->coord; 
+	if (eiPrev!=nullptr && eiPrev->segmentIndex>=iPrev)
+		pPrev=eiPrev->coord;
 	Label label( edge->getLabel() );
 	// since edgeStub is oriented opposite to it's parent edge, have to flip sides for edge label
 	label.flip();
@@ -116,7 +116,7 @@ EdgeEndBuilder::createEdgeEndForPrev(Edge *edge, vector<EdgeEnd*> *l,
  * The next intersection is provided
  * in case it is the endpoint for the stub edge.
  * Otherwise, the next point from the parent edge will be the endpoint.
- * 
+ *
  * eiCurr will always be an EdgeIntersection, but eiNext may be null.
  */
 void
@@ -125,11 +125,11 @@ EdgeEndBuilder::createEdgeEndForNext(Edge *edge, vector<EdgeEnd*> *l,
 {
 	int iNext=eiCurr->segmentIndex + 1;
 	// if there is no next edge there is nothing to do
-	if (iNext>=edge->getNumPoints() && eiNext==NULL) return;
+	if (iNext>=edge->getNumPoints() && eiNext==nullptr) return;
 	Coordinate pNext(edge->getCoordinate(iNext));
 	// if the next intersection is in the same segment as the current, use it as the endpoint
-	if (eiNext!=NULL && eiNext->segmentIndex==eiCurr->segmentIndex)
-		pNext=eiNext->coord; 
+	if (eiNext!=nullptr && eiNext->segmentIndex==eiCurr->segmentIndex)
+		pNext=eiNext->coord;
 	EdgeEnd *e = new EdgeEnd(edge, eiCurr->coord, pNext, edge->getLabel());
 	//Debug.println(e);
 	l->push_back(e);

@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -44,7 +44,7 @@ void
 SweepLineIndex::add(SweepLineInterval *sweepInt)
 {
 	// FIXME: who's going to delete the newly-created events ?
-	SweepLineEvent *insertEvent=new SweepLineEvent(sweepInt->getMin(),NULL,sweepInt);
+	SweepLineEvent *insertEvent=new SweepLineEvent(sweepInt->getMin(),nullptr,sweepInt);
 	events.push_back(insertEvent);
 	events.push_back(new SweepLineEvent(sweepInt->getMax(), insertEvent, sweepInt));
 }
@@ -73,7 +73,7 @@ void
 SweepLineIndex::computeOverlaps(SweepLineOverlapAction *action)
 {
     nOverlaps = 0;
-    
+
     buildIndex();
 
     const std::vector<SweepLineEvent*>::size_type n=events.size();

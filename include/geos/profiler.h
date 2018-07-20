@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -21,7 +21,7 @@
 /* For MingW builds with __STRICT_ANSI__ (-ansi) */
 /** MINGW64 doesn't have a config.h **/
 #if defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR)
-/* Allow us to check for presence of gettimeofday in MingW */ 
+/* Allow us to check for presence of gettimeofday in MingW */
 #include <config.h>
 
 #include <sys/time.h>
@@ -32,7 +32,7 @@ extern "C" {
   __MINGW_IMPORT char 	*_tzname[2];
 }
 #endif
- 
+
 #if defined(_MSC_VER) || defined(__MINGW32__) && !defined(HAVE_GETTIMEOFDAY) && !defined(__MINGW64_VERSION_MAJOR)
 #include <geos/timeval.h>
 #else
@@ -73,15 +73,16 @@ public:
 
 	/** \brief start a new timer */
 	void start() {
-		gettimeofday(&starttime, NULL);
+		gettimeofday(&starttime, nullptr);
 	}
 
 	/** \brief stop current timer */
 	void stop()
 	{
-		gettimeofday(&stoptime, NULL);
-		double elapsed = 1000000*(stoptime.tv_sec-starttime.tv_sec)+
-			(stoptime.tv_usec-starttime.tv_usec);
+		gettimeofday(&stoptime, nullptr);
+		double elapsed = static_cast<double>(
+				1000000 * (stoptime.tv_sec - starttime.tv_sec)
+				+ (stoptime.tv_usec - starttime.tv_usec));
 
 		timings.push_back(elapsed);
 		totaltime += elapsed;
@@ -91,7 +92,7 @@ public:
 			if ( elapsed > max ) max = elapsed;
 			if ( elapsed < min ) min = elapsed;
 		}
-		avg = totaltime / timings.size();
+		avg = totaltime / static_cast<double>(timings.size());
 	}
 
 	/** \brief Return Max stored timing */
@@ -164,7 +165,7 @@ public:
 
 	/**
 	 * \brief
-	 * Stop timer for named task. 
+	 * Stop timer for named task.
 	 * Elapsed time is registered in the given task.
 	 */
 	void stop(std::string name);
@@ -177,10 +178,10 @@ public:
 
 
 /** \brief Return a string representing the Profile */
-std::ostream& operator<< (std::ostream& os, const Profile&);
+GEOS_DLL std::ostream& operator<< (std::ostream& os, const Profile&);
 
 /** \brief Return a string representing the Profiler */
-std::ostream& operator<< (std::ostream& os, const Profiler&);
+GEOS_DLL std::ostream& operator<< (std::ostream& os, const Profiler&);
 
 } // namespace geos::util
 } // namespace geos

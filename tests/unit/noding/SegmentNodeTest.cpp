@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for geos::noding::SegmentNode class.
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/noding/SegmentNode.h>
 #include <geos/noding/NodedSegmentString.h>
@@ -21,12 +21,12 @@ namespace tut
     struct test_segmentnode_data
     {
 
-    	typedef std::auto_ptr<geos::geom::CoordinateSequence>
+    	typedef std::unique_ptr<geos::geom::CoordinateSequence>
             CoordSeqPtr;
 
-    	typedef std::auto_ptr<geos::noding::SegmentString>
+    	typedef std::unique_ptr<geos::noding::SegmentString>
             SegmentStringPtr;
-	
+
         const geos::geom::CoordinateSequenceFactory* factory_;
 
         test_segmentnode_data()
@@ -56,7 +56,7 @@ namespace tut
         const size_t coords_size = 2;
         CoordSeqPtr cs( factory_->create((size_t)0, coords_size) );
 
-        ensure( 0 != cs.get() );
+        ensure( nullptr != cs.get() );
 
         Coordinate c0(0, 0);
         Coordinate c1(3, 3);
@@ -66,8 +66,8 @@ namespace tut
         ensure_equals( cs->size(), coords_size );
 
         // Create SegmentString instance
-        
-        NodedSegmentString segment(cs.release(), 0);
+
+        NodedSegmentString segment(cs.release(), nullptr);
 
         ensure_equals( segment.size(), coords_size );
 
@@ -80,10 +80,10 @@ namespace tut
             ensure_equals( node.segmentIndex, segment_index );
 
             // only first endpoint is considered interior
-            ensure( node.isInterior() ); 
+            ensure( node.isInterior() );
 
-            // 
-            // TODO - mloskot 
+            //
+            // TODO - mloskot
             //  1. What's the purpose of isEndPoint() and how to test it?
             //  2. Add new test cases
             //
@@ -104,7 +104,7 @@ namespace tut
         const size_t coords_size = 2;
         CoordSeqPtr cs( factory_->create((size_t)0, coords_size) );
 
-        ensure( 0 != cs.get() );
+        ensure( nullptr != cs.get() );
 
         Coordinate c0(0, 0);
         Coordinate c1(3, 3);
@@ -114,8 +114,8 @@ namespace tut
         ensure_equals( cs->size(), coords_size );
 
         // Create SegmentString instance
-        
-        NodedSegmentString segment(cs.release(), 0);
+
+        NodedSegmentString segment(cs.release(), nullptr);
 
         ensure_equals( segment.size(), coords_size );
 
@@ -128,7 +128,7 @@ namespace tut
             ensure_equals( node.segmentIndex, segment_index );
 
             // on first endpoint ...
-            ensure( ! node.isInterior() ); 
+            ensure( ! node.isInterior() );
 
         }
 
@@ -146,7 +146,7 @@ namespace tut
         const size_t coords_size = 2;
         CoordSeqPtr cs( factory_->create((size_t)0, coords_size) );
 
-        ensure( 0 != cs.get() );
+        ensure( nullptr != cs.get() );
 
         Coordinate c0(0, 0);
         Coordinate c1(3, 3);
@@ -156,8 +156,8 @@ namespace tut
         ensure_equals( cs->size(), coords_size );
 
         // Create SegmentString instance
-        
-        NodedSegmentString segment(cs.release(), 0);
+
+        NodedSegmentString segment(cs.release(), nullptr);
 
         ensure_equals( segment.size(), coords_size );
 
@@ -170,7 +170,7 @@ namespace tut
             ensure_equals( node.segmentIndex, segment_index );
 
             // on first endpoint ...
-            ensure( node.isInterior() ); 
+            ensure( node.isInterior() );
 
         }
 
@@ -188,7 +188,7 @@ namespace tut
         const size_t coords_size = 2;
         CoordSeqPtr cs( factory_->create((size_t)0, coords_size) );
 
-        ensure( 0 != cs.get() );
+        ensure( nullptr != cs.get() );
 
         Coordinate c0(0, 0);
         Coordinate c1(3, 3);
@@ -198,8 +198,8 @@ namespace tut
         ensure_equals( cs->size(), coords_size );
 
         // Create SegmentString instance
-        
-        NodedSegmentString segment(cs.release(), 0);
+
+        NodedSegmentString segment(cs.release(), nullptr);
 
         ensure_equals( segment.size(), coords_size );
 
@@ -212,7 +212,7 @@ namespace tut
             ensure_equals( node.segmentIndex, segment_index );
 
             // on first endpoint ...
-            ensure( node.isInterior() ); 
+            ensure( node.isInterior() );
 
         }
 

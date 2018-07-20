@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  * Copyright (C) 2005 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -54,30 +54,30 @@ public:
 
 	friend class GeometryFactory;
 
-	virtual ~MultiLineString();
+	~MultiLineString() override;
 
 	/// Returns line dimension (1)
-	Dimension::DimensionType getDimension() const;
+	Dimension::DimensionType getDimension() const override;
 
 	/**
 	 * \brief
 	 * Returns Dimension::False if all LineStrings in the collection
 	 * are closed, 0 otherwise.
 	 */
-	int getBoundaryDimension() const;
+	int getBoundaryDimension() const override;
 
-	/// Returns a (possibly empty) MultiPoint 
-	Geometry* getBoundary() const;
+	/// Returns a (possibly empty) MultiPoint
+	Geometry* getBoundary() const override;
 
-	std::string getGeometryType() const;
+	std::string getGeometryType() const override;
 
-	virtual GeometryTypeId getGeometryTypeId() const;
+	GeometryTypeId getGeometryTypeId() const override;
 
 	bool isClosed() const;
 
-	bool equalsExact(const Geometry *other, double tolerance=0) const;
+	bool equalsExact(const Geometry *other, double tolerance=0) const override;
 
-	Geometry *clone() const;
+	Geometry *clone() const override;
 
 	/**
 	 * Creates a MultiLineString in the reverse
@@ -88,7 +88,7 @@ public:
 	 *
 	 * @return a MultiLineString in the reverse order
 	 */
-	MultiLineString* reverse() const;
+	Geometry* reverse() const override;
 
 protected:
 
@@ -109,7 +109,7 @@ protected:
 	 * 	The GeometryFactory used to create this geometry.
 	 *	Caller must keep the factory alive for the life-time
 	 *	of the constructed MultiLineString.
-	 * 	
+	 *
 	 */
 	MultiLineString(std::vector<Geometry *> *newLines,
 			const GeometryFactory *newFactory);

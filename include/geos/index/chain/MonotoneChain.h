@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -22,7 +22,7 @@
 #include <geos/export.h>
 #include <geos/geom/Envelope.h> // for inline
 
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 // Forward declarations
 namespace geos {
@@ -31,8 +31,8 @@ namespace geos {
 		class LineSegment;
 		class CoordinateSequence;
 	}
-	namespace index { 
-		namespace chain { 
+	namespace index {
+		namespace chain {
 			class MonotoneChainSelectAction;
 			class MonotoneChainOverlapAction;
 		}
@@ -48,11 +48,11 @@ namespace chain { // geos::index::chain
  * allow for fast searching of intersections.
  *
  * They have the following properties:
- * 
+ *
  * - the segments within a monotone chain never intersect each other
  * - the envelope of any contiguous subset of the segments in a monotone
  *   chain is equal to the envelope of the endpoints of the subset.
- * 
+ *
  * Property 1 means that there is no need to test pairs of segments from
  * within the same monotone chain for intersection.
  * Property 2 allows an efficient binary search to be used to find the
@@ -68,7 +68,7 @@ namespace chain { // geos::index::chain
  * have to be allocated.
  *
  * MonotoneChains support the following kinds of queries:
- * 
+ *
  * - Envelope select: determine all the segments in the chain which
  *   intersect a given envelope
  * - Overlap: determine all the pairs of segments in two chains whose
@@ -119,7 +119,7 @@ public:
 	 * Allocates a new CoordinateSequence to hold the Coordinates
 	 *
 	 */
-	std::auto_ptr<geom::CoordinateSequence> getCoordinates() const;
+	std::unique_ptr<geom::CoordinateSequence> getCoordinates() const;
 
 	/**
 	 * Determine all the line segments in the chain whose envelopes overlap
@@ -148,7 +148,7 @@ private:
 			     std::size_t start1, std::size_t end1,
 	                     MonotoneChainOverlapAction& mco);
 
-	/// Externally owned 
+	/// Externally owned
 	const geom::CoordinateSequence& pts;
 
 	/// Owned by this class, lazely created
@@ -167,8 +167,8 @@ private:
 	int id;
 
     // Declare type as noncopyable
-    MonotoneChain(const MonotoneChain& other);
-    MonotoneChain& operator=(const MonotoneChain& rhs);
+    MonotoneChain(const MonotoneChain& other) = delete;
+    MonotoneChain& operator=(const MonotoneChain& rhs) = delete;
 };
 
 } // namespace geos::index::chain

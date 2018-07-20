@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -38,7 +38,7 @@ namespace geos {
 	}
 	namespace index {
 		namespace quadtree {
-			// class Root; 
+			// class Root;
 		}
 	}
 }
@@ -53,7 +53,7 @@ namespace quadtree { // geos::index::quadtree
  * of 2D rectangles.  If other kinds of spatial objects
  * need to be indexed they can be represented by their
  * envelopes
- * 
+ *
  * The quadtree structure is used to provide a primary filter
  * for range rectangle queries.  The query() method returns a list of
  * all objects which <i>may</i> intersect the query rectangle.  Note that
@@ -65,7 +65,7 @@ namespace quadtree { // geos::index::quadtree
  * This implementation does not require specifying the extent of the inserted
  * items beforehand.  It will automatically expand to accomodate any extent
  * of dataset.
- * 
+ *
  * This data structure is also known as an <i>MX-CIF quadtree</i>
  * following the usage of Samet and others.
  */
@@ -113,15 +113,15 @@ public:
 		minExtent(1.0)
 	{}
 
-	~Quadtree();
+	~Quadtree() override;
 
 	/// Returns the number of levels in the tree.
 	int depth();
 
 	/// Returns the number of items in the tree.
 	int size();
-	
-	void insert(const geom::Envelope *itemEnv, void *item);
+
+	void insert(const geom::Envelope *itemEnv, void *item) override;
 
 	/** \brief
 	 * Queries the tree and returns items which may lie
@@ -140,7 +140,7 @@ public:
 	 * @param ret a vector where items which may intersect the
 	 * 	      search envelope are pushed
 	 */
-	void query(const geom::Envelope *searchEnv, std::vector<void*>& ret);
+	void query(const geom::Envelope *searchEnv, std::vector<void*>& ret) override;
 
 
 	/** \brief
@@ -159,7 +159,7 @@ public:
 	 * @param searchEnv the envelope of the desired query area.
 	 * @param visitor a visitor object which is passed the visited items
 	 */
-	void query(const geom::Envelope *searchEnv, ItemVisitor& visitor)
+	void query(const geom::Envelope *searchEnv, ItemVisitor& visitor) override
 	{
 		/*
 		 * the items that are matched are the items in quads which
@@ -175,7 +175,7 @@ public:
 	 * @param item the item to remove
 	 * @return <code>true</code> if the item was found (and thus removed)
 	 */
-	bool remove(const geom::Envelope* itemEnv, void* item);
+	bool remove(const geom::Envelope* itemEnv, void* item) override;
 
 	/// Return a list of all items in the Quadtree
 	std::vector<void*>* queryAll();

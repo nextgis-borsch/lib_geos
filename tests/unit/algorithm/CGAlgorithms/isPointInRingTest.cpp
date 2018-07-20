@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for CGAlgorithms::isPointInRing() function
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/algorithm/CGAlgorithms.h>
 #include <geos/geom/Polygon.h>
@@ -24,21 +24,21 @@ namespace tut
 
     struct test_ispointinring_data
     {
-	    typedef std::auto_ptr<geos::geom::Geometry> GeomPtr;
+	    typedef std::unique_ptr<geos::geom::Geometry> GeomPtr;
 
         geos::geom::CoordinateSequence* cs_;
         geos::io::WKTReader reader_;
-        
+
         test_ispointinring_data()
-            : cs_(0)
+            : cs_(nullptr)
         {
-            assert(0 == cs_);
+            assert(nullptr == cs_);
         }
-        
+
         ~test_ispointinring_data()
         {
             delete cs_;
-            cs_ = 0;
+            cs_ = nullptr;
         }
     };
 

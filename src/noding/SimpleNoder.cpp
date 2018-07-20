@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -35,12 +35,12 @@ SimpleNoder::computeIntersects(SegmentString* e0, SegmentString* e1)
 
 	const CoordinateSequence* pts0 = e0->getCoordinates();
 	const CoordinateSequence* pts1 = e1->getCoordinates();
-	for (unsigned int i0=0, n0=pts0->getSize()-1; i0<n0; i0++) {
-		for (unsigned int i1=0, n1=pts1->getSize()-1; i1<n1; i1++) {
+	for (unsigned int i0=0, n0=static_cast<unsigned int>(pts0->getSize()-1); i0<n0; i0++) {
+		for (unsigned int i1=0, n1=static_cast<unsigned int>(pts1->getSize()-1); i1<n1; i1++) {
 			segInt->processIntersections(e0, i0, e1, i1);
 		}
 	}
- 
+
 }
 
 /*public*/

@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSNode
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -31,25 +31,25 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeosnode_data()
-            : geom1_(0), geom2_(0), w_(0)
+            : geom1_(nullptr), geom2_(nullptr), w_(nullptr)
         {
             initGEOS(notice, notice);
             w_ = GEOSWKTWriter_create();
             GEOSWKTWriter_setTrim(w_, 1);
-        }       
+        }
 
         ~test_capigeosnode_data()
         {
             GEOSGeom_destroy(geom1_);
             GEOSGeom_destroy(geom2_);
             GEOSWKTWriter_destroy(w_);
-            geom1_ = 0;
-            geom2_ = 0;
+            geom1_ = nullptr;
+            geom2_ = nullptr;
             finishGEOS();
         }
 
@@ -71,11 +71,11 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(0 0, 10 10, 10 0, 0 10)");
         geom2_ = GEOSNode(geom1_);
-        ensure(0 != geom2_);
+        ensure(nullptr != geom2_);
 
         GEOSNormalize(geom2_);
         char* wkt_c = GEOSWKTWriter_write(w_, geom2_);
-        std::string out(wkt_c); 
+        std::string out(wkt_c);
         free(wkt_c);
 
         ensure_equals(out,
@@ -90,11 +90,11 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("MULTILINESTRING((0 0, 2 0, 4 0),(5 0, 3 0, 1 0))");
         geom2_ = GEOSNode(geom1_);
-        ensure(0 != geom2_);
+        ensure(nullptr != geom2_);
 
         GEOSNormalize(geom2_);
         char* wkt_c = GEOSWKTWriter_write(w_, geom2_);
-        std::string out(wkt_c); 
+        std::string out(wkt_c);
         free(wkt_c);
 
         ensure_equals(out,
@@ -109,18 +109,18 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("MULTILINESTRING((0 0, 2 0, 4 0),(0 0, 2 0, 4 0))");
         geom2_ = GEOSNode(geom1_);
-        ensure(0 != geom2_);
+        ensure(nullptr != geom2_);
 
         GEOSNormalize(geom2_);
         char* wkt_c = GEOSWKTWriter_write(w_, geom2_);
-        std::string out(wkt_c); 
+        std::string out(wkt_c);
         free(wkt_c);
 
         ensure_equals(out,
           "MULTILINESTRING ((2 0, 4 0), (0 0, 2 0))"
         );
     }
-    
+
 
 } // namespace tut
 

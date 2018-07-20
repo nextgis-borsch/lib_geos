@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSRelatePatternMatch
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -27,14 +27,14 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeosrelatepatternmatch_data()
         {
             initGEOS(notice, notice);
-        }       
+        }
 
         ~test_capigeosrelatepatternmatch_data()
         {
@@ -67,7 +67,7 @@ namespace tut
         char ret = GEOSRelatePatternMatch("000000000", "TTTTTTTTT");
 	ensure_equals(ret, char(1));
     }
- 
+
     template<>
     template<>
     void object::test<3>()

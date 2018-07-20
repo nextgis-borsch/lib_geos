@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -27,9 +27,9 @@
 #include <sstream>
 
 #include <geos/geomgraph/Edge.h>
-#include <geos/geomgraph/Position.h> 
-#include <geos/geomgraph/Label.h> 
-#include <geos/geomgraph/index/MonotoneChainEdge.h> 
+#include <geos/geomgraph/Position.h>
+#include <geos/geomgraph/Label.h>
+#include <geos/geomgraph/index/MonotoneChainEdge.h>
 #include <geos/algorithm/LineIntersector.h>
 #include <geos/geom/IntersectionMatrix.h>
 #include <geos/geom/CoordinateSequence.h>
@@ -59,7 +59,7 @@ using namespace geos::algorithm;
  * Handles edges from both L and A geometrys.
  */
 void
-Edge::updateIM(const Label& lbl, IntersectionMatrix& im) 
+Edge::updateIM(const Label& lbl, IntersectionMatrix& im)
 {
 	im.setAtLeastIfValid(lbl.getLocation(0,Position::ON),
 	                      lbl.getLocation(1,Position::ON),
@@ -89,8 +89,8 @@ Edge::~Edge()
 Edge::Edge(CoordinateSequence* newPts, const Label& newLabel)
 	:
 	GraphComponent(newLabel),
-	mce(NULL),
-	env(NULL),
+	mce(nullptr),
+	env(nullptr),
 	isIsolatedVar(true),
 	depth(),
 	depthDelta(0),
@@ -104,8 +104,8 @@ Edge::Edge(CoordinateSequence* newPts, const Label& newLabel)
 Edge::Edge(CoordinateSequence* newPts)
 	:
 	GraphComponent(),
-	mce(NULL),
-	env(NULL),
+	mce(nullptr),
+	env(nullptr),
 	isIsolatedVar(true),
 	depth(),
 	depthDelta(0),
@@ -120,7 +120,7 @@ MonotoneChainEdge*
 Edge::getMonotoneChainEdge()
 {
 	testInvariant();
-	if (mce==NULL) mce=new MonotoneChainEdge(this);
+	if (mce==nullptr) mce=new MonotoneChainEdge(this);
 	return mce;
 }
 
@@ -203,8 +203,8 @@ Edge::equals(const Edge& e) const
 {
 	testInvariant();
 
-	unsigned int npts1=getNumPoints(); 
-	unsigned int npts2=e.getNumPoints(); 
+	unsigned int npts1=getNumPoints();
+	unsigned int npts2=e.getNumPoints();
 
 	if (npts1 != npts2 ) return false;
 
@@ -257,7 +257,7 @@ Edge::print() const
 	ss << *this;
 	return ss.str();
 }
-  
+
 // Dunno how to implemente this in terms of operator<<
 string
 Edge::printReverse() const
@@ -288,7 +288,7 @@ Envelope*
 Edge::getEnvelope()
 {
 	// compute envelope lazily
-	if (env==NULL)
+	if (env==nullptr)
 	{
 		env=new Envelope();
 		unsigned int npts=getNumPoints();

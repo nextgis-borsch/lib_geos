@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -28,7 +28,7 @@
 #include <memory>
 
 #include <geos/geom/Coordinate.h>
-#include <geos/geom/CoordinateSequence.h> // for auto_ptr<CoordinateSequence>
+#include <geos/geom/CoordinateSequence.h> // for unique_ptr<CoordinateSequence>
 #include <geos/geomgraph/PlanarGraph.h>
 #include <geos/geom/LineString.h> // for LineStringLT
 
@@ -105,13 +105,13 @@ private:
 	int argIndex;
 
 	/// Cache for fast responses to getBoundaryPoints
-	std::auto_ptr< geom::CoordinateSequence > boundaryPoints;
+	std::unique_ptr< geom::CoordinateSequence > boundaryPoints;
 
-	std::auto_ptr< std::vector<Node*> > boundaryNodes;
+	std::unique_ptr< std::vector<Node*> > boundaryNodes;
 
 	bool hasTooFewPointsVar;
 
-	geom::Coordinate invalidPoint; 
+	geom::Coordinate invalidPoint;
 
 	/// Allocates a new EdgeSetIntersector. Remember to delete it!
 	index::EdgeSetIntersector* createEdgeSetIntersector();
@@ -155,8 +155,8 @@ private:
 		const geom::Coordinate& coord, int loc);
 
     // Declare type as noncopyable
-    GeometryGraph(const GeometryGraph& other);
-    GeometryGraph& operator=(const GeometryGraph& rhs);
+    GeometryGraph(const GeometryGraph& other) = delete;
+    GeometryGraph& operator=(const GeometryGraph& rhs) = delete;
 
 public:
 
@@ -175,7 +175,7 @@ public:
 	GeometryGraph(int newArgIndex, const geom::Geometry *newParentGeom,
 	              const algorithm::BoundaryNodeRule& boundaryNodeRule);
 
-	virtual ~GeometryGraph();
+	~GeometryGraph() override;
 
 
 	const geom::Geometry* getGeometry();
@@ -214,7 +214,7 @@ public:
 	index::SegmentIntersector* computeSelfNodes(
 			algorithm::LineIntersector *li,
 			bool computeRingSelfNodes,
-			const geom::Envelope *env=0)
+			const geom::Envelope *env=nullptr)
 	{
 		return computeSelfNodes(*li, computeRingSelfNodes, env);
 	}
@@ -223,7 +223,7 @@ public:
 			algorithm::LineIntersector *li,
 			bool computeRingSelfNodes,
 			bool isDoneIfProperInt,
-			const geom::Envelope *env=0)
+			const geom::Envelope *env=nullptr)
 	{
 		return computeSelfNodes(*li, computeRingSelfNodes, isDoneIfProperInt, env);
 	}
@@ -232,21 +232,21 @@ public:
 	// be deprecated.
 	index::SegmentIntersector* computeSelfNodes(
 			algorithm::LineIntersector& li,
-			bool computeRingSelfNodes, const geom::Envelope *env=0);
+			bool computeRingSelfNodes, const geom::Envelope *env=nullptr);
 
 	index::SegmentIntersector* computeSelfNodes(
 			algorithm::LineIntersector& li,
-			bool computeRingSelfNodes, bool isDoneIfProperInt, const geom::Envelope *env=0);
+			bool computeRingSelfNodes, bool isDoneIfProperInt, const geom::Envelope *env=nullptr);
 
 	index::SegmentIntersector* computeEdgeIntersections(GeometryGraph *g,
 		algorithm::LineIntersector *li, bool includeProper,
-		const geom::Envelope *env=0);
+		const geom::Envelope *env=nullptr);
 
 	std::vector<Edge*> *getEdges();
 
 	bool hasTooFewPoints();
 
-	const geom::Coordinate& getInvalidPoint(); 
+	const geom::Coordinate& getInvalidPoint();
 
 	const algorithm::BoundaryNodeRule& getBoundaryNodeRule() const
 	{ return boundaryNodeRule; }

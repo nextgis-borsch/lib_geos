@@ -3,7 +3,7 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005 2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
@@ -20,6 +20,16 @@
 
 #ifndef GEOS_GEOM_GEOMETRY_H
 #define GEOS_GEOM_GEOMETRY_H
+
+#ifndef USE_UNSTABLE_GEOS_CPP_API
+#ifndef _MSC_VER
+# warning "The GEOS C++ API is unstable, please use the C API instead"
+# warning "HINT: #include geos_c.h"
+#else
+#pragma message("The GEOS C++ API is unstable, please use the C API instead")
+#pragma message("HINT: #include geos_c.h")
+#endif
+#endif
 
 #include <geos/export.h>
 #include <geos/platform.h>
@@ -171,13 +181,13 @@ public:
 	friend class GeometryFactory;
 
 	/// A vector of const Geometry pointers
-	typedef std::vector<const Geometry *> ConstVect;
+	using ConstVect = std::vector<const Geometry *>;
 
 	/// A vector of non-const Geometry pointers
-	typedef std::vector<Geometry *> NonConstVect;
+	using NonConstVect = std::vector<Geometry *>;
 
-	/// An auto_ptr of Geometry
-	typedef std::auto_ptr<Geometry> AutoPtr;
+	/// An unique_ptr of Geometry
+	using Ptr = std::unique_ptr<Geometry> ;
 
 	/// Make a deep-copy of this Geometry
 	virtual Geometry* clone() const=0;
@@ -574,6 +584,14 @@ public:
 	/// all the points in the Geometry.
 	virtual Geometry* convexHull() const;
 
+	/**
+     * Computes a new geometry which has all component coordinate sequences
+     * in reverse order (opposite orientation) to this one.
+     *
+     * @return a reversed geometry
+     */
+	virtual Geometry* reverse() const=0;
+
 	/** \brief
 	 * Returns a Geometry representing the points shared by
 	 * this Geometry and other.
@@ -614,7 +632,7 @@ public:
    *
    * @see UnaryUnionOp
    */
-  AutoPtr Union() const;
+  Ptr Union() const;
 		// throw(IllegalArgumentException *, TopologyException *);
 
 	/**
@@ -641,8 +659,8 @@ public:
 	virtual Geometry* symDifference(const Geometry *other) const;
 
 	/** \brief
-	 * Returns true if the two Geometrys are exactly equal,
-	 * up to a specified tolerance.
+	 * Returns true iff the two Geometrys are of the same type and their
+	 * vertices corresponding by index are equal up to a specified tolerance.
 	 */
 	virtual bool equalsExact(const Geometry *other, double tolerance=0)
 		const=0; //Abstract
@@ -765,7 +783,7 @@ public:
 protected:
 
 	/// The bounding box of this Geometry
-	mutable std::auto_ptr<Envelope> envelope;
+	mutable std::unique_ptr<Envelope> envelope;
 
 	/// Returns true if the array contains any non-empty Geometrys.
 	static bool hasNonEmptyElements(const std::vector<Geometry *>* geometries);
@@ -794,7 +812,7 @@ protected:
 
 	//virtual void checkEqualPrecisionModel(Geometry *other);
 
-	virtual Envelope::AutoPtr computeEnvelopeInternal() const=0; //Abstract
+	virtual Envelope::Ptr computeEnvelopeInternal() const=0; //Abstract
 
 	virtual int compareToSameClass(const Geometry *geom) const=0; //Abstract
 
@@ -835,7 +853,7 @@ private:
 	class GEOS_DLL GeometryChangedFilter : public GeometryComponentFilter
 	{
 	public:
-		void filter_rw(Geometry* geom);
+		void filter_rw(Geometry* geom) override;
 	};
 
 	static GeometryChangedFilter geometryChangedFilter;
@@ -870,11 +888,11 @@ std::string geosversion();
  */
 std::string jtsport();
 
-// We use this instead of std::pair<auto_ptr<Geometry>> because C++11
+// We use this instead of std::pair<unique_ptr<Geometry>> because C++11
 // forbids that construct:
 // http://lwg.github.com/issues/lwg-closed.html#2068
 struct GeomPtrPair {
-	typedef std::auto_ptr<Geometry> GeomPtr;
+	typedef std::unique_ptr<Geometry> GeomPtr;
 	GeomPtr first;
 	GeomPtr second;
 };

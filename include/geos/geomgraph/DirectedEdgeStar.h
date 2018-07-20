@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -59,16 +59,16 @@ public:
 	DirectedEdgeStar()
 		:
 		EdgeEndStar(),
-		resultAreaEdgeList(0),
+		resultAreaEdgeList(nullptr),
 		label()
 	{}
 
-	~DirectedEdgeStar() {
+	~DirectedEdgeStar() override {
 		delete resultAreaEdgeList;
 	}
 
 	/// Insert a directed edge in the list
-	void insert(EdgeEnd *ee);
+	void insert(EdgeEnd *ee) override;
 
 	Label &getLabel() { return label; }
 
@@ -82,7 +82,7 @@ public:
 	 * Compute the labelling for all dirEdges in this star, as well
 	 * as the overall labelling
 	 */
-	void computeLabelling(std::vector<GeometryGraph*> *geom); // throw(TopologyException *);
+	void computeLabelling(std::vector<GeometryGraph*> *geom) override; // throw(TopologyException *);
 
 	/** \brief
 	 * For each dirEdge in the star,
@@ -98,17 +98,17 @@ public:
 	 * Traverse the star of DirectedEdges, linking the included edges together.
 	 * To link two dirEdges, the <next> pointer for an incoming dirEdge
 	 * is set to the next outgoing edge.
-	 * 
+	 *
 	 * DirEdges are only linked if:
-	 * 
+	 *
 	 * - they belong to an area (i.e. they have sides)
 	 * - they are marked as being in the result
-	 * 
+	 *
 	 * Edges are linked in CCW order (the order they are stored).
 	 * This means that rings have their face on the Right
 	 * (in other words,
 	 * the topological location of the face is given by the RHS label of the DirectedEdge)
-	 * 
+	 *
 	 * PRECONDITION: No pair of dirEdges are both marked as being in the result
 	 */
 	void linkResultDirectedEdges(); // throw(TopologyException *);
@@ -132,7 +132,7 @@ public:
 	 */
 	void computeDepths(DirectedEdge *de);
 
-	virtual std::string print() const;
+	std::string print() const override;
 
 private:
 

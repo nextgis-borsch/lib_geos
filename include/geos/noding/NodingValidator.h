@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -91,8 +91,8 @@ private:
 			const geom::Coordinate& p0, const geom::Coordinate& p1) const;
 
     // Declare type as noncopyable
-    NodingValidator(const NodingValidator& other);
-    NodingValidator& operator=(const NodingValidator& rhs);
+    NodingValidator(const NodingValidator& other) = delete;
+    NodingValidator& operator=(const NodingValidator& rhs) = delete;
 
 public:
 

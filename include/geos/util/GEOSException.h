@@ -1,4 +1,4 @@
-﻿/**********************************************************************
+/**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -57,10 +57,10 @@ public:
 		_msg(name+": "+msg)
 	{}
 
-	virtual ~GEOSException() throw()
+	~GEOSException() throw() override
 	{}
 
-	const char* what() const throw()
+	const char* what() const throw() override
 	{
 		return _msg.c_str();
 	}

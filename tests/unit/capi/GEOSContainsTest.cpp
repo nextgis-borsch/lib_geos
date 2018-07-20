@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSContains
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 #include <geos/io/WKBReader.h>
@@ -31,22 +31,22 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeoscontains_data()
-            : geom1_(0), geom2_(0)
+            : geom1_(nullptr), geom2_(nullptr)
         {
             initGEOS(notice, notice);
-        }       
+        }
 
         ~test_capigeoscontains_data()
         {
             GEOSGeom_destroy(geom1_);
             GEOSGeom_destroy(geom2_);
-            geom1_ = 0;
-            geom2_ = 0;
+            geom1_ = nullptr;
+            geom2_ = nullptr;
             finishGEOS();
         }
 
@@ -68,8 +68,8 @@ namespace tut
         geom1_ = GEOSGeomFromWKT("POLYGON EMPTY");
         geom2_ = GEOSGeomFromWKT("POLYGON EMPTY");
 
-        ensure( 0 != geom1_ );
-        ensure( 0 != geom2_ );
+        ensure( nullptr != geom1_ );
+        ensure( nullptr != geom2_ );
 
         char const r1 = GEOSContains(geom1_, geom2_);
 
@@ -86,9 +86,9 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("POLYGON((1 1,1 5,5 5,5 1,1 1))");
         geom2_ = GEOSGeomFromWKT("POINT(2 2)");
-        
-        ensure( 0 != geom1_ );
-        ensure( 0 != geom2_ );
+
+        ensure( nullptr != geom1_ );
+        ensure( nullptr != geom2_ );
 
         char const r1 = GEOSContains(geom1_, geom2_);
 
@@ -98,21 +98,21 @@ namespace tut
 
         ensure_equals(int(r2), 0);
     }
-    
+
     template<>
     template<>
     void object::test<3>()
     {
         geom1_ = GEOSGeomFromWKT("MULTIPOLYGON(((0 0,0 10,10 10,10 0,0 0)))");
         geom2_ = GEOSGeomFromWKT("POLYGON((1 1,1 2,2 2,2 1,1 1))");
-        
-        ensure( 0 != geom1_ );
-        ensure( 0 != geom2_ );
+
+        ensure( nullptr != geom1_ );
+        ensure( nullptr != geom2_ );
 
         char const r1 = GEOSContains(geom1_, geom2_);
 
         ensure_equals(int(r1), 1);
-        
+
         char const r2 = GEOSContains(geom2_, geom1_);
 
         ensure_equals(int(r2), 0);
@@ -132,34 +132,36 @@ namespace tut
         // A contains B if precision is limited to 1e+10
         {
             geos::geom::PrecisionModel pm(1e+10);
-            geos::geom::GeometryFactory::unique_ptr factory = geos::geom::GeometryFactory::create(&pm);
+            geos::geom::GeometryFactory::Ptr factory = geos::geom::GeometryFactory::create(&pm);
             geos::io::WKBReader reader(*factory);
 
             std::istringstream sOuter(outer);
             geom1_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sOuter));
             std::istringstream sInner(inner);
             geom2_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sInner));
-            ensure(0 != geom1_);
-            ensure(0 != geom2_);
+            ensure(nullptr != geom1_);
+            ensure(nullptr != geom2_);
 
             int ret = GEOSContains(geom1_, geom2_);
             ensure_equals(ret, 1);
             ret = GEOSContains(geom2_, geom1_);
             ensure_equals(ret, 0);
+            GEOSGeom_destroy(geom1_);
+            GEOSGeom_destroy(geom2_);
         }
 
         // A does NOT contain B if precision is extended to 1e+11 or beyond
         {
             geos::geom::PrecisionModel pm(1e+11);
-            geos::geom::GeometryFactory::unique_ptr factory = geos::geom::GeometryFactory::create(&pm);
+            geos::geom::GeometryFactory::Ptr factory = geos::geom::GeometryFactory::create(&pm);
             geos::io::WKBReader reader(*factory);
 
             std::istringstream sOuter(outer);
             geom1_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sOuter));
             std::istringstream sInner(inner);
             geom2_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sInner));
-            ensure(0 != geom1_);
-            ensure(0 != geom2_);
+            ensure(nullptr != geom1_);
+            ensure(nullptr != geom2_);
 
             int ret = GEOSContains(geom1_, geom2_);
             ensure_equals(ret, 0);
@@ -167,7 +169,7 @@ namespace tut
             ensure_equals(ret, 0);
         }
     }
- 
+
     // Test outer rectangle contains inner rectangle with one coincident vertex
     // and two vertices of the inner rectangle are on the boundary (lay on segments)
     // of the outer rectangle.
@@ -176,7 +178,7 @@ namespace tut
     template<>
     void object::test<5>()
     {
-        // Coincident vertext at -753.167968418005 93709.4279185742
+        // Coincident vertex at -753.167968418005 93709.4279185742
         //POLYGON ((-753.167968418005 93754.0955183194,-816.392328351464 93754.0955183194,-816.392328351464 93709.4279185742,-753.167968418005 93709.4279185742,-753.167968418005 93754.0955183194))
         std::string const outer("01030000800100000005000000bd70d3ff578987c09e373e87a1e3f6400000000000000000a9f60b7d238389c09e373e87a1e3f6400000000000000000a9f60b7d238389c09625c1d8d6e0f6400000000000000000bd70d3ff578987c09625c1d8d6e0f6400000000000000000bd70d3ff578987c09e373e87a1e3f6400000000000000000");
         //POLYGON ((-753.167968418005 93747.6909727677,-799.641978447015 93747.6909727677,-799.641978447015 93709.4279185742,-753.167968418005 93709.4279185742,-753.167968418005 93747.6909727677))
@@ -185,34 +187,37 @@ namespace tut
         // A contains B if precision is limited to 1e+10
         {
             geos::geom::PrecisionModel pm(1e+10);
-            geos::geom::GeometryFactory::unique_ptr factory = geos::geom::GeometryFactory::create(&pm);
+            geos::geom::GeometryFactory::Ptr factory = geos::geom::GeometryFactory::create(&pm);
             geos::io::WKBReader reader(*factory);
 
             std::istringstream sOuter(outer);
             geom1_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sOuter));
             std::istringstream sInner(inner);
             geom2_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sInner));
-            ensure(0 != geom1_);
-            ensure(0 != geom2_);
+            ensure(nullptr != geom1_);
+            ensure(nullptr != geom2_);
 
             int ret = GEOSContains(geom1_, geom2_);
             ensure_equals(ret, 1);
             ret = GEOSContains(geom2_, geom1_);
             ensure_equals(ret, 0);
+
+            GEOSGeom_destroy(geom1_);
+            GEOSGeom_destroy(geom2_);
         }
 
         // A contains B if FLOATING PM is used with extended precision
         {
             geos::geom::PrecisionModel pm;
-            geos::geom::GeometryFactory::unique_ptr factory = geos::geom::GeometryFactory::create(&pm);
+            geos::geom::GeometryFactory::Ptr factory = geos::geom::GeometryFactory::create(&pm);
             geos::io::WKBReader reader(*factory);
 
             std::istringstream sOuter(outer);
             geom1_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sOuter));
             std::istringstream sInner(inner);
             geom2_ = reinterpret_cast<GEOSGeometry*>(reader.readHEX(sInner));
-            ensure(0 != geom1_);
-            ensure(0 != geom2_);
+            ensure(nullptr != geom1_);
+            ensure(nullptr != geom2_);
 
             int ret = GEOSContains(geom1_, geom2_);
             ensure_equals(ret, 1);

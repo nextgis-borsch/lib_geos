@@ -25,6 +25,10 @@
 #include <geos/geom/LineSegment.h>
 #include <geos/index/ItemVisitor.h>
 
+using namespace geos::geom;
+using namespace geos::operation::distance;
+using namespace geos::index::strtree;
+
 namespace geos {
 namespace precision {
 
@@ -35,14 +39,14 @@ double MinimumClearance::getDistance() {
     return minClearance;
 }
 
-std::auto_ptr<LineString> MinimumClearance::getLine() {
+std::unique_ptr<LineString> MinimumClearance::getLine() {
     compute();
 
     // return empty line string if no min pts were found
     if (minClearance == std::numeric_limits<double>::infinity())
-        return std::auto_ptr<LineString>(inputGeom->getFactory()->createLineString());
+        return std::unique_ptr<LineString>(inputGeom->getFactory()->createLineString());
 
-    return std::auto_ptr<LineString>(inputGeom->getFactory()->createLineString(minClearancePts->clone()));
+    return std::unique_ptr<LineString>(inputGeom->getFactory()->createLineString(minClearancePts->clone()));
 }
 
 void MinimumClearance::compute() {
@@ -68,7 +72,7 @@ void MinimumClearance::compute() {
             return &minPts;
         }
 
-        double distance(const ItemBoundable* b1, const ItemBoundable* b2) {
+        double distance(const ItemBoundable* b1, const ItemBoundable* b2) override {
             FacetSequence* fs1 = static_cast<FacetSequence*>(b1->getItem());
             FacetSequence* fs2 = static_cast<FacetSequence*>(b2->getItem());
 
@@ -138,7 +142,7 @@ void MinimumClearance::compute() {
     };
 
     struct ItemDeleter : public index::ItemVisitor {
-        void visitItem(void * item) {
+        void visitItem(void * item) override {
             delete static_cast<FacetSequence*>(item);
         }
     };
@@ -157,11 +161,11 @@ void MinimumClearance::compute() {
     };
 
     // already computed
-    if (minClearancePts.get() != NULL)
+    if (minClearancePts.get() != nullptr)
         return;
 
     // initialize to "No Distance Exists" state
-    minClearancePts = std::auto_ptr<CoordinateSequence>(inputGeom->getFactory()->getCoordinateSequenceFactory()->create(2, 2));
+    minClearancePts = std::unique_ptr<CoordinateSequence>(inputGeom->getFactory()->getCoordinateSequenceFactory()->create(2, 2));
     minClearance = std::numeric_limits<double>::infinity();
 
     // handle empty geometries

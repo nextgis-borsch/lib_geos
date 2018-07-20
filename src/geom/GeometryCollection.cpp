@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -24,6 +24,7 @@
 #include <geos/geom/CoordinateSequenceFilter.h>
 #include <geos/geom/CoordinateArraySequenceFactory.h>
 #include <geos/geom/Dimension.h>
+#include <geos/geom/GeometryFactory.h>
 #include <geos/geom/GeometryFilter.h>
 #include <geos/geom/GeometryComponentFilter.h>
 #include <geos/geom/Envelope.h>
@@ -61,7 +62,7 @@ GeometryCollection::GeometryCollection(const GeometryCollection &gc)
 GeometryCollection::GeometryCollection(vector<Geometry *> *newGeoms, const GeometryFactory *factory):
 	Geometry(factory)
 {
-	if (newGeoms==NULL) {
+	if (newGeoms==nullptr) {
 		geometries=new vector<Geometry *>();
 		return;
 	}
@@ -81,7 +82,7 @@ GeometryCollection::GeometryCollection(vector<Geometry *> *newGeoms, const Geome
 
 /*
  * Collects all coordinates of all subgeometries into a CoordinateSequence.
- * 
+ *
  * Returns a newly the collected coordinates
  *
  */
@@ -98,7 +99,7 @@ GeometryCollection::getCoordinates() const
 			k++;
 			(*coordinates)[k] = childCoordinates->getAt(j);
 		}
-		delete childCoordinates; 
+		delete childCoordinates;
 	}
 	return CoordinateArraySequenceFactory::instance()->create(coordinates);
 }
@@ -135,7 +136,7 @@ GeometryCollection::getBoundaryDimension() const
 	return dimension;
 }
 
-int 
+int
 GeometryCollection::getCoordinateDimension() const
 {
 	int dimension=2;
@@ -249,10 +250,10 @@ GeometryCollection::normalize()
 	sort(geometries->begin(), geometries->end(), GeometryGreaterThen());
 }
 
-Envelope::AutoPtr
+Envelope::Ptr
 GeometryCollection::computeEnvelopeInternal() const
 {
-	Envelope::AutoPtr envelope(new Envelope());
+	Envelope::Ptr envelope(new Envelope());
 	for (size_t i=0; i<geometries->size(); i++) {
 		const Envelope *env=(*geometries)[i]->getEnvelopeInternal();
 		envelope->expandToInclude(env);
@@ -270,7 +271,7 @@ GeometryCollection::compareToSameClass(const Geometry *g) const
 const Coordinate*
 GeometryCollection::getCoordinate() const
 {
-	// should use auto_ptr here or return NULL or throw an exception !
+	// should use unique_ptr here or return NULL or throw an exception !
 	// 	--strk;
 	if (isEmpty()) return new Coordinate();
     	return (*geometries)[0]->getCoordinate();
@@ -365,6 +366,25 @@ GeometryTypeId
 GeometryCollection::getGeometryTypeId() const
 {
 	return GEOS_GEOMETRYCOLLECTION;
+}
+
+Geometry*
+GeometryCollection::reverse() const
+{
+	if (isEmpty()) {
+		return clone();
+	}
+
+	auto* reversed = new std::vector<Geometry*>{geometries->size()};
+
+	std::transform(geometries->begin(),
+				   geometries->end(),
+				   reversed->begin(),
+				   [](const Geometry* g) {
+					   return g->reverse();
+				   });
+
+	return getFactory()->createGeometryCollection(reversed);
 }
 
 } // namespace geos::geom

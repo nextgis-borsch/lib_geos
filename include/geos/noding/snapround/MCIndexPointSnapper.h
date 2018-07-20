@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -48,7 +48,7 @@ namespace snapround { // geos::noding::snapround
 class GEOS_DLL MCIndexPointSnapper {
 
 public:
- 
+
 
 	MCIndexPointSnapper(index::SpatialIndex& nIndex)
 		:
@@ -71,7 +71,7 @@ public:
 			unsigned int vertexIndex);
 
 	bool snap(HotPixel& hotPixel) {
-		return snap(hotPixel, 0, 0);
+		return snap(hotPixel, nullptr, 0);
 	}
 
 
@@ -80,8 +80,8 @@ private:
 	index::SpatialIndex& index;
 
     // Declare type as noncopyable
-    MCIndexPointSnapper(const MCIndexPointSnapper& other);
-    MCIndexPointSnapper& operator=(const MCIndexPointSnapper& rhs);
+    MCIndexPointSnapper(const MCIndexPointSnapper& other) = delete;
+    MCIndexPointSnapper& operator=(const MCIndexPointSnapper& rhs) = delete;
 };
 
 

@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -42,7 +42,7 @@ namespace predicate { // geos::operation::predicate
 /** \brief
  * Optimized implementation of spatial predicate "contains"
  * for cases where the first Geometry is a rectangle.
- * 
+ *
  * As a further optimization,
  * this class can be used directly to test many geometries against a single
  * rectangle.
@@ -110,8 +110,8 @@ public:
 	bool contains(const geom::Geometry& geom);
 
     // Declare type as noncopyable
-    RectangleContains(const RectangleContains& other);
-    RectangleContains& operator=(const RectangleContains& rhs);
+    RectangleContains(const RectangleContains& other) = delete;
+    RectangleContains& operator=(const RectangleContains& rhs) = delete;
 };
 
 

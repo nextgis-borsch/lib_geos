@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -58,9 +58,9 @@ HotPixel::getSafeEnvelope() const
 {
 	static const double SAFE_ENV_EXPANSION_FACTOR = 0.75;
 
-	if (safeEnv.get() == NULL) {
+	if (safeEnv.get() == nullptr) {
 		double safeTolerance = SAFE_ENV_EXPANSION_FACTOR / scaleFactor;
-		safeEnv = auto_ptr<Envelope>(new Envelope(originalPt.x - safeTolerance,
+		safeEnv = unique_ptr<Envelope>(new Envelope(originalPt.x - safeTolerance,
 			originalPt.x + safeTolerance,
 			originalPt.y - safeTolerance,
 			originalPt.y + safeTolerance
@@ -71,7 +71,7 @@ HotPixel::getSafeEnvelope() const
 
 /*private*/
 void
-HotPixel::initCorners(const Coordinate& pt) 
+HotPixel::initCorners(const Coordinate& pt)
 {
 	double tolerance = 0.5;
 	minx = pt.x - tolerance;
@@ -174,13 +174,13 @@ HotPixel::intersectsPixelClosure(const Coordinate& p0,
 bool
 HotPixel::addSnappedNode(NodedSegmentString& segStr, size_t segIndex)
 {
-	const Coordinate& p0 = segStr.getCoordinate(segIndex);
-	const Coordinate& p1 = segStr.getCoordinate(segIndex + 1);
+	const Coordinate& p0 = segStr.getCoordinate(static_cast<unsigned int>(segIndex));
+	const Coordinate& p1 = segStr.getCoordinate(static_cast<unsigned int>(segIndex + 1));
 
 	if (intersects(p0, p1))
 	{
 		//cout << "snapped: " <<  snapPt << endl;
-		segStr.addIntersection(getCoordinate(), segIndex);
+		segStr.addIntersection(getCoordinate(), static_cast<unsigned int>(segIndex));
 		return true;
 	}
 	return false;

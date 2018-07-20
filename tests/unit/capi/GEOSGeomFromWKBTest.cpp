@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSGeomFromWKB
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 #include <utility.h> // wkb_hex_decoder
 // geos
 #include <geos_c.h>
@@ -33,25 +33,25 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeosgeomfromwkb_data()
-            : geom1_(0), geom2_(0), reader_(0)
+            : geom1_(nullptr), geom2_(nullptr), reader_(nullptr)
         {
             initGEOS(notice, notice);
             reader_ = GEOSWKTReader_create();
-        }       
+        }
 
         ~test_capigeosgeomfromwkb_data()
         {
             GEOSGeom_destroy(geom2_);
-            geom2_ = 0;
+            geom2_ = nullptr;
             GEOSGeom_destroy(geom1_);
-            geom1_ = 0;
+            geom1_ = nullptr;
             GEOSWKTReader_destroy(reader_);
-            reader_ = 0;
+            reader_ = nullptr;
             finishGEOS();
         }
 
@@ -61,7 +61,7 @@ namespace tut
             wkb_hex_decoder::decode(wkbhex, wkb);
 
             geom1_ = GEOSGeomFromWKB_buf(&wkb[0], wkb.size());
-            ensure("GEOSGeomFromWKB_buf failed to create geometry", 0 != geom1_ );
+            ensure("GEOSGeomFromWKB_buf failed to create geometry", nullptr != geom1_ );
 
             // TODO: Update test to compare with WKT-based geometry
             (void)wkt;
@@ -101,7 +101,7 @@ namespace tut
         std::string ewkb("01010000200400000000000000000000000000000000000000");
         test_wkb(ewkb, wkt);
     }
-    
+
     template<>
     template<>
     void object::test<3>()

@@ -1,9 +1,9 @@
 // $Id$
-// 
+//
 // Test Suite for geos::precision::GeometryPrecisionReducer class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/precision/GeometryPrecisionReducer.h>
 #include <geos/geom/Geometry.h>
@@ -24,13 +24,13 @@ namespace tut
     // Common data used by tests
     struct test_gpr_data
     {
-        typedef std::auto_ptr<geos::geom::Geometry> GeometryPtr;
+        typedef std::unique_ptr<geos::geom::Geometry> GeometryPtr;
         typedef geos::geom::GeometryFactory GeometryFactory;
 
         geos::geom::PrecisionModel pm_float_;
         geos::geom::PrecisionModel pm_fixed_;
-        GeometryFactory::unique_ptr factory_;
-        GeometryFactory::unique_ptr factory_fixed_;
+        GeometryFactory::Ptr factory_;
+        GeometryFactory::Ptr factory_fixed_;
         geos::io::WKTReader reader_;
         geos::precision::GeometryPrecisionReducer reducer_;
         geos::precision::GeometryPrecisionReducer reducerKeepCollapse_; // keep collapse

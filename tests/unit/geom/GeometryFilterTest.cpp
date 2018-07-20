@@ -1,7 +1,7 @@
 //
 // Test Suite for geos::geom::GeometryFilter class.
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/geom/Geometry.h>
 #include <geos/geom/GeometryFactory.h>
@@ -16,10 +16,10 @@ namespace tut
 
 struct test_geometryfilter_data
 {
-    typedef geos::geom::Geometry::AutoPtr GeometryPtr; // owner
+    typedef geos::geom::Geometry::Ptr GeometryPtr; // owner
     typedef std::vector<geos::geom::Geometry const*> GeometryRefArray; // observer
 
-    geos::geom::GeometryFactory::unique_ptr gf;
+    geos::geom::GeometryFactory::Ptr gf;
     geos::io::WKTReader reader;
     test_geometryfilter_data()
         : gf(geos::geom::GeometryFactory::create())
@@ -59,14 +59,14 @@ void object::test<1>()
             ensure(lineal.empty());
             ensure(nonlineal.empty());
         }
-        void filter_ro(geos::geom::Geometry const* g)
+        void filter_ro(geos::geom::Geometry const* g) override
         {
             if (dynamic_cast<geos::geom::Lineal const*>(g))
                 lineal.push_back(g);
             else
                 nonlineal.push_back(g);
         }
-        void filter_rw(geos::geom::Geometry*) {}
+        void filter_rw(geos::geom::Geometry*) override {}
     };
 
     GeometryRefArray lineal;
@@ -84,13 +84,13 @@ void object::test<1>()
     //   0: GeometryCollection
     //   1: Point
     //   2: Polygon
-    ensure_equals(lineal.size(), 4);
+    ensure_equals(lineal.size(), 4ul);
     // TODO: shouldn't be 1 for POLYGON?
-    ensure_equals(nonlineal.size(), 3);
+    ensure_equals(nonlineal.size(), 3ul);
     // TODO: is 7, shouldn't be not 4?
     //ensure_equals(lineal.size() + nonlineal.size(), g->getNumGeometries());
-    ensure_equals(g->getNumGeometries(), 4);
-    ensure_equals(lineal.size() + nonlineal.size(), 7);
+    ensure_equals(g->getNumGeometries(), 4ul);
+    ensure_equals(lineal.size() + nonlineal.size(), 7ul);
 }
 
 } // namespace tut

@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for geos::noding::snapround::MCIndexSnapRounder class.
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/noding/SegmentNode.h>
 #include <geos/noding/Noder.h>
@@ -49,9 +49,9 @@ namespace tut
       typedef geos::geom::PrecisionModel PrecisionModel;
       typedef geos::geom::CoordinateSequence CoordinateSequence;
 
-      typedef std::auto_ptr<CoordinateSequence> CoordSeqPtr;
-      typedef std::auto_ptr<Geometry> GeomPtr;
-	
+      typedef std::unique_ptr<CoordinateSequence> CoordSeqPtr;
+      typedef std::unique_ptr<Geometry> GeomPtr;
+
       typedef std::vector<SegmentString*> SegStrVct;
       typedef std::vector<Geometry*> GeomVct;
 
@@ -75,7 +75,7 @@ namespace tut
       void getSegmentStrings(const Geometry& g, SegStrVct& vct)
       {
         CoordSeqPtr s ( g.getCoordinates() );
-        vct.push_back( new NodedSegmentString(s.release(), 0) );
+        vct.push_back( new NodedSegmentString(s.release(), nullptr) );
       }
 
       GeomPtr readGeometry(const std::string& wkt)
@@ -129,16 +129,16 @@ namespace tut
       std::string wkt0("LINESTRING(99739.70596 -2239218.0625,99739.85604 -2239218.21258,99739.85605 -2239218.21258, 99739.85605 -2239218.21258,99739.86851 -2239218.21258,99739.86851 -2239218.20012, 99739.86851 -2239218.20012,99739.86851 -2239218.04, 99739.95848 -2239218.11015,99739.86851 -2239218.20012, 99739.86851 -2239218.20012,99739.85605 -2239218.21258, 99739.85605 -2239218.21258,99739.80901 -2239218.25961, 99739.80901 -2239218.25961,99739.68863 -2239218.38, 99739.86204 -2239218.31264,99739.80901 -2239218.25961, 99739.80901 -2239218.25961,99739.66841 -2239218.11901)");
       SegStrVct nodable;
       getSegmentStrings(wkt0, nodable);
-      ensure_equals( nodable.size(), 1u ); 
+      ensure_equals( nodable.size(), 1u );
 
-      PrecisionModel pm(1e-5); 
+      PrecisionModel pm(1e-5);
       MCIndexSnapRounder noder(pm);
 
-      ensure_equals( nodable.size(), 1u ); 
+      ensure_equals( nodable.size(), 1u );
       noder.computeNodes(&nodable);
-      std::auto_ptr<SegStrVct> noded ( noder.getNodedSubstrings() );
+      std::unique_ptr<SegStrVct> noded ( noder.getNodedSubstrings() );
 
-      ensure_equals( "1e-5", noded->size(), 178u );  
+      ensure_equals( "1e-5", noded->size(), 178u );
 
       freeSegmentStrings(*noded);
       freeSegmentStrings(nodable);

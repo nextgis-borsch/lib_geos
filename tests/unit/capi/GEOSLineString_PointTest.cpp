@@ -1,12 +1,13 @@
 // Test Suite for C-API LineString and Point functions
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
+#include <cmath>
 
 namespace tut
 {
@@ -32,7 +33,7 @@ namespace tut
         }
 
         test_capilinestringpoint_data()
-            : geom1_(0)
+            : geom1_(nullptr)
         {
             initGEOS(notice, notice);
         }
@@ -40,7 +41,7 @@ namespace tut
         ~test_capilinestringpoint_data()
         {
             GEOSGeom_destroy(geom1_);
-            geom1_ = 0;
+            geom1_ = nullptr;
             finishGEOS();
         }
 
@@ -61,8 +62,8 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(0 0, 5 5, 10 10)");
         GEOSGeometry *geom2;
-        double x, y;
-        ensure( 0 != geom1_ );
+        double x, y, z;
+        ensure( nullptr != geom1_ );
 
         char const r1 = GEOSisClosed(geom1_);
 
@@ -71,27 +72,33 @@ namespace tut
         geom2 = GEOSGeomGetPointN(geom1_, 0);
         GEOSGeomGetX(geom2, &x);
         GEOSGeomGetY(geom2, &y);
+        GEOSGeomGetZ(geom2, &z);
 
         ensure_equals(x, 0);
         ensure_equals(y, 0);
+        ensure(std::isnan(z));
 
         GEOSGeom_destroy(geom2);
 
         geom2 = GEOSGeomGetStartPoint(geom1_);
         GEOSGeomGetX(geom2, &x);
         GEOSGeomGetY(geom2, &y);
+        GEOSGeomGetZ(geom2, &z);
 
         ensure_equals(x, 0);
         ensure_equals(y, 0);
+        ensure(std::isnan(z));
 
         GEOSGeom_destroy(geom2);
 
         geom2 = GEOSGeomGetEndPoint(geom1_);
         GEOSGeomGetX(geom2, &x);
         GEOSGeomGetY(geom2, &y);
+        GEOSGeomGetZ(geom2, &z);
 
         ensure_equals(x, 10);
         ensure_equals(y, 10);
+        ensure(std::isnan(z));
 
         GEOSGeom_destroy(geom2);
     }
@@ -102,7 +109,7 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(0 0, 5 5, 10 10)");
         double length;
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         GEOSGeomGetLength(geom1_, &length);
         ensure(length != 0.0);
@@ -114,9 +121,25 @@ namespace tut
     {
         geom1_ = GEOSGeomFromWKT("LINESTRING(0 0, 5 5, 10 10)");
         int points;
-        ensure( 0 != geom1_ );
+        ensure( nullptr != geom1_ );
 
         points = GEOSGeomGetNumPoints(geom1_);
         ensure_equals(points, 3);
+    }
+
+    template<>
+    template<>
+    void object::test<4>()
+    {
+        geom1_ = GEOSGeomFromWKT("POINT Z(0 10 20)");
+        double x, y, z;
+
+        GEOSGeomGetX(geom1_, &x);
+        GEOSGeomGetY(geom1_, &y);
+        GEOSGeomGetZ(geom1_, &z);
+
+        ensure_equals(x, 0);
+        ensure_equals(y, 10);
+        ensure_equals(z, 20);
     }
 } // namespace tut

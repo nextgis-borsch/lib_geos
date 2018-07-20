@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  *
@@ -52,14 +52,14 @@ public:
 		node2( n2)
 	{ }
 
-	~IntervalRTreeBranchNode()
+	~IntervalRTreeBranchNode() override
 	{
 		delete node1;
 		delete node2;
 	}
 
-	
-	void query(double queryMin, double queryMax, index::ItemVisitor * visitor) const;
+
+	void query(double queryMin, double queryMax, index::ItemVisitor * visitor) const override;
 };
 
 } // geos::intervalrtree

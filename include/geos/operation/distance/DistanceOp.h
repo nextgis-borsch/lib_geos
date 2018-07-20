@@ -3,12 +3,12 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -33,7 +33,7 @@
 
 // Forward declarations
 namespace geos {
-	namespace geom { 
+	namespace geom {
 		class Coordinate;
 		class Polygon;
 		class LineString;
@@ -41,8 +41,8 @@ namespace geos {
 		class Geometry;
 		class CoordinateSequence;
 	}
-	namespace operation { 
-		namespace distance { 
+	namespace operation {
+		namespace distance {
 			class GeometryLocation;
 		}
 	}
@@ -59,13 +59,13 @@ namespace distance { // geos::operation::distance
  * within a given distance, or else are the nearest points
  * on the geometries (in which case this also
  * provides the distance between the geometries).
- * 
+ *
  * The distance computation also finds a pair of points in the
  * input geometries which have the minimum distance between them.
  * If a point lies in the interior of a line segment,
  * the coordinate computed is a close
  * approximation to the exact point.
- * 
+ *
  * The algorithms used are straightforward O(n^2)
  * comparisons.  This worst-case performance could be improved on
  * by using Voronoi techniques or spatial indexes.
@@ -201,7 +201,7 @@ private:
 	 * Geometries.
 	 *
 	 * @return a pair of {@link GeometryLocation}s for the closest points.
-	 *         Ownership of returned object is left to this instance and 
+	 *         Ownership of returned object is left to this instance and
 	 *         it's reference will be alive for the whole lifetime of it.
 	 *
 	 * NOTE: this is public in JTS, but we aim at API reduction here...
@@ -211,11 +211,11 @@ private:
 
 	// input (TODO: use two references instead..)
 	std::vector<geom::Geometry const*> geom;
-	double terminateDistance; 
+	double terminateDistance;
 
-	// working 
+	// working
 	algorithm::PointLocator ptLocator;
-	// TODO: use auto_ptr
+	// TODO: use unique_ptr
 	std::vector<GeometryLocation*> *minDistanceLocation;
 	double minDistance;
 

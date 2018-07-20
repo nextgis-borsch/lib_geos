@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -65,7 +65,7 @@ public:
 
 	Root() {}
 
-	virtual ~Root() {}
+	~Root() override {}
 
 	/**
 	 * Insert an item into the quadtree this is the root of.
@@ -74,7 +74,7 @@ public:
 
 protected:
 
-	bool isSearchMatch(const geom::Envelope& /* searchEnv */) const {
+	bool isSearchMatch(const geom::Envelope& /* searchEnv */) const override {
 		return true;
 	}
 

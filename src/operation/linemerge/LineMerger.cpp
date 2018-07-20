@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -53,8 +53,8 @@ LineMerger::add(vector<Geometry*> *geometries)
 }
 
 LineMerger::LineMerger():
-	mergedLineStrings(NULL),
-	factory(NULL)
+	mergedLineStrings(nullptr),
+	factory(nullptr)
 {
 }
 
@@ -82,7 +82,7 @@ struct LMGeometryComponentFilter: public GeometryComponentFilter {
  * Adds a Geometry to be processed. May be called multiple times.
  * Any dimension of Geometry may be added; the constituent linework will be
  * extracted.
- */  
+ */
 void
 LineMerger::add(const Geometry *geometry)
 {
@@ -93,14 +93,14 @@ LineMerger::add(const Geometry *geometry)
 void
 LineMerger::add(const LineString *lineString)
 {
-	if (factory==NULL) factory=lineString->getFactory();
+	if (factory==nullptr) factory=lineString->getFactory();
 	graph.addEdge(lineString);
 }
 
 void
 LineMerger::merge()
 {
-	if (mergedLineStrings!=NULL) return;
+	if (mergedLineStrings!=nullptr) return;
 
 	// reset marks (this allows incremental processing)
 	GraphComponent::setMarkedMap(graph.nodeIterator(), graph.nodeEnd(),
@@ -108,20 +108,20 @@ LineMerger::merge()
 	GraphComponent::setMarked(graph.edgeIterator(), graph.edgeEnd(),
 	                                                              false);
 
-	for (size_t i=0, n=edgeStrings.size(); i<n; ++i) 
+	for (size_t i=0, n=edgeStrings.size(); i<n; ++i)
 		delete edgeStrings[i];
 	edgeStrings.clear();
 
 	buildEdgeStringsForObviousStartNodes();
 	buildEdgeStringsForIsolatedLoops();
 
-	unsigned numEdgeStrings = edgeStrings.size();
+	auto numEdgeStrings = edgeStrings.size();
 	mergedLineStrings=new vector<LineString*>(numEdgeStrings);
 	for (size_t i=0; i<numEdgeStrings; ++i)
 	{
 		EdgeString *edgeString=edgeStrings[i];
 		(*mergedLineStrings)[i]=edgeString->toLineString();
-	}    
+	}
 }
 
 void
@@ -134,7 +134,7 @@ void
 LineMerger::buildEdgeStringsForIsolatedLoops()
 {
 	buildEdgeStringsForUnprocessedNodes();
-}  
+}
 
 void
 LineMerger::buildEdgeStringsForUnprocessedNodes()
@@ -151,7 +151,7 @@ LineMerger::buildEdgeStringsForUnprocessedNodes()
 #if GEOS_DEBUG
 		cerr<<"Node "<<i<<": "<<*node<<endl;
 #endif
-		if (!node->isMarked()) { 
+		if (!node->isMarked()) {
 			assert(node->getDegree()==2);
 			buildEdgeStringsStartingAt(node);
 			node->setMarked(true);
@@ -177,7 +177,7 @@ LineMerger::buildEdgeStringsForNonDegree2Nodes()
 #if GEOS_DEBUG
 		cerr<<"Node "<<i<<": "<<*node<<endl;
 #endif
-		if (node->getDegree()!=2) { 
+		if (node->getDegree()!=2) {
 			buildEdgeStringsStartingAt(node);
 			node->setMarked(true);
 #if GEOS_DEBUG
@@ -206,14 +206,14 @@ LineMerger::buildEdgeStringsStartingAt(Node *node)
 
 EdgeString*
 LineMerger::buildEdgeStringStartingWith(LineMergeDirectedEdge *start)
-{    
+{
 	EdgeString *edgeString = new EdgeString(factory);
 	LineMergeDirectedEdge *current=start;
 	do {
 		edgeString->add(current);
 		current->getEdge()->setMarked(true);
-		current=current->getNext();      
-	} while (current!=NULL && current!=start);
+		current=current->getNext();
+	} while (current!=nullptr && current!=start);
 	return edgeString;
 }
 
@@ -227,7 +227,7 @@ LineMerger::getMergedLineStrings()
 
 	// Explicitly give ownership to the caller.
 	vector<LineString*>* ret = mergedLineStrings;
-	mergedLineStrings = NULL;
+	mergedLineStrings = nullptr;
 	return ret;
 }
 

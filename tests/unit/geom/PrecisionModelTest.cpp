@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::geom::PrecisionModel class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/geom/PrecisionModel.h>
 #include <geos/geom/Coordinate.h>
@@ -25,9 +25,9 @@ namespace tut
                       double x2, double y2)
         {
               Coordinate p(x1, y1);
-      
+
               pm.makePrecise(p);
-      
+
               Coordinate pPrecise(x2, y2);
               ensure(p.equals2D(pPrecise));
         }

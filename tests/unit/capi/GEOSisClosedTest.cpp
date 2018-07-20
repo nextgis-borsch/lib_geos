@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSisClosed
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -34,7 +34,7 @@ namespace tut
             std::fprintf(stdout, "\n");
         }
 
-        test_capiisclosed_data() : geom_(0)
+        test_capiisclosed_data() : geom_(nullptr)
         {
             initGEOS(notice, notice);
         }

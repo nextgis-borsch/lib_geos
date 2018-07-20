@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -76,13 +76,13 @@ Root::insert(const Envelope *itemEnv, void* item)
 	 *  If the subquad doesn't exist or this item is not contained in it,
 	 *  have to expand the tree upward to contain the item.
 	 */
-	if (node==NULL || !node->getEnvelope()->contains(itemEnv))
+	if (node==nullptr || !node->getEnvelope()->contains(itemEnv))
 	{
-		std::auto_ptr<Node> snode (node); // may be NULL
-		node = 0; subnode[index] = 0;
+		std::unique_ptr<Node> snode (node); // may be NULL
+		node = nullptr; subnode[index] = nullptr;
 
-		std::auto_ptr<Node> largerNode =
-			Node::createExpanded(snode, *itemEnv);
+		std::unique_ptr<Node> largerNode =
+			Node::createExpanded(std::move(snode), *itemEnv);
 
 #if GEOS_DEBUG
 		std::cerr<<"("<<this<<") created expanded node " << largerNode.get() << " containing previously reported subnode" << std::endl;

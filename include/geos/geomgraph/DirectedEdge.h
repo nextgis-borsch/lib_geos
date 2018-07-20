@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -53,8 +53,8 @@ public:
 	 */
 	static int depthFactor(int currLocation, int nextLocation);
 
-	//DirectedEdge();	
-	//virtual ~DirectedEdge();	
+	//DirectedEdge();
+	//virtual ~DirectedEdge();
 
 	DirectedEdge(Edge *newEdge, bool newIsForward);
 
@@ -118,7 +118,7 @@ public:
 	 * This edge is a line edge if
 	 * - at least one of the labels is a line label
 	 * - any labels which are not line labels have all Locations = EXTERIOR
-	 * 
+	 *
 	 */
 	bool isLineEdge();
 
@@ -134,15 +134,15 @@ public:
 	bool isInteriorAreaEdge();
 
 	/** \brief
-	 * Set both edge depths. 
+	 * Set both edge depths.
 	 *
-	 * One depth for a given side is provided. 
+	 * One depth for a given side is provided.
 	 * The other is computed depending on the Location transition and the
 	 * depthDelta of the edge.
 	 */
 	void setEdgeDepths(int position, int newDepth);
 
-	virtual std::string print() const;
+	std::string print() const override;
 
 	std::string printEdge();
 
@@ -160,16 +160,16 @@ private:
 	DirectedEdge *sym;
 
 	/// the next edge in the edge ring for the polygon containing this edge
-	DirectedEdge *next; 
+	DirectedEdge *next;
 
 	/// the next edge in the MinimalEdgeRing that contains this edge
-	DirectedEdge *nextMin; 
+	DirectedEdge *nextMin;
 
 	/// the EdgeRing that this edge is part of
-	EdgeRing *edgeRing; 
+	EdgeRing *edgeRing;
 
 	/// the MinimalEdgeRing that this edge is part of
-	EdgeRing *minEdgeRing; 
+	EdgeRing *minEdgeRing;
 
 	/** \brief
 	 * The depth of each side (position) of this edge.

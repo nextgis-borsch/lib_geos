@@ -3,7 +3,7 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009-2010  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009-2010  Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
@@ -71,7 +71,7 @@ public:
 	}
 
 	// Snap points are assumed to be all distinct points (a set would be better, uh ?)
-	std::auto_ptr<geom::Coordinate::Vect> snapTo(const geom::Coordinate::ConstVect& snapPts);
+	std::unique_ptr<geom::Coordinate::Vect> snapTo(const geom::Coordinate::ConstVect& snapPts);
 
 	void setAllowSnappingToSourceVertices(bool allow) {
 		allowSnappingToSourceVertices = allow;
@@ -152,8 +152,8 @@ private:
 			geom::CoordinateList::iterator too_far);
 
     // Declare type as noncopyable
-    LineStringSnapper(const LineStringSnapper& other);
-    LineStringSnapper& operator=(const LineStringSnapper& rhs);
+    LineStringSnapper(const LineStringSnapper& other) = delete;
+    LineStringSnapper& operator=(const LineStringSnapper& rhs) = delete;
 };
 
 

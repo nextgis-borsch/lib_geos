@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -25,7 +25,7 @@
 
 #include <geos/export.h>
 #include <vector>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -65,15 +65,15 @@ public:
 
 	void remove(const geom::LineSegment* seg);
 
-	std::auto_ptr< std::vector<geom::LineSegment*> >
+	std::unique_ptr< std::vector<geom::LineSegment*> >
 			query(const geom::LineSegment* seg) const;
 
 private:
 
-	std::auto_ptr<index::quadtree::Quadtree> index;
+	std::unique_ptr<index::quadtree::Quadtree> index;
 
 	std::vector<geom::Envelope*> newEnvelopes;
-	
+
 	// Copying is turned off
 	LineSegmentIndex(const LineSegmentIndex&);
 	LineSegmentIndex& operator=(const LineSegmentIndex&);

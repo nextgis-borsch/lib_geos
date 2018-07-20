@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009  Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -98,7 +98,7 @@ void
 Key::computeKey(const Envelope& itemEnv)
 {
 	level=computeQuadLevel(itemEnv);
-	env.init(); // reset to null 
+	env.init(); // reset to null
 	computeKey(level, itemEnv);
 	// MD - would be nice to have a non-iterative form of this algorithm
 	while (!env.contains(itemEnv)) {

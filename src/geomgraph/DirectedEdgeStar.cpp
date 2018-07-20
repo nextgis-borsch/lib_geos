@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -90,7 +90,7 @@ DirectedEdge*
 DirectedEdgeStar::getRightmostEdge()
 {
 	EdgeEndStar::iterator it=begin();
-	if ( it==end() ) return NULL;
+	if ( it==end() ) return nullptr;
 
 	assert(*it);
 	assert(dynamic_cast<DirectedEdge*>(*it));
@@ -121,7 +121,7 @@ DirectedEdgeStar::getRightmostEdge()
 			return deLast;
 	}
 	assert(0); // found two horizontal edges incident on node
-	return NULL;
+	return nullptr;
 }
 
 /*public*/
@@ -129,7 +129,7 @@ void
 DirectedEdgeStar::computeLabelling(std::vector<GeometryGraph*> *geom)
 	//throw(TopologyException *)
 {
-	// this call can throw a TopologyException 
+	// this call can throw a TopologyException
 	// we don't have any cleanup to do...
 	EdgeEndStar::computeLabelling(geom);
 
@@ -156,7 +156,7 @@ DirectedEdgeStar::computeLabelling(std::vector<GeometryGraph*> *geom)
 void
 DirectedEdgeStar::mergeSymLabels()
 {
-	EdgeEndStar::iterator endIt=end(); 
+	EdgeEndStar::iterator endIt=end();
 	for (EdgeEndStar::iterator it=begin(); it!=endIt; ++it)
 	{
 		assert(*it);
@@ -192,7 +192,7 @@ DirectedEdgeStar::updateLabelling(const Label& nodeLabel)
 std::vector<DirectedEdge*>*
 DirectedEdgeStar::getResultAreaEdges()
 {
-	if (resultAreaEdgeList!=NULL) return resultAreaEdgeList;
+	if (resultAreaEdgeList!=nullptr) return resultAreaEdgeList;
 
 	resultAreaEdgeList=new std::vector<DirectedEdge*>();
 
@@ -210,14 +210,14 @@ DirectedEdgeStar::getResultAreaEdges()
 
 /*public*/
 void
-DirectedEdgeStar::linkResultDirectedEdges() 
+DirectedEdgeStar::linkResultDirectedEdges()
 	// throw(TopologyException *)
 {
 	// make sure edges are copied to resultAreaEdges list
 	getResultAreaEdges();
 	// find first area edge (if any) to start linking at
-	DirectedEdge *firstOut=NULL;
-	DirectedEdge *incoming=NULL;
+	DirectedEdge *firstOut=nullptr;
+	DirectedEdge *incoming=nullptr;
 	int state=SCANNING_FOR_INCOMING;
 	// link edges in CCW order
 	for (std::vector<DirectedEdge*>::iterator
@@ -235,7 +235,7 @@ DirectedEdgeStar::linkResultDirectedEdges()
 		assert(nextIn);
 
 		// record first outgoing edge, in order to link the last incoming edge
-		if (firstOut==NULL && nextOut->isInResult()) firstOut=nextOut;
+		if (firstOut==nullptr && nextOut->isInResult()) firstOut=nextOut;
 
 		switch (state) {
 			case SCANNING_FOR_INCOMING:
@@ -251,7 +251,7 @@ DirectedEdgeStar::linkResultDirectedEdges()
 		}
 	}
 	if (state==LINKING_TO_OUTGOING) {
-		if (firstOut==NULL)
+		if (firstOut==nullptr)
 		{
 			throw util::TopologyException("no outgoing dirEdge found",
 					getCoordinate());
@@ -267,8 +267,8 @@ void
 DirectedEdgeStar::linkMinimalDirectedEdges(EdgeRing *er)
 {
 	// find first area edge (if any) to start linking at
-	DirectedEdge *firstOut=NULL;
-	DirectedEdge *incoming=NULL;
+	DirectedEdge *firstOut=nullptr;
+	DirectedEdge *incoming=nullptr;
 	int state=SCANNING_FOR_INCOMING;
 
 	// link edges in CW order
@@ -285,7 +285,7 @@ DirectedEdgeStar::linkMinimalDirectedEdges(EdgeRing *er)
 		assert(nextIn);
 
 		// record first outgoing edge, in order to link the last incoming edge
-		if (firstOut==NULL && nextOut->getEdgeRing()==er) firstOut=nextOut;
+		if (firstOut==nullptr && nextOut->getEdgeRing()==er) firstOut=nextOut;
 		switch (state) {
 			case SCANNING_FOR_INCOMING:
 				if (nextIn->getEdgeRing()!=er) continue;
@@ -301,7 +301,7 @@ DirectedEdgeStar::linkMinimalDirectedEdges(EdgeRing *er)
 		}
 	}
 	if (state==LINKING_TO_OUTGOING) {
-		assert(firstOut!=NULL); // found null for first outgoing dirEdge
+		assert(firstOut!=nullptr); // found null for first outgoing dirEdge
 		assert(firstOut->getEdgeRing()==er); // unable to link last incoming dirEdge
 		assert(incoming);
 		incoming->setNextMin(firstOut);
@@ -315,12 +315,12 @@ DirectedEdgeStar::linkAllDirectedEdges()
 	//getEdges();
 
 	// find first area edge (if any) to start linking at
-	DirectedEdge *prevOut=NULL;
-	DirectedEdge *firstIn=NULL;
+	DirectedEdge *prevOut=nullptr;
+	DirectedEdge *firstIn=nullptr;
 
 	// link edges in CW order
-	EdgeEndStar::reverse_iterator rbeginIt=rbegin(); 
-	EdgeEndStar::reverse_iterator rendIt=rend(); 
+	EdgeEndStar::reverse_iterator rbeginIt=rbegin();
+	EdgeEndStar::reverse_iterator rendIt=rend();
 	for(EdgeEndStar::reverse_iterator it=rbeginIt; it!=rendIt; ++it)
 	{
 		assert(*it);
@@ -330,8 +330,8 @@ DirectedEdgeStar::linkAllDirectedEdges()
 		DirectedEdge *nextIn=nextOut->getSym();
 		assert(nextIn);
 
-		if (firstIn==NULL) firstIn=nextIn;
-		if (prevOut!=NULL) nextIn->setNext(prevOut);
+		if (firstIn==nullptr) firstIn=nextIn;
+		if (prevOut!=nullptr) nextIn->setNext(prevOut);
 		// record outgoing edge, in order to link the last incoming edge
 		prevOut=nextOut;
 	}

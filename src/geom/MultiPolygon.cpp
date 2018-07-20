@@ -3,12 +3,12 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -28,6 +28,7 @@
 #include <cassert>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #ifndef GEOS_INLINE
 # include "geos/geom/MultiPolygon.inl"
@@ -106,6 +107,25 @@ MultiPolygon::equalsExact(const Geometry *other, double tolerance) const
 GeometryTypeId
 MultiPolygon::getGeometryTypeId() const {
 	return GEOS_MULTIPOLYGON;
+}
+
+Geometry*
+MultiPolygon::reverse() const
+{
+	if (isEmpty()) {
+		return clone();
+	}
+
+    auto* reversed = new std::vector<Geometry*>{geometries->size()};
+
+    std::transform(geometries->begin(),
+                   geometries->end(),
+                   reversed->begin(),
+                   [](const Geometry* g) {
+                       return g->reverse();
+                   });
+
+    return getFactory()->createMultiPolygon(reversed);
 }
 
 } // namespace geos::geom

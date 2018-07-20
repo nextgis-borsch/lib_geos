@@ -3,12 +3,12 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -42,7 +42,7 @@ namespace predicate { // geos::operation::predicate
  *
  * This class works for all input geometries, including
  * {@link GeometryCollection}s.
- * 
+ *
  * As a further optimization,
  * this class can be used to test
  * many geometries against a single
@@ -58,8 +58,8 @@ private:
  	const geom::Envelope &rectEnv;
 
     // Declare type as noncopyable
-    RectangleIntersects(const RectangleIntersects& other);
-    RectangleIntersects& operator=(const RectangleIntersects& rhs);
+    RectangleIntersects(const RectangleIntersects& other) = delete;
+    RectangleIntersects& operator=(const RectangleIntersects& rhs) = delete;
 
 public:
 
@@ -86,7 +86,7 @@ public:
 	static bool intersects(const geom::Polygon &rectangle,
 			const geom::Geometry &b)
 	{
-		RectangleIntersects rp(rectangle); 
+		RectangleIntersects rp(rectangle);
 		return rp.intersects(b);
 	}
 

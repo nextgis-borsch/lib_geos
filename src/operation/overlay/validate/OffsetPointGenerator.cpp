@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -18,16 +18,16 @@
 
 #include <geos/operation/overlay/validate/OffsetPointGenerator.h>
 #include <geos/geom/Geometry.h>
-#include <geos/geom/LineString.h> 
-#include <geos/geom/MultiPoint.h> 
-#include <geos/geom/CoordinateSequence.h> 
+#include <geos/geom/LineString.h>
+#include <geos/geom/MultiPoint.h>
+#include <geos/geom/CoordinateSequence.h>
 #include <geos/geom/GeometryFactory.h>
-#include <geos/geom/util/LinearComponentExtracter.h> 
+#include <geos/geom/util/LinearComponentExtracter.h>
 
 #include <cassert>
 #include <functional>
 #include <vector>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 #include <cmath>
 #include <algorithm> // std::for_each
 
@@ -54,10 +54,10 @@ OffsetPointGenerator::OffsetPointGenerator(const geom::Geometry& geom,
 }
 
 /*public*/
-std::auto_ptr< std::vector<geom::Coordinate> >
+std::unique_ptr< std::vector<geom::Coordinate> >
 OffsetPointGenerator::getPoints()
 {
-	assert (offsetPts.get() == NULL);
+	assert (offsetPts.get() == nullptr);
 	offsetPts.reset(new vector<Coordinate>());
 
 	vector<const LineString*> lines;
@@ -65,7 +65,8 @@ OffsetPointGenerator::getPoints()
 	for_each(lines.begin(), lines.end(),
 		bind1st(mem_fun(&OffsetPointGenerator::extractPoints), this));
 
-	return offsetPts;
+	// NOTE: Apparently, this is 'source' method giving up the object resource.
+	return std::move(offsetPts);
 }
 
 /*private*/

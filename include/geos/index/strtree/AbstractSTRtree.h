@@ -1,4 +1,4 @@
-﻿/**********************************************************************
+/**********************************************************************
  *
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -21,15 +21,15 @@
 
 #include <vector>
 #include <list>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 #include <cassert> // for inlines
 #include <algorithm>
 
 // Forward declarations
 namespace geos {
-	namespace index { 
+	namespace index {
 		class ItemVisitor;
-		namespace strtree { 
+		namespace strtree {
 			class Boundable;
 			class AbstractNode;
 		}
@@ -44,7 +44,7 @@ namespace strtree { // geos::index::strtree
 typedef std::vector<Boundable*> BoundableList;
 //typedef std::list<Boundable*> BoundableList;
 
-/// list contains boundables or lists of boundables. The lists are owned by 
+/// list contains boundables or lists of boundables. The lists are owned by
 /// this class, the plain boundables are held by reference only.
 class ItemsList;
 
@@ -123,11 +123,11 @@ public:
  * STR-packed R-trees are described in:
  * P. Rigaux, Michel Scholl and Agnes Voisard. Spatial Databases With
  * Application To GIS. Morgan Kaufmann, San Francisco, 2002.
- * 
- * This implementation is based on Boundables rather than just AbstractNodes, 
- * because the STR algorithm operates on both nodes and 
+ *
+ * This implementation is based on Boundables rather than just AbstractNodes,
+ * because the STR algorithm operates on both nodes and
  * data, both of which are treated here as Boundables.
- * 
+ *
  */
 class GEOS_DLL AbstractSTRtree {
 
@@ -137,7 +137,7 @@ private:
 
 	/**
 	 * Creates the levels higher than the given level
-	 * 
+	 *
 	 * @param boundablesOfALevel
 	 *            the level to build on
 	 * @param level
@@ -149,7 +149,7 @@ private:
 			BoundableList* boundablesOfALevel,
 			int level);
 
-	virtual std::auto_ptr<BoundableList> sortBoundables(const BoundableList* input)=0;
+	virtual std::unique_ptr<BoundableList> sortBoundables(const BoundableList* input)=0;
 
 	bool remove(const void* searchBounds, AbstractNode& node, void* item);
 	bool removeItem(AbstractNode& node, void* item);
@@ -161,7 +161,7 @@ protected:
 	/** \brief
 	 * A test for intersection between two bounds, necessary because
 	 * subclasses of AbstractSTRtree have different implementations of
-	 * bounds. 
+	 * bounds.
 	 */
 	class GEOS_DLL IntersectsOp {
 		public:
@@ -183,14 +183,14 @@ protected:
 
 	std::vector <AbstractNode *> *nodes;
 
-	// Ownership to caller (TODO: return by auto_ptr)
+	// Ownership to caller (TODO: return by unique_ptr)
 	virtual AbstractNode* createNode(int level)=0;
 
 	/**
 	 * Sorts the childBoundables then divides them into groups of size M, where
 	 * M is the node capacity.
 	 */
-	virtual std::auto_ptr<BoundableList> createParentBoundables(
+	virtual std::unique_ptr<BoundableList> createParentBoundables(
 			BoundableList* childBoundables, int newLevel);
 
 	virtual AbstractNode* lastNode(BoundableList* nodeList)
@@ -223,11 +223,11 @@ protected:
 	void query(const void* searchBounds, ItemVisitor& visitor);
 
 	void query(const void* searchBounds, const AbstractNode& node, ItemVisitor& visitor);
-  
+
 	///  Also builds the tree, if necessary.
 	bool remove(const void* itemEnv, void* item);
 
-	std::auto_ptr<BoundableList> boundablesAtLevel(int level);
+	std::unique_ptr<BoundableList> boundablesAtLevel(int level);
 
 	// @@ should be size_t, probably
 	std::size_t nodeCapacity;
@@ -239,7 +239,7 @@ protected:
 	 * @see IntersectsOp
 	 */
 	virtual IntersectsOp *getIntersectsOp()=0;
- 
+
 
 public:
 
@@ -296,15 +296,15 @@ public:
 			BoundableList* boundables);
 
     /**
-     * Gets a tree structure (as a nested list) 
+     * Gets a tree structure (as a nested list)
      * corresponding to the structure of the items and nodes in this tree.
      * <p>
-     * The returned {@link List}s contain either {@link Object} items, 
+     * The returned {@link List}s contain either {@link Object} items,
      * or Lists which correspond to subtrees of the tree
      * Subtrees which do not contain any items are not included.
      * <p>
      * Builds the tree if necessary.
-     * 
+     *
      * @note The caller is responsible for releasing the list
      *
      * @return a List of items and/or Lists

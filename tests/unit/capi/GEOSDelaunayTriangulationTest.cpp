@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSDelaunayTriangulation
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -31,12 +31,12 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
         test_capigeosdelaunaytriangulation_data()
-            : geom1_(0), geom2_(0)
+            : geom1_(nullptr), geom2_(nullptr)
         {
             initGEOS(notice, notice);
             w_ = GEOSWKTWriter_create();
@@ -57,8 +57,8 @@ namespace tut
             GEOSGeom_destroy(geom1_);
             GEOSGeom_destroy(geom2_);
             GEOSWKTWriter_destroy(w_);
-            geom1_ = 0;
-            geom2_ = 0;
+            geom1_ = nullptr;
+            geom2_ = nullptr;
             finishGEOS();
         }
 
@@ -138,14 +138,14 @@ namespace tut
         geom1_ = GEOSGeomFromWKT("MULTIPOINT(0 0, 5 0, 10 10)");
 
         geom2_ = GEOSDelaunayTriangulation(geom1_, 0, 0);
-        ensure(geom2_ != 0);
-        ensure_equals_wkt(geom2_, 
+        ensure(geom2_ != nullptr);
+        ensure_equals_wkt(geom2_,
           "GEOMETRYCOLLECTION (POLYGON ((0 0, 10 10, 5 0, 0 0)))"
         );
 
         GEOSGeom_destroy(geom2_);
         geom2_ = GEOSDelaunayTriangulation(geom1_, 0, 1);
-        ensure_equals_wkt(geom2_, 
+        ensure_equals_wkt(geom2_,
           "MULTILINESTRING ((5 0, 10 10), (0 0, 10 10), (0 0, 5 0))"
         );
     }
@@ -158,14 +158,14 @@ namespace tut
         geom1_ = GEOSGeomFromWKT("POLYGON((0 0, 8.5 1, 10 10, 0.5 9, 0 0),(2 2, 3 8, 7 8, 8 2, 2 2)))");
 
         geom2_ = GEOSDelaunayTriangulation(geom1_, 0, 0);
-        ensure(geom2_ != 0);
-        ensure_equals_wkt(geom2_, 
+        ensure(geom2_ != nullptr);
+        ensure_equals_wkt(geom2_,
 "GEOMETRYCOLLECTION (POLYGON ((8 2, 10 10, 8.5 1, 8 2)), POLYGON ((7 8, 10 10, 8 2, 7 8)), POLYGON ((3 8, 10 10, 7 8, 3 8)), POLYGON ((2 2, 8 2, 8.5 1, 2 2)), POLYGON ((2 2, 7 8, 8 2, 2 2)), POLYGON ((2 2, 3 8, 7 8, 2 2)), POLYGON ((0.5 9, 10 10, 3 8, 0.5 9)), POLYGON ((0.5 9, 3 8, 2 2, 0.5 9)), POLYGON ((0 0, 2 2, 8.5 1, 0 0)), POLYGON ((0 0, 0.5 9, 2 2, 0 0)))"
         );
 
         GEOSGeom_destroy(geom2_);
         geom2_ = GEOSDelaunayTriangulation(geom1_, 0, 1);
-        ensure_equals_wkt(geom2_, 
+        ensure_equals_wkt(geom2_,
 "MULTILINESTRING ((8.5 1, 10 10), (8 2, 10 10), (8 2, 8.5 1), (7 8, 10 10), (7 8, 8 2), (3 8, 10 10), (3 8, 7 8), (2 2, 8.5 1), (2 2, 8 2), (2 2, 7 8), (2 2, 3 8), (0.5 9, 10 10), (0.5 9, 3 8), (0.5 9, 2 2), (0 0, 8.5 1), (0 0, 2 2), (0 0, 0.5 9))"
         );
     }
@@ -179,10 +179,10 @@ namespace tut
 
         GEOSGeom_destroy(geom2_);
         geom2_ = GEOSDelaunayTriangulation(geom1_, 2, 1);
-        ensure_equals_wkt(geom2_, 
+        ensure_equals_wkt(geom2_,
 "MULTILINESTRING ((10 0, 10 10), (0 0, 10 10), (0 0, 10 0))"
         );
     }
-    
+
 } // namespace tut
 

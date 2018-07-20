@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2012  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2012  Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -22,7 +22,7 @@
 #include <geos/export.h>
 #include <geos/noding/SegmentString.h> // for NonConstVect
 
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 // Forward declarations
 namespace geos {
@@ -41,11 +41,11 @@ class GEOS_DLL GeometryNoder
 {
 public:
 
-  static std::auto_ptr<geom::Geometry> node(const geom::Geometry& geom);
+  static std::unique_ptr<geom::Geometry> node(const geom::Geometry& geom);
 
   GeometryNoder(const geom::Geometry& g);
 
-  std::auto_ptr<geom::Geometry> getNoded();
+  std::unique_ptr<geom::Geometry> getNoded();
 
 private:
 
@@ -58,9 +58,9 @@ private:
 
   Noder& getNoder();
 
-  std::auto_ptr<Noder> noder;
+  std::unique_ptr<Noder> noder;
 
-  std::auto_ptr<geom::Geometry> toGeometry(SegmentString::NonConstVect& noded);
+  std::unique_ptr<geom::Geometry> toGeometry(SegmentString::NonConstVect& noded);
 
   GeometryNoder(GeometryNoder const&); /*= delete*/
   GeometryNoder& operator=(GeometryNoder const&); /*= delete*/

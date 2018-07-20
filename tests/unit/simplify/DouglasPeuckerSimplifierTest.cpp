@@ -1,7 +1,7 @@
 //
 // Test Suite for geos::simplify::DouglasPeuckerSimplifierTest
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/io/WKTReader.h>
 #include <geos/io/WKTWriter.h>
@@ -30,7 +30,7 @@ namespace tut
 		geos::io::WKTReader wktreader;
         geos::io::WKTWriter wktwriter;
 
-		typedef geos::geom::Geometry::AutoPtr GeomPtr;
+		typedef geos::geom::Geometry::Ptr GeomPtr;
 
 		test_dpsimp_data()
 			:
@@ -301,18 +301,18 @@ namespace tut
         {
             double f;
             Multiplier(double f) : f(f) {}
-            void filter_rw(CoordinateSequence& seq, std::size_t i)
+            void filter_rw(CoordinateSequence& seq, std::size_t i) override
             {
                 seq.setOrdinate(i, CoordinateSequence::X, seq[i].x * f);
                 seq.setOrdinate(i, CoordinateSequence::Y, seq[i].y * f);
             }
-            void filter_ro(const CoordinateSequence& seq, std::size_t i)
+            void filter_ro(const CoordinateSequence& seq, std::size_t i) override
             {
                 ::geos::ignore_unused_variable_warning(seq);
                 ::geos::ignore_unused_variable_warning(i);
             }
-            bool isDone() const { return false; }
-            bool isGeometryChanged() const { return true; }
+            bool isDone() const override { return false; }
+            bool isGeometryChanged() const override { return true; }
         };
 
         Multiplier m(2047);

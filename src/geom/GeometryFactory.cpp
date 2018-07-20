@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  * Copyright (C) 2005 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -58,7 +58,7 @@ using namespace std;
 namespace geos {
 namespace geom { // geos::geom
 
-namespace { 
+namespace {
 
 class gfCoordinateOperation: public util::CoordinateOperation {
 using CoordinateOperation::edit;
@@ -68,7 +68,7 @@ public:
       : _gsf(gsf)
   {}
   CoordinateSequence* edit( const CoordinateSequence *coordSeq,
-                            const Geometry * )
+                            const Geometry * ) override
   {
     return _gsf->create(*coordSeq);
   }
@@ -93,8 +93,8 @@ GeometryFactory::GeometryFactory()
 }
 
 /*public static*/
-GeometryFactory::unique_ptr
-GeometryFactory::create() { return GeometryFactory::unique_ptr(new GeometryFactory()); }
+GeometryFactory::Ptr
+GeometryFactory::create() { return GeometryFactory::Ptr(new GeometryFactory()); }
 
 /*protected*/
 GeometryFactory::GeometryFactory(const PrecisionModel* pm, int newSRID,
@@ -120,11 +120,11 @@ GeometryFactory::GeometryFactory(const PrecisionModel* pm, int newSRID,
 }
 
 /*public static*/
-GeometryFactory::unique_ptr
+GeometryFactory::Ptr
 GeometryFactory::create(const PrecisionModel* pm, int newSRID,
 		CoordinateSequenceFactory* nCoordinateSequenceFactory)
 {
-  return GeometryFactory::unique_ptr(
+  return GeometryFactory::Ptr(
     new GeometryFactory(pm, newSRID, nCoordinateSequenceFactory)
   );
 }
@@ -148,11 +148,11 @@ GeometryFactory::GeometryFactory(
 }
 
 /*public static*/
-GeometryFactory::unique_ptr
+GeometryFactory::Ptr
 GeometryFactory::create(
 		CoordinateSequenceFactory* nCoordinateSequenceFactory)
 {
-  return GeometryFactory::unique_ptr(
+  return GeometryFactory::Ptr(
     new GeometryFactory(nCoordinateSequenceFactory)
   );
 }
@@ -175,10 +175,10 @@ GeometryFactory::GeometryFactory(const PrecisionModel *pm)
 }
 
 /*public static*/
-GeometryFactory::unique_ptr
+GeometryFactory::Ptr
 GeometryFactory::create(const PrecisionModel *pm)
 {
-  return GeometryFactory::unique_ptr(
+  return GeometryFactory::Ptr(
     new GeometryFactory(pm)
   );
 }
@@ -201,10 +201,10 @@ GeometryFactory::GeometryFactory(const PrecisionModel* pm, int newSRID)
 }
 
 /*public static*/
-GeometryFactory::unique_ptr
+GeometryFactory::Ptr
 GeometryFactory::create(const PrecisionModel* pm, int newSRID)
 {
-  return GeometryFactory::unique_ptr(
+  return GeometryFactory::Ptr(
     new GeometryFactory(pm, newSRID)
   );
 }
@@ -221,10 +221,10 @@ GeometryFactory::GeometryFactory(const GeometryFactory &gf)
 }
 
 /*public static*/
-GeometryFactory::unique_ptr
+GeometryFactory::Ptr
 GeometryFactory::create(const GeometryFactory &gf)
 {
-  return GeometryFactory::unique_ptr(
+  return GeometryFactory::Ptr(
     new GeometryFactory(gf)
   );
 }
@@ -236,7 +236,7 @@ GeometryFactory::~GeometryFactory(){
 #endif
 	delete precisionModel;
 }
-  
+
 /*public*/
 Point*
 GeometryFactory::createPointFromInternalCoord(const Coordinate* coord,
@@ -281,7 +281,7 @@ GeometryFactory::toGeometry(const Envelope* envelope) const
 	coord.y = envelope->getMinY();
 	cl->add(coord);
 
-	Polygon *p = createPolygon(createLinearRing(cl), NULL);
+	Polygon *p = createPolygon(createLinearRing(cl), nullptr);
 	return p;
 }
 
@@ -296,7 +296,7 @@ GeometryFactory::getPrecisionModel() const
 Point*
 GeometryFactory::createPoint() const
 {
-	return new Point(NULL, this);
+	return new Point(nullptr, this);
 }
 
 /*public*/
@@ -326,9 +326,9 @@ Point*
 GeometryFactory::createPoint(const CoordinateSequence &fromCoords) const
 {
 	CoordinateSequence *newCoords = fromCoords.clone();
-	Point *g = NULL;
+	Point *g = nullptr;
 	try {
-		g = new Point(newCoords,this); 
+		g = new Point(newCoords,this);
 	} catch (...) {
 		delete newCoords;
 		throw;
@@ -341,7 +341,7 @@ GeometryFactory::createPoint(const CoordinateSequence &fromCoords) const
 MultiLineString*
 GeometryFactory::createMultiLineString() const
 {
-	return new MultiLineString(NULL,this);
+	return new MultiLineString(nullptr,this);
 }
 
 /*public*/
@@ -364,7 +364,7 @@ GeometryFactory::createMultiLineString(const vector<Geometry *> &fromLines)
 		if ( ! line ) throw geos::util::IllegalArgumentException("createMultiLineString called with a vector containing non-LineStrings");
 		(*newGeoms)[i] = new LineString(*line);
 	}
-	MultiLineString *g = NULL;
+	MultiLineString *g = nullptr;
 	try {
 		g = new MultiLineString(newGeoms,this);
 	} catch (...) {
@@ -381,14 +381,14 @@ GeometryFactory::createMultiLineString(const vector<Geometry *> &fromLines)
 GeometryCollection*
 GeometryFactory::createGeometryCollection() const
 {
-	return new GeometryCollection(NULL,this);
+	return new GeometryCollection(nullptr,this);
 }
 
 /*public*/
 Geometry*
 GeometryFactory::createEmptyGeometry() const
 {
-	return new GeometryCollection(NULL,this);
+	return new GeometryCollection(nullptr,this);
 }
 
 /*public*/
@@ -406,7 +406,7 @@ GeometryFactory::createGeometryCollection(const vector<Geometry *> &fromGeoms) c
 	for (size_t i=0; i<fromGeoms.size(); i++) {
 		(*newGeoms)[i] = fromGeoms[i]->clone();
 	}
-	GeometryCollection *g = NULL;
+	GeometryCollection *g = nullptr;
 	try {
 		g = new GeometryCollection(newGeoms,this);
 	} catch (...) {
@@ -423,7 +423,7 @@ GeometryFactory::createGeometryCollection(const vector<Geometry *> &fromGeoms) c
 MultiPolygon*
 GeometryFactory::createMultiPolygon() const
 {
-	return new MultiPolygon(NULL,this);
+	return new MultiPolygon(nullptr,this);
 }
 
 /*public*/
@@ -442,7 +442,7 @@ GeometryFactory::createMultiPolygon(const vector<Geometry *> &fromPolys) const
 	{
 		(*newGeoms)[i] = fromPolys[i]->clone();
 	}
-	MultiPolygon *g = NULL;
+	MultiPolygon *g = nullptr;
 	try {
 		g = new MultiPolygon(newGeoms,this);
 	} catch (...) {
@@ -459,7 +459,7 @@ GeometryFactory::createMultiPolygon(const vector<Geometry *> &fromPolys) const
 LinearRing*
 GeometryFactory::createLinearRing() const
 {
-	return new LinearRing(NULL,this);
+	return new LinearRing(nullptr,this);
 }
 
 /*public*/
@@ -470,10 +470,10 @@ GeometryFactory::createLinearRing(CoordinateSequence* newCoords) const
 }
 
 /*public*/
-Geometry::AutoPtr
-GeometryFactory::createLinearRing(CoordinateSequence::AutoPtr newCoords) const
+Geometry::Ptr
+GeometryFactory::createLinearRing(CoordinateSequence::Ptr newCoords) const
 {
-	return Geometry::AutoPtr(new LinearRing(newCoords, this));
+	return Geometry::Ptr(new LinearRing(std::move(newCoords), this));
 }
 
 /*public*/
@@ -481,7 +481,7 @@ LinearRing*
 GeometryFactory::createLinearRing(const CoordinateSequence& fromCoords) const
 {
 	CoordinateSequence *newCoords = fromCoords.clone();
-	LinearRing *g = NULL;
+	LinearRing *g = nullptr;
 	// construction failure will delete newCoords
 	g = new LinearRing(newCoords, this);
 	return g;
@@ -504,7 +504,7 @@ GeometryFactory::createMultiPoint(const vector<Geometry *> &fromPoints) const
 		(*newGeoms)[i] = fromPoints[i]->clone();
 	}
 
-	MultiPoint *g = NULL;
+	MultiPoint *g = nullptr;
 	try {
 		g = new MultiPoint(newGeoms,this);
 	} catch (...) {
@@ -521,7 +521,7 @@ GeometryFactory::createMultiPoint(const vector<Geometry *> &fromPoints) const
 MultiPoint*
 GeometryFactory::createMultiPoint() const
 {
-	return new MultiPoint(NULL, this);
+	return new MultiPoint(nullptr, this);
 }
 
 /*public*/
@@ -535,7 +535,7 @@ GeometryFactory::createMultiPoint(const CoordinateSequence &fromCoords) const
 		Point *pt=createPoint(fromCoords.getAt(i));
 		pts->push_back(pt);
 	}
-	MultiPoint *mp = NULL;
+	MultiPoint *mp = nullptr;
 	try {
 		mp = createMultiPoint(pts);
 	} catch (...) {
@@ -557,7 +557,7 @@ GeometryFactory::createMultiPoint(const std::vector<Coordinate> &fromCoords) con
 		Point *pt=createPoint(fromCoords[i]);
 		pts->push_back(pt);
 	}
-	MultiPoint *mp = NULL;
+	MultiPoint *mp = nullptr;
 	try {
 		mp = createMultiPoint(pts);
 	} catch (...) {
@@ -572,7 +572,7 @@ GeometryFactory::createMultiPoint(const std::vector<Coordinate> &fromCoords) con
 Polygon*
 GeometryFactory::createPolygon() const
 {
-	return new Polygon(NULL, NULL, this);
+	return new Polygon(nullptr, nullptr, this);
 }
 
 /*public*/
@@ -594,7 +594,7 @@ GeometryFactory::createPolygon(const LinearRing &shell, const vector<Geometry *>
 	{
 		(*newHoles)[i] = holes[i]->clone();
 	}
-	Polygon *g = NULL;
+	Polygon *g = nullptr;
 	try {
 		g = new Polygon(newRing, newHoles, this);
 	} catch (...) {
@@ -611,14 +611,14 @@ GeometryFactory::createPolygon(const LinearRing &shell, const vector<Geometry *>
 LineString *
 GeometryFactory::createLineString() const
 {
-	return new LineString(NULL, this);
+	return new LineString(nullptr, this);
 }
 
 /*public*/
-std::auto_ptr<LineString>
+std::unique_ptr<LineString>
 GeometryFactory::createLineString(const LineString& ls) const
 {
-	return std::auto_ptr<LineString>(new LineString(ls));
+	return std::unique_ptr<LineString>(new LineString(ls));
 }
 
 /*public*/
@@ -630,11 +630,11 @@ GeometryFactory::createLineString(CoordinateSequence *newCoords)
 }
 
 /*public*/
-Geometry::AutoPtr
-GeometryFactory::createLineString(CoordinateSequence::AutoPtr newCoords)
+Geometry::Ptr
+GeometryFactory::createLineString(CoordinateSequence::Ptr newCoords)
 	const
 {
-	return Geometry::AutoPtr(new LineString(newCoords, this));
+	return Geometry::Ptr(new LineString(std::move(newCoords), this));
 }
 
 /*public*/
@@ -643,7 +643,7 @@ GeometryFactory::createLineString(const CoordinateSequence &fromCoords)
 	const
 {
 	CoordinateSequence *newCoords = fromCoords.clone();
-	LineString *g = NULL;
+	LineString *g = nullptr;
 	// construction failure will delete newCoords
 	g = new LineString(newCoords, this);
 	return g;
@@ -656,7 +656,7 @@ GeometryFactory::buildGeometry(vector<Geometry *> *newGeoms) const
 	string geomClass("NULL");
 	bool isHeterogeneous=false;
 	bool hasGeometryCollection=false;
-    
+
 	for (size_t i=0, n=newGeoms->size(); i<n; ++i)
 	{
 		Geometry* geom = (*newGeoms)[i];
@@ -721,9 +721,10 @@ GeometryFactory::buildGeometry(const vector<Geometry *> &fromGeoms) const
 	bool isHeterogeneous=false;
 	bool isCollection=fromGeoms.size()>1;
 	size_t i;
-    
+
 	for (i=0; i<fromGeoms.size(); i++) {
-		string partClass(typeid(*fromGeoms[i]).name());
+		Geometry *geom = fromGeoms[i];
+		string partClass(typeid(*geom).name());
 		if (geomClass=="NULL") {
 			geomClass=partClass;
 		} else if (geomClass!=partClass) {
@@ -781,7 +782,7 @@ GeometryFactory::destroyGeometry(Geometry *g) const
 
 /*public static*/
 const GeometryFactory*
-GeometryFactory::getDefaultInstance() 
+GeometryFactory::getDefaultInstance()
 {
 	static GeometryFactory* defInstance = new GeometryFactory();
 	return defInstance;

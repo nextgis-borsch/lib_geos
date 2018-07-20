@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -44,7 +44,7 @@ namespace intersection { // geos::operation::intersection
   Rectangle::toPolygon(const geom::GeometryFactory &f) const
   {
     geom::LinearRing* ls = toLinearRing(f);
-    return f.createPolygon(ls, 0);
+    return f.createPolygon(ls, nullptr);
   }
 
   geom::LinearRing*

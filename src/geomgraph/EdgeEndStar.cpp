@@ -3,7 +3,7 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
@@ -76,7 +76,7 @@ EdgeEnd*
 EdgeEndStar::getNextCW(EdgeEnd *ee)
 {
 	EdgeEndStar::iterator it=find(ee);
-	if ( it==end() ) return NULL;
+	if ( it==end() ) return nullptr;
 	if ( it==begin() ) { it=end(); --it; }
 	else --it;
 	return *it;

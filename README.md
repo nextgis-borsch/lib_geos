@@ -5,10 +5,10 @@ Project homepage: http://geos.osgeo.org/
 
 ## Build status
 
-| branch / CI | Debbie | Winnie | Dronie | Travis CI | GitLab CI | AppVeyor |
-|:---         |:---    |:---    |:---    |:---       |:---       |:---      |
-| svn-trunk   | [![debbie](https://debbie.postgis.net/buildStatus/icon?job=GEOS_Trunk)](https://debbie.postgis.net/view/GEOS/job/GEOS_Trunk/) | [![winnie](https://debbie.postgis.net:444/view/GEOS/job/GEOS_matrix_trunk/badge/icon)](https://debbie.postgis.net:444/view/GEOS/job/GEOS_matrix_trunk/) | [![dronie](https://drone.osgeo.org/api/badges/geos/geos/status.svg?branch=svn-trunk)](https://drone.osgeo.org/geos/geos?branch=svn-trunk) | [![travis](https://travis-ci.org/OSGeo/geos.svg?branch=svn-trunk)](https://travis-ci.org/OSGeo/geos?branch=svn-trunk) | [![gitlab-ci](https://gitlab.com/geos/libgeos/badges/svn-trunk/build.svg)](https://gitlab.com/geos/libgeos/commits/svn-trunk) | [![appveyor](https://ci.appveyor.com/api/projects/status/ao909hwpsb1yu062/branch/svn-trunk?svg=true)](https://ci.appveyor.com/project/OSGeo/geos/branch/svn-trunk) |
-| svn-3.6     | [![debbie](https://debbie.postgis.net/buildStatus/icon?job=GEOS_Branch_3.6)](https://debbie.postgis.net/view/GEOS/job/GEOS_Branch_3.6/) | [![winnie](https://debbie.postgis.net:444/view/GEOS/job/GEOS_matrix_branch_3.6/badge/icon)](https://debbie.postgis.net:444/view/GEOS/job/GEOS_matrix_branch_3.6/) | [![dronie](https://drone.osgeo.org/api/badges/geos/geos/status.svg?branch=svn-3.6)](https://drone.osgeo.org/geos/geos?branch=svn-3.6) | [![travis](https://travis-ci.org/OSGeo/geos.svg?branch=svn-3.6)](https://travis-ci.org/OSGeo/geos?branch=svn-3.6) | [![gitlab-ci](https://gitlab.com/geos/libgeos/badges/svn-3.6/build.svg)](https://gitlab.com/geos/libgeos/commits/svn-3.6) | [![appveyor](https://ci.appveyor.com/api/projects/status/ao909hwpsb1yu062/branch/svn-3.6?svg=true)](https://ci.appveyor.com/project/OSGeo/geos/branch/svn-3.6) |
+| branch / CI | Debbie | Winnie | Dronie | Travis CI | GitLab CI | AppVeyor | Bessie | Bessie32 |
+|:---         |:---    |:---    |:---    |:---       |:---       |:---      |:---    |:---    |
+| master      | [![debbie](https://debbie.postgis.net/buildStatus/icon?job=GEOS_Master)](https://debbie.postgis.net/view/GEOS/job/GEOS_Master/) | [![winnie](https://winnie.postgis.net:444/view/GEOS/job/GEOS_Master/badge/icon)](https://winnie.postgis.net:444/view/GEOS/job/GEOS_Master/) | [![dronie](https://drone.osgeo.org/api/badges/geos/geos/status.svg?branch=master)](https://drone.osgeo.org/geos/geos?branch=master) | [![travis](https://travis-ci.com/libgeos/geos.svg?branch=master)](https://travis-ci.com/libgeos/geos?branch=master) | [![gitlab-ci](https://gitlab.com/geos/libgeos/badges/master/build.svg)](https://gitlab.com/geos/libgeos/commits/master) | [![appveyor](https://ci.appveyor.com/api/projects/status/ao909hwpsb1yu062/branch/master?svg=true)](https://ci.appveyor.com/project/OSGeo/geos/branch/master) | [![bessie](https://debbie.postgis.net/buildStatus/icon?job=GEOS_Worker_Run/label=bessie&BRANCH=master)](https://debbie.postgis.net/view/GEOS/job/GEOS_Worker_Run/label=bessie) | [![bessie32](https://debbie.postgis.net/buildStatus/icon?job=GEOS_Worker_Run/label=bessie32&BRANCH=master)](https://debbie.postgis.net/view/GEOS/job/GEOS_Worker_Run/label=bessie32) ||
+| svn-3.6     | [![debbie](https://debbie.postgis.net/buildStatus/icon?job=GEOS_Branch_3.6)](https://debbie.postgis.net/view/GEOS/job/GEOS_Branch_3.6/) | [![winnie](https://winnie.postgis.net:444/view/GEOS/job/GEOS_Branch_3.6/badge/icon)](https://winnie.postgis.net:444/view/GEOS/job/GEOS_Branch_3.6/) | [![dronie](https://drone.osgeo.org/api/badges/geos/geos/status.svg?branch=svn-3.6)](https://drone.osgeo.org/geos/geos?branch=svn-3.6) | [![travis](https://travis-ci.com/libgeos/geos.svg?branch=svn-3.6)](https://travis-ci.com/libgeos/geos?branch=svn-3.6) | [![gitlab-ci](https://gitlab.com/geos/libgeos/badges/svn-3.6/build.svg)](https://gitlab.com/geos/libgeos/commits/svn-3.6) | [![appveyor](https://ci.appveyor.com/api/projects/status/ao909hwpsb1yu062/branch/svn-3.6?svg=true)](https://ci.appveyor.com/project/OSGeo/geos/branch/svn-3.6) |
 
 More on: https://trac.osgeo.org/geos#BuildandInstall
 
@@ -58,6 +58,12 @@ is required:
 
 ### Using the C interface (recommended)
 
+GEOS promises long term stability of C API
+
+The C library uses the C++ interface, but the C library follows
+normal ABI-change-sensitive versioning, so programs that link only
+against the C library should work without relinking when GEOS is upgraded.
+
 To compile programs against the C lib (recommended):
 
     CFLAGS += `geos-config --cflags`
@@ -68,16 +74,15 @@ Example usage:
 
     capi/geostest.c contains basic usage examples.
 
-### Using the C++ interface (discouraged)
+### Using the C++ interface (no stability promise)
 
-NB: The C++ interface should not be used directly; the GEOS project
-views it as a bug for another program to use the C++ interface or even
-to directly link against the C++ library.  The C++ library name will
-change on every minor release because it is too hard to know if there
-have been ABI changes.  (The C library uses the C++ interface, but the
-C library follows normal ABI-change-sensitive versioning, so programs
-that link only against the C library should work without relinking
-when GEOS is upgraded.)
+Developers who decide to use the C++ interface should be aware GEOS
+does not promise API or ABI stability of C++ API between releases.
+Moreover C++ API/ABI breaking changes may not even be announced
+or include in the NEWS file
+
+The C++ library name will change on every minor release because
+it is too hard to know if there have been ABI changes.
 
 To compile programs against the C++ lib:
 
@@ -114,9 +119,3 @@ To build Doxygen documentation:
     cd doc
     make doxygen-html
 
-# Borsch
-
-[NextGIS Borsch](https://github.com/nextgis-borsch/borsch) helps to resolve
-dependencies of building C/C++ libraries and applications. NextGIS Borsch is based on [CMake](https://cmake.org/).
-
-[![Borsch compatible](https://img.shields.io/badge/Borsch-compatible-orange.svg?style=flat)](https://github.com/nextgis-borsch/borsch)

@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -46,17 +46,17 @@ public:
 	 */
 	PointExtracter(Point::ConstVect& newComps);
 
-	void filter_rw(Geometry *geom);
+	void filter_rw(Geometry *geom) override;
 
-	void filter_ro(const Geometry *geom);
+	void filter_ro(const Geometry *geom) override;
 
 private:
 
 	Point::ConstVect& comps;
 
     // Declare type as noncopyable
-    PointExtracter(const PointExtracter& other);
-    PointExtracter& operator=(const PointExtracter& rhs);
+    PointExtracter(const PointExtracter& other) = delete;
+    PointExtracter& operator=(const PointExtracter& rhs) = delete;
 };
 
 } // namespace geos.geom.util

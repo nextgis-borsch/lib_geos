@@ -3,7 +3,7 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009-2010  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009-2010  Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
@@ -26,6 +26,7 @@
 #include <geos/geom/CoordinateList.h>
 #include <geos/util/UniqueCoordinateArrayFilter.h>
 #include <geos/geom/LineSegment.h>
+#include <geos/util/Interrupt.h>
 
 #include <vector>
 #include <memory>
@@ -50,7 +51,7 @@ namespace overlay { // geos.operation.overlay
 namespace snap { // geos.operation.overlay.snap
 
 /*public*/
-std::auto_ptr<Coordinate::Vect>
+std::unique_ptr<Coordinate::Vect>
 LineStringSnapper::snapTo(const geom::Coordinate::ConstVect& snapPts)
 {
 	geom::CoordinateList coordList(srcPts);
@@ -125,6 +126,7 @@ cerr << "Snapping vertices of: " << srcCoords << endl;
 			it != end;
 			++it)
 	{
+	    GEOS_CHECK_FOR_INTERRUPTS();
 		assert(*it);
 		const Coordinate& snapPt = *(*it);
 
@@ -227,6 +229,8 @@ LineStringSnapper::snapSegments(geom::CoordinateList& srcCoords,
 
   // nothing to do if there are no source coords..
   if ( srcCoords.empty() ) return;
+
+	GEOS_CHECK_FOR_INTERRUPTS();
 
 #if GEOS_DEBUG
 cerr << "Snapping segments of: " << srcCoords << endl;

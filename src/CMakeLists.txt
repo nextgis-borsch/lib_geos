@@ -45,7 +45,8 @@ if(OSX_FRAMEWORK)
     MACOSX_FRAMEWORK_SHORT_VERSION_STRING ${VERSION}
     MACOSX_FRAMEWORK_IDENTIFIER org.osgeo.geos
     XCODE_ATTRIBUTE_INSTALL_PATH "@rpath"
-    PUBLIC_HEADER "${geos_HHEADERS}" )
+    PUBLIC_HEADER "${geos_HHEADERS}"
+    CXX_STANDARD 11)
 
     set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
 
@@ -108,7 +109,7 @@ else()
             else()
                 set_target_properties(${LIB_NAME}static PROPERTIES OUTPUT_NAME ${LIB_NAME})
             endif()
-            set_target_properties(${LIB_NAME}static PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+            set_target_properties(${LIB_NAME}static PROPERTIES CLEAN_DIRECT_OUTPUT 1 CXX_STANDARD 11)
         endif()
     else()
         set_target_properties(${LIB_NAME}
@@ -120,7 +121,7 @@ else()
 
     set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
 
-    set_target_properties(${LIB_NAME} PROPERTIES CLEAN_DIRECT_OUTPUT 1)
+    set_target_properties(${LIB_NAME} PROPERTIES CLEAN_DIRECT_OUTPUT 1 CXX_STANDARD 11)
 endif()
 
 set(INSTALL_TARGETS ${INSTALL_TARGETS} ${LIB_NAME})

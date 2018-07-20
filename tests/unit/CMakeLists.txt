@@ -28,6 +28,8 @@ if(GEOS_ENABLE_TESTS)
       target_link_libraries(geos_unit ${PROJECT_NAME} ${PROJECT_NAME}_c)
   endif()
 
+  set_property(TARGET geos_unit PROPERTY CXX_STANDARD 11)
+
   add_test(geos_unit ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/geos_unit)
 
   set(STATUS_RESULT "ON")

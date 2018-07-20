@@ -3,18 +3,18 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2010      Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2010      Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
  *
  * Last port: original work
  *
- * Developed by Sandro Santilli (strk@keybit.net)
+ * Developed by Sandro Santilli (strk@kbt.io)
  * for Faunalia (http://www.faunalia.it)
  * with funding from Regione Toscana - Settore SISTEMA INFORMATIVO
  * TERRITORIALE ED AMBIENTALE - for the project: "Sviluppo strumenti
@@ -108,17 +108,17 @@ SharedPathsOp::findLinearIntersections(PathList& to)
   // TODO: optionally use the tolerance,
   //       snapping _g2 over _g1 ?
 
-  std::auto_ptr<Geometry> full ( OverlayOp::overlayOp(
+  std::unique_ptr<Geometry> full ( OverlayOp::overlayOp(
     &_g1, &_g2, OverlayOp::opINTERSECTION) );
 
-  // NOTE: intersection of equal lines yelds splitted lines, 
+  // NOTE: intersection of equal lines yelds splitted lines,
   //       should we sew them back ?
 
   for (size_t i=0, n=full->getNumGeometries(); i<n; ++i)
   {
     const Geometry* sub = full->getGeometryN(i);
     const LineString* path = dynamic_cast<const LineString*>(sub);
-    if ( path ) { 
+    if ( path ) {
       // NOTE: we're making a copy here, wouldn't be needed
       //       for a simple predicate
       to.push_back(_gf.createLineString(*path).release());
@@ -150,7 +150,7 @@ SharedPathsOp::isForward(const geom::LineString& edge,
 
   /*
    * We move the coordinate somewhat closer, to avoid
-   * vertices of the geometry being checked (geom). 
+   * vertices of the geometry being checked (geom).
    *
    * This is mostly only needed when one of the two points
    * of the edge is an endpoint of a _closed_ geom.

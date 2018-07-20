@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009 2011  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009 2011  Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -19,9 +19,9 @@
 #ifndef GEOS_OP_OVERLAY_SNAP_SNAPIFNEEDEDOVERLAYOP_H
 #define GEOS_OP_OVERLAY_SNAP_SNAPIFNEEDEDOVERLAYOP_H
 
-#include <geos/operation/overlay/OverlayOp.h> // for enums 
+#include <geos/operation/overlay/OverlayOp.h> // for enums
 
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 // Forward declarations
 namespace geos {
@@ -51,7 +51,7 @@ class SnapIfNeededOverlayOp
 
 public:
 
-	static std::auto_ptr<geom::Geometry>
+	static std::unique_ptr<geom::Geometry>
 	overlayOp(const geom::Geometry& g0, const geom::Geometry& g1,
 	          OverlayOp::OpCode opCode)
 	{
@@ -59,25 +59,25 @@ public:
 		return op.getResultGeometry(opCode);
 	}
 
-	static std::auto_ptr<geom::Geometry>
+	static std::unique_ptr<geom::Geometry>
 	intersection(const geom::Geometry& g0, const geom::Geometry& g1)
 	{
 		return overlayOp(g0, g1, OverlayOp::opINTERSECTION);
 	}
 
-	static std::auto_ptr<geom::Geometry>
+	static std::unique_ptr<geom::Geometry>
 	Union(const geom::Geometry& g0, const geom::Geometry& g1)
 	{
 		return overlayOp(g0, g1, OverlayOp::opUNION);
 	}
 
-	static std::auto_ptr<geom::Geometry>
+	static std::unique_ptr<geom::Geometry>
 	difference(const geom::Geometry& g0, const geom::Geometry& g1)
 	{
 		return overlayOp(g0, g1, OverlayOp::opDIFFERENCE);
 	}
 
-	static std::auto_ptr<geom::Geometry>
+	static std::unique_ptr<geom::Geometry>
 	symDifference(const geom::Geometry& g0, const geom::Geometry& g1)
 	{
 		return overlayOp(g0, g1, OverlayOp::opSYMDIFFERENCE);
@@ -90,8 +90,8 @@ public:
 	{
 	}
 
-	
-	typedef std::auto_ptr<geom::Geometry> GeomPtr;
+
+	typedef std::unique_ptr<geom::Geometry> GeomPtr;
 
 	GeomPtr getResultGeometry(OverlayOp::OpCode opCode);
 
@@ -101,10 +101,10 @@ private:
 	const geom::Geometry& geom1;
 
     // Declare type as noncopyable
-    SnapIfNeededOverlayOp(const SnapIfNeededOverlayOp& other);
-    SnapIfNeededOverlayOp& operator=(const SnapIfNeededOverlayOp& rhs);
+    SnapIfNeededOverlayOp(const SnapIfNeededOverlayOp& other) = delete;
+    SnapIfNeededOverlayOp& operator=(const SnapIfNeededOverlayOp& rhs) = delete;
 };
- 
+
 
 } // namespace geos::operation::overlay::snap
 } // namespace geos::operation::overlay

@@ -3,12 +3,12 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -28,21 +28,21 @@
 
 #include <vector>
 #include <list>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 4251) // warning C4251: needs to have dll-interface to be used by clients of class
 #endif
 
-// Forward declarations 
+// Forward declarations
 namespace geos {
-	namespace geom { 
+	namespace geom {
 		class GeometryFactory;
 		class Geometry;
 		class LineString;
 	}
-	namespace planargraph { 
+	namespace planargraph {
 		class DirectedEdge;
 		class Subgraph;
 		class Node;
@@ -73,7 +73,7 @@ namespace linemerge { // geos::operation::linemerge
  * not be what is expected.
  * The computed output is a single MultiLineString containing the ordered
  * linestrings in the sequence.
- * 
+ *
  * The sequencing employs the classic <b>Eulerian path</b> graph algorithm.
  * Since Eulerian paths are not uniquely determined,
  * further rules are used to
@@ -106,7 +106,7 @@ private:
 	const geom::GeometryFactory *factory;
 	unsigned int lineCount;
 	bool isRun;
-	std::auto_ptr<geom::Geometry> sequencedGeometry;
+	std::unique_ptr<geom::Geometry> sequencedGeometry;
 	bool isSequenceableVar;
 
 	void addLine(const geom::LineString *lineString);
@@ -140,7 +140,7 @@ private:
 		DirEdgeList& deList,
 		DirEdgeList::iterator lit,
 		bool expectedClosed);
-	
+
 	/**
 	 * Finds an {@link DirectedEdge} for an unvisited edge (if any),
 	 * choosing the dirEdge which preserves orientation, if possible.
@@ -155,9 +155,9 @@ private:
 	/**
 	 * Computes a version of the sequence which is optimally
 	 * oriented relative to the underlying geometry.
-	 * 
+	 *
 	 * Heuristics used are:
-	 * 
+	 *
 	 * - If the path has a degree-1 node which is the start
 	 *   node of an linestring, use that node as the start of the sequence
 	 * - If the path has a degree-1 node which is the end
@@ -166,7 +166,7 @@ private:
 	 *   (NOTE: in this case could orient the sequence according to the
 	 *   majority of the linestring orientations)
 	 *
-	 * @param seq a List of planarDirectedEdges 
+	 * @param seq a List of planarDirectedEdges
 	 * @return the oriented sequence, possibly same as input if already
 	 *         oriented
 	 */
@@ -202,10 +202,10 @@ public:
 
 	LineSequencer()
 		:
-		factory(0),
+		factory(nullptr),
 		lineCount(0),
 		isRun(false),
-		sequencedGeometry(0),
+		sequencedGeometry(nullptr),
 		isSequenceableVar(false)
 		{}
 

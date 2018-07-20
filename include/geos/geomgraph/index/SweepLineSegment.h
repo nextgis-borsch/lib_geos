@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -40,7 +40,7 @@ namespace index { // geos::geomgraph::index
 class GEOS_DLL SweepLineSegment: public SweepLineEventOBJ {
 public:
 	SweepLineSegment(Edge *newEdge, int newPtIndex);
-	~SweepLineSegment();
+	~SweepLineSegment() override;
 	double getMinX();
 	double getMaxX();
 	void computeIntersections(SweepLineSegment *ss, SegmentIntersector *si);

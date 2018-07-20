@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -35,8 +35,8 @@
 
 #include <vector>
 #include <cmath> // for fabs
-#include <cassert> 
-#include <algorithm> 
+#include <cassert>
+#include <algorithm>
 #include <memory>
 
 #ifndef GEOS_DEBUG
@@ -73,18 +73,18 @@ Polygon::Polygon(LinearRing *newShell, vector<Geometry *> *newHoles,
 		const GeometryFactory *newFactory):
 	Geometry(newFactory)
 {
-	if (newShell==NULL) {
-		shell=getFactory()->createLinearRing(NULL);
+	if (newShell==nullptr) {
+		shell=getFactory()->createLinearRing(nullptr);
 	}
 	else
 	{
-		if (newHoles != NULL && newShell->isEmpty() && hasNonEmptyElements(newHoles)) {
+		if (newHoles != nullptr && newShell->isEmpty() && hasNonEmptyElements(newHoles)) {
 			throw util::IllegalArgumentException("shell is empty but holes are not");
 		}
 		shell=newShell;
 	}
 
-	if (newHoles==NULL)
+	if (newHoles==nullptr)
 	{
 		holes=new vector<Geometry *>();
 	}
@@ -151,8 +151,8 @@ Polygon::getCoordinateDimension() const
 {
 	int dimension=2;
 
-    if( shell != NULL )
-        dimension = max(dimension,shell->getCoordinateDimension());
+	if( shell != nullptr )
+		dimension = max(dimension,shell->getCoordinateDimension());
 
 	size_t nholes=holes->size();
 	for (size_t i=0; i<nholes; ++i)
@@ -242,10 +242,10 @@ Polygon::getBoundary() const
 	return ret;
 }
 
-Envelope::AutoPtr
+Envelope::Ptr
 Polygon::computeEnvelopeInternal() const
 {
-	return Envelope::AutoPtr(new Envelope(*(shell->getEnvelopeInternal())));
+	return Envelope::Ptr(new Envelope(*(shell->getEnvelopeInternal())));
 }
 
 bool
@@ -476,7 +476,7 @@ bool
 Polygon::isRectangle() const
 {
 	if ( getNumInteriorRing() != 0 ) return false;
-	assert(shell!=NULL);
+	assert(shell!=nullptr);
 	if ( shell->getNumPoints() != 5 ) return false;
 
 	const CoordinateSequence &seq = *(shell->getCoordinatesRO());
@@ -503,6 +503,26 @@ Polygon::isRectangle() const
 		prevY = y;
 	}
 	return true;
+}
+
+Geometry*
+Polygon::reverse() const
+{
+	if (isEmpty()) {
+		return clone();
+	}
+
+	auto* exteriorRingReversed = dynamic_cast<LinearRing*>(shell->reverse());
+	auto* interiorRingsReversed = new std::vector<Geometry*>{holes->size()};
+
+	std::transform(holes->begin(),
+				   holes->end(),
+				   interiorRingsReversed->begin(),
+				   [](const Geometry * g) {
+		             return g->reverse();
+	});
+
+	return getFactory()->createPolygon(exteriorRingReversed, interiorRingsReversed);
 }
 
 } // namespace geos::geom

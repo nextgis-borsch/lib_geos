@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -23,7 +23,7 @@
 #include <geos/simplify/TaggedLineSegment.h>
 #include <geos/geom/CoordinateSequence.h>
 #include <geos/geom/LineString.h>
-//#include <geos/geom/Geometry.h> // for auto_ptr destructor 
+//#include <geos/geom/Geometry.h> // for unique_ptr destructor
 //#include <geos/geom/GeometryFactory.h>
 //#include <geos/geom/CoordinateSequenceFactory.h>
 
@@ -52,8 +52,8 @@ TaggedLineStringSimplifier::TaggedLineStringSimplifier(
 	inputIndex(nInputIndex),
 	outputIndex(nOutputIndex),
 	li(new algorithm::LineIntersector()),
-	line(NULL),
-	linePts(NULL),
+	line(nullptr),
+	linePts(nullptr),
 	distanceTolerance(0.0)
 {
 }
@@ -100,14 +100,13 @@ TaggedLineStringSimplifier::simplifySection(std::size_t i,
 	{
 
 #if GEOS_DEBUG
-		std::cerr << "single segment, no flattening" 
+		std::cerr << "single segment, no flattening"
 		          << std::endl;
 #endif
-
-		auto_ptr<TaggedLineSegment> newSeg(new
+		unique_ptr<TaggedLineSegment> newSeg(new
 			TaggedLineSegment(*(line->getSegment(i))));
 
-		line->addToResult(newSeg);
+		line->addToResult(std::move(newSeg));
 		// leave this segment in the input index, for efficiency
 		return;
 	}
@@ -135,7 +134,7 @@ TaggedLineStringSimplifier::simplifySection(std::size_t i,
 	std::size_t furthestPtIndex = findFurthestPoint(linePts, i, j, distance);
 
 #if GEOS_DEBUG
-	std::cerr << "furthest point " << furthestPtIndex 
+	std::cerr << "furthest point " << furthestPtIndex
 	          << " at distance " << distance
 	          << std::endl;
 #endif
@@ -155,33 +154,33 @@ TaggedLineStringSimplifier::simplifySection(std::size_t i,
 	if (isValidToSimplify)
 	{
 
-		auto_ptr<TaggedLineSegment> newSeg = flatten(i, j);
+		unique_ptr<TaggedLineSegment> newSeg = flatten(i, j);
 
 #if GEOS_DEBUG
-		std::cerr << "isValidToSimplify, adding seg " 
+		std::cerr << "isValidToSimplify, adding seg "
 			  << newSeg->p0 << ", " << newSeg->p1
 			  << " to TaggedLineSegment["<<line<<"] result "
 			  << std::endl;
 #endif
 
-		line->addToResult(newSeg);
+		line->addToResult(std::move(newSeg));
 		return;
 	}
 
 	simplifySection(i, furthestPtIndex, depth);
 	simplifySection(furthestPtIndex, j, depth);
- 
+
 }
 
 
 /*private*/
-auto_ptr<TaggedLineSegment>
+unique_ptr<TaggedLineSegment>
 TaggedLineStringSimplifier::flatten(std::size_t start, std::size_t end)
 {
 	// make a new segment for the simplified geometry
 	const Coordinate& p0 = linePts->getAt(start);
 	const Coordinate& p1 = linePts->getAt(end);
-	auto_ptr<TaggedLineSegment> newSeg(new TaggedLineSegment(p0, p1));
+	unique_ptr<TaggedLineSegment> newSeg(new TaggedLineSegment(p0, p1));
 	// update the indexes
 	remove(line, start, end);
 	outputIndex->add(newSeg.get());
@@ -209,7 +208,7 @@ bool
 TaggedLineStringSimplifier::hasBadOutputIntersection(
 		const LineSegment& candidateSeg)
 {
-	auto_ptr< vector<LineSegment*> > querySegs =
+	unique_ptr< vector<LineSegment*> > querySegs =
 		outputIndex->query(&candidateSeg);
 
 	for (vector<LineSegment*>::iterator
@@ -245,7 +244,7 @@ TaggedLineStringSimplifier::hasBadInputIntersection(
 		const vector<std::size_t>& sectionIndex,
 		const LineSegment& candidateSeg)
 {
-	auto_ptr< vector<LineSegment*> > querySegs =
+	unique_ptr< vector<LineSegment*> > querySegs =
 		inputIndex->query(&candidateSeg);
 
 	for (vector<LineSegment*>::iterator
@@ -255,7 +254,7 @@ TaggedLineStringSimplifier::hasBadInputIntersection(
 	{
 		assert(*it);
 		assert(dynamic_cast<TaggedLineSegment*>(*it));
-		TaggedLineSegment* querySeg = 
+		TaggedLineSegment* querySeg =
 			static_cast<TaggedLineSegment*>(*it);
 
 		if (hasInteriorIntersection(*querySeg, candidateSeg))
@@ -327,7 +326,7 @@ TaggedLineStringSimplifier::findFurthestPoint(
 		const Coordinate& midPt = pts->getAt(k);
 		double distance = seg.distance(midPt);
 #if GEOS_DEBUG
-		std::cerr << "dist to " << midPt 
+		std::cerr << "dist to " << midPt
 			  << ": " << distance
 			  << std::endl;
 #endif
@@ -342,7 +341,7 @@ TaggedLineStringSimplifier::findFurthestPoint(
 	}
 	maxDistance = maxDist;
 	return maxIndex;
- 
+
 }
 
 } // namespace geos::simplify

@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -21,7 +21,7 @@
 
 #include <geos/export.h>
 
-#include <geos/geom/CoordinateFilter.h> // for inheritance 
+#include <geos/geom/CoordinateFilter.h> // for inheritance
 #include <geos/geom/Envelope.h> // for composition
 #include <geos/operation/overlay/ElevationMatrixCell.h> // for composition
 
@@ -62,16 +62,16 @@ class GEOS_DLL ElevationMatrixFilter: public geom::CoordinateFilter
 {
 public:
 	ElevationMatrixFilter(ElevationMatrix &em);
-	~ElevationMatrixFilter();
-	void filter_rw(geom::Coordinate *c) const;
-	void filter_ro(const geom::Coordinate *c);
+	~ElevationMatrixFilter() override;
+	void filter_rw(geom::Coordinate *c) const override;
+	void filter_ro(const geom::Coordinate *c) override;
 private:
 	ElevationMatrix &em;
 	double avgElevation;
 
     // Declare type as noncopyable
-    ElevationMatrixFilter(const ElevationMatrixFilter& other);
-    ElevationMatrixFilter& operator=(const ElevationMatrixFilter& rhs);
+    ElevationMatrixFilter(const ElevationMatrixFilter& other) = delete;
+    ElevationMatrixFilter& operator=(const ElevationMatrixFilter& rhs) = delete;
 };
 
 

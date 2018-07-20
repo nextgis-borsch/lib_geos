@@ -3,12 +3,12 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -54,7 +54,7 @@ LineSequencer::isSequenced(const Geometry* geom)
 {
 	const MultiLineString *mls;
 
-	if ( 0 == (mls=dynamic_cast<const MultiLineString *>(geom)) )
+	if ( nullptr == (mls=dynamic_cast<const MultiLineString *>(geom)) )
 	{
 		return true;
 	}
@@ -63,7 +63,7 @@ LineSequencer::isSequenced(const Geometry* geom)
 	Coordinate::ConstSet prevSubgraphNodes;
 	Coordinate::ConstVect currNodes;
 
-	const Coordinate* lastNode = NULL;
+	const Coordinate* lastNode = nullptr;
 
 	for (std::size_t i=0, n=mls->getNumGeometries(); i<n; ++i)
 	{
@@ -74,7 +74,7 @@ LineSequencer::isSequenced(const Geometry* geom)
 
 
 		const Coordinate* startNode = &(line.getCoordinateN(0));
-		const Coordinate* endNode = &(line.getCoordinateN(line.getNumPoints() - 1));
+		const Coordinate* endNode = &(line.getCoordinateN(static_cast<int>(line.getNumPoints() - 1)));
 
 		/**
 		 * If this linestring is connected to a previous subgraph,
@@ -89,7 +89,7 @@ LineSequencer::isSequenced(const Geometry* geom)
 			return false;
 		}
 
-		if (lastNode != NULL)
+		if (lastNode != nullptr)
 		{
 			if (! startNode->equals2D(*lastNode))
 			{
@@ -104,7 +104,7 @@ LineSequencer::isSequenced(const Geometry* geom)
 		lastNode = endNode;
 	}
 	return true;
-} 
+}
 
 /* private */
 bool
@@ -155,7 +155,7 @@ LineSequencer::findSequences()
 			delete subgraph;
 			delAll(*sequences);
 			delete sequences;
-			return NULL;
+			return nullptr;
 		}
 		delete subgraph;
 	}
@@ -166,7 +166,7 @@ LineSequencer::findSequences()
 void
 LineSequencer::addLine(const LineString *lineString)
 {
-	if (factory == NULL) {
+	if (factory == nullptr) {
 		factory = lineString->getFactory();
 	}
 	graph.addEdge(lineString);
@@ -181,9 +181,9 @@ LineSequencer::computeSequence()
 	isRun = true;
 
 	Sequences* sequences = findSequences();
-	if (sequences == NULL) return;
+	if (sequences == nullptr) return;
 
-	sequencedGeometry = auto_ptr<Geometry>(buildSequencedGeometry(*sequences));
+	sequencedGeometry = unique_ptr<Geometry>(buildSequencedGeometry(*sequences));
 	isSequenceableVar = true;
 
 	delAll(*sequences);
@@ -194,14 +194,14 @@ LineSequencer::computeSequence()
 
 	// Result is not linear
 	assert(dynamic_cast<LineString *>(sequencedGeometry.get())
-		|| dynamic_cast<MultiLineString *>(sequencedGeometry.get())); 
+		|| dynamic_cast<MultiLineString *>(sequencedGeometry.get()));
 }
 
 /*private*/
 Geometry*
 LineSequencer::buildSequencedGeometry(const Sequences& sequences)
 {
-	auto_ptr<Geometry::NonConstVect> lines(new Geometry::NonConstVect);
+	unique_ptr<Geometry::NonConstVect> lines(new Geometry::NonConstVect);
 
 	for (Sequences::const_iterator
 		i1=sequences.begin(), i1End=sequences.end();
@@ -224,7 +224,7 @@ LineSequencer::buildSequencedGeometry(const Sequences& sequences)
 				lineToAdd = reverse(line);
 			} else {
 				Geometry* lineClone = line->clone();
-				lineToAdd = dynamic_cast<LineString *>(lineClone); 
+				lineToAdd = dynamic_cast<LineString *>(lineClone);
 				assert(lineToAdd);
 			}
 
@@ -233,7 +233,7 @@ LineSequencer::buildSequencedGeometry(const Sequences& sequences)
 	}
 
 	if ( lines->size() == 0 ) {
-		return NULL;
+		return nullptr;
 	} else {
 		Geometry::NonConstVect *l=lines.get();
 		lines.release();
@@ -254,15 +254,15 @@ LineSequencer::reverse(const LineString *line)
 const planargraph::Node*
 LineSequencer::findLowestDegreeNode(const planargraph::Subgraph& graph)
 {
-	size_t minDegree = numeric_limits<size_t>::max(); 
-	const planargraph::Node* minDegreeNode = NULL;
+	size_t minDegree = numeric_limits<size_t>::max();
+	const planargraph::Node* minDegreeNode = nullptr;
 	for (planargraph::NodeMap::container::const_iterator
 		it = graph.nodeBegin(), itEnd = graph.nodeEnd();
 		it != itEnd;
 		++it )
 	{
 		const planargraph::Node* node = (*it).second;
-		if (minDegreeNode == NULL || node->getDegree() < minDegree)
+		if (minDegreeNode == nullptr || node->getDegree() < minDegree)
 		{
 			minDegree = node->getDegree();
 			minDegreeNode = node;
@@ -278,8 +278,8 @@ LineSequencer::findUnvisitedBestOrientedDE(const planargraph::Node* node)
 	using planargraph::DirectedEdge;
 	using planargraph::DirectedEdgeStar;
 
-	const DirectedEdge* wellOrientedDE = NULL;
-	const DirectedEdge* unvisitedDE = NULL;
+	const DirectedEdge* wellOrientedDE = nullptr;
+	const DirectedEdge* unvisitedDE = nullptr;
 	const DirectedEdgeStar* des=node->getOutEdges();
 	for (DirectedEdge::NonConstVect::const_iterator i=des->begin(),
 		e=des->end();
@@ -292,7 +292,7 @@ LineSequencer::findUnvisitedBestOrientedDE(const planargraph::Node* node)
 			if (de->getEdgeDirection()) wellOrientedDE = de;
 		}
 	}
-	if (wellOrientedDE != NULL)
+	if (wellOrientedDE != nullptr)
 		return wellOrientedDE;
 	return unvisitedDE;
 }
@@ -311,7 +311,7 @@ LineSequencer::addReverseSubpath(const planargraph::DirectedEdge *de,
 	// trace an unvisited path *backwards* from this de
 	Node* endNode = de->getToNode();
 
-	Node* fromNode = NULL;
+	Node* fromNode = nullptr;
 	while (true) {
 		deList.insert(lit, de->getSym());
 		de->getEdge()->setVisited(true);
@@ -319,7 +319,7 @@ LineSequencer::addReverseSubpath(const planargraph::DirectedEdge *de,
 		const DirectedEdge* unvisitedOutDE = findUnvisitedBestOrientedDE(fromNode);
 
 		// this must terminate, since we are continually marking edges as visited
-		if (unvisitedOutDE == NULL) break;
+		if (unvisitedOutDE == nullptr) break;
 		de = unvisitedOutDE->getSym();
 	}
 	if ( expectedClosed ) {
@@ -332,7 +332,7 @@ LineSequencer::addReverseSubpath(const planargraph::DirectedEdge *de,
 }
 
 /*private*/
-planargraph::DirectedEdge::NonConstList* 
+planargraph::DirectedEdge::NonConstList*
 LineSequencer::findSequence(planargraph::Subgraph& graph)
 {
 	using planargraph::DirectedEdge;
@@ -356,7 +356,7 @@ LineSequencer::findSequence(planargraph::Subgraph& graph)
 	while (lit != seq->begin()) {
 		const DirectedEdge* prev = *(--lit);
 		const DirectedEdge* unvisitedOutDE = findUnvisitedBestOrientedDE(prev->getFromNode());
-		if (unvisitedOutDE != NULL)
+		if (unvisitedOutDE != nullptr)
 			addReverseSubpath(unvisitedOutDE->getSym(), *seq, lit, true);
 	}
 
@@ -371,8 +371,8 @@ LineSequencer::findSequence(planargraph::Subgraph& graph)
 }
 
 /* private */
-planargraph::DirectedEdge::NonConstList* 
-LineSequencer::orient(planargraph::DirectedEdge::NonConstList* seq) 
+planargraph::DirectedEdge::NonConstList*
+LineSequencer::orient(planargraph::DirectedEdge::NonConstList* seq)
 {
 	using namespace geos::planargraph;
 
@@ -397,7 +397,7 @@ LineSequencer::orient(planargraph::DirectedEdge::NonConstList* seq)
 			hasObviousStartNode = true;
 			flipSeq = true;
 		}
-		if (startEdge->getFromNode()->getDegree() == 1 && 
+		if (startEdge->getFromNode()->getDegree() == 1 &&
 				startEdge->getEdgeDirection() == true)
 		{
 			hasObviousStartNode = true;
@@ -431,7 +431,7 @@ LineSequencer::orient(planargraph::DirectedEdge::NonConstList* seq)
 }
 
 /* private */
-planargraph::DirectedEdge::NonConstList* 
+planargraph::DirectedEdge::NonConstList*
 LineSequencer::reverse(planargraph::DirectedEdge::NonConstList& seq)
 {
 	using namespace geos::planargraph;
@@ -445,7 +445,7 @@ LineSequencer::reverse(planargraph::DirectedEdge::NonConstList& seq)
 	return newSeq;
 }
 
- 
+
 
 } // namespace geos.operation.linemerge
 } // namespace geos.operation

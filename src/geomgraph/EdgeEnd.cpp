@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -19,7 +19,7 @@
  **********************************************************************/
 
 #include <geos/geomgraph/EdgeEnd.h>
-#include <geos/geomgraph/Node.h> // for assertions 
+#include <geos/geomgraph/Node.h> // for assertions
 #include <geos/algorithm/CGAlgorithms.h>
 #include <geos/geomgraph/Label.h>
 #include <geos/geomgraph/Quadrant.h>
@@ -42,9 +42,9 @@ using namespace geos::algorithm;
 /*public*/
 EdgeEnd::EdgeEnd()
 	:
-	edge(NULL),
+	edge(nullptr),
 	label(),
-	node(NULL),
+	node(nullptr),
 	dx(0.0),
 	dy(0.0),
 	quadrant(0)
@@ -56,7 +56,7 @@ EdgeEnd::EdgeEnd(Edge* newEdge)
 	:
 	edge(newEdge),
 	label(),
-	node(NULL),
+	node(nullptr),
 	dx(0.0),
 	dy(0.0),
 	quadrant(0)
@@ -69,7 +69,7 @@ EdgeEnd::EdgeEnd(Edge* newEdge, const Coordinate& newP0,
 	:
 	edge(newEdge),
 	label(newLabel),
-	node(NULL),
+	node(nullptr),
 	dx(0.0),
 	dy(0.0),
 	quadrant(0)
@@ -83,7 +83,7 @@ EdgeEnd::EdgeEnd(Edge* newEdge, const Coordinate& newP0,
 	:
 	edge(newEdge),
 	label(),
-	node(NULL),
+	node(nullptr),
 	dx(0.0),
 	dy(0.0),
 	quadrant(0)

@@ -3,12 +3,12 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -51,8 +51,8 @@ private:
 	bool intersectsVar;
 
     // Declare type as noncopyable
-    EnvelopeIntersectsVisitor(const EnvelopeIntersectsVisitor& other);
-    EnvelopeIntersectsVisitor& operator=(const EnvelopeIntersectsVisitor& rhs);
+    EnvelopeIntersectsVisitor(const EnvelopeIntersectsVisitor& other) = delete;
+    EnvelopeIntersectsVisitor& operator=(const EnvelopeIntersectsVisitor& rhs) = delete;
 
 protected:
 
@@ -63,7 +63,7 @@ protected:
 	 * @return <code>true</code> if an intersection must occur
 	 * <code>false</code> if no conclusion can be made
 	 */
-	void visit(const geom::Geometry &element)
+	void visit(const geom::Geometry &element) override
 	{
 		const geom::Envelope &elementEnv = *(element.getEnvelopeInternal());
 
@@ -101,7 +101,7 @@ protected:
 		}
 	}
 
-	bool isDone() { return intersectsVar==true; }
+	bool isDone() override { return intersectsVar==true; }
 
 public:
 
@@ -137,14 +137,14 @@ private:
 
 protected:
 
-	void visit(const geom::Geometry &geom)
+	void visit(const geom::Geometry &geom) override
 	{
 		using geos::algorithm::locate::SimplePointInAreaLocator;
 
 		const geom::Polygon *poly;
 
 		// if test geometry is not polygonal this check is not needed
-		if ( 0 == (poly=dynamic_cast<const geom::Polygon *>(&geom)) ) {
+		if ( nullptr == (poly=dynamic_cast<const geom::Polygon *>(&geom)) ) {
 			return;
 		}
 
@@ -174,7 +174,7 @@ protected:
 		}
 	}
 
-	bool isDone() { return containsPointVar; }
+	bool isDone() override { return containsPointVar; }
 
 public:
 
@@ -225,7 +225,7 @@ private:
 
 protected:
 
-	void visit(const geom::Geometry &geom)
+	void visit(const geom::Geometry &geom) override
 	{
 		const geom::Envelope &elementEnv = *(geom.getEnvelopeInternal());
 
@@ -235,7 +235,7 @@ protected:
 		computeSegmentIntersection(geom);
 	}
 
-	bool isDone() { return intersectsVar; }
+	bool isDone() override { return intersectsVar; }
 
 public:
 

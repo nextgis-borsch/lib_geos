@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009 Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -64,31 +64,31 @@ public:
 		pts(newPts)
 	{}
 
-	virtual ~BasicSegmentString()
+	~BasicSegmentString() override
 	{}
 
 	/// see dox in SegmentString.h
-	virtual unsigned int size() const
+	unsigned int size() const override
 	{
-		return pts->size();
+		return static_cast<unsigned int>(pts->size());
 	}
 
 	/// see dox in SegmentString.h
-	virtual const geom::Coordinate& getCoordinate(unsigned int i) const;
+	const geom::Coordinate& getCoordinate(unsigned int i) const override;
 
 	/// see dox in SegmentString.h
-	virtual geom::CoordinateSequence* getCoordinates() const;
+	geom::CoordinateSequence* getCoordinates() const override;
 
 	/// see dox in SegmentString.h
-	virtual bool isClosed() const;
+	bool isClosed() const override;
 
 	/// see dox in SegmentString.h
-	virtual std::ostream& print(std::ostream& os) const;
+	std::ostream& print(std::ostream& os) const override;
 
 	/** \brief
 	 * Gets the octant of the segment starting at vertex index.
 	 *
-	 * @param index the index of the vertex starting the segment. 
+	 * @param index the index of the vertex starting the segment.
 	 *        Must not be the last index in the vertex list
 	 * @return the octant of the segment at the vertex
 	 */

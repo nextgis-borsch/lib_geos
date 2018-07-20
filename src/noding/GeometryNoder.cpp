@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2012  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2012  Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -36,8 +36,8 @@
 #include <geos/noding/snapround/SimpleSnapRounder.h>
 #include <geos/noding/snapround/MCIndexSnapRounder.h>
 
-#include <memory> // for auto_ptr
-#include <iostream> 
+#include <memory> // for unique_ptr
+#include <iostream>
 
 namespace geos {
 namespace noding { // geos.noding
@@ -53,12 +53,12 @@ public:
     : _to(to)
   {}
 
-  void filter_ro(const geom::Geometry * g) {
+  void filter_ro(const geom::Geometry * g) override {
     const geom::LineString *ls = dynamic_cast<const geom::LineString *>(g);
     if ( ls ) {
-      geom::CoordinateSequence* coord = ls->getCoordinates(); 
+      geom::CoordinateSequence* coord = ls->getCoordinates();
       // coord ownership transferred to SegmentString
-      SegmentString *ss = new NodedSegmentString(coord, 0);
+      SegmentString *ss = new NodedSegmentString(coord, nullptr);
       _to.push_back(ss);
     }
   }
@@ -73,7 +73,7 @@ private:
 
 
 /* public static */
-std::auto_ptr<geom::Geometry>
+std::unique_ptr<geom::Geometry>
 GeometryNoder::node(const geom::Geometry& geom)
 {
   GeometryNoder noder(geom);
@@ -88,7 +88,7 @@ GeometryNoder::GeometryNoder(const geom::Geometry& g)
 }
 
 /* private */
-std::auto_ptr<geom::Geometry>
+std::unique_ptr<geom::Geometry>
 GeometryNoder::toGeometry(SegmentString::NonConstVect& nodedEdges)
 {
   const geom::GeometryFactory *geomFact = argGeom.getFactory();
@@ -98,13 +98,11 @@ GeometryNoder::toGeometry(SegmentString::NonConstVect& nodedEdges)
   // Create a geometry out of the noded substrings.
   std::vector< geom::Geometry* >* lines = new std::vector< geom::Geometry * >();
   lines->reserve(nodedEdges.size());
-  for ( unsigned int i = 0, n = nodedEdges.size(); i < n; ++i )
+  for (auto &ss :  nodedEdges)
   {
-    SegmentString* ss = nodedEdges [i];
-
     const geom::CoordinateSequence* coords = ss->getCoordinates();
 
-    // Check if an equivalent edge is known 
+    // Check if an equivalent edge is known
     OrientedCoordinateArray oca1( *coords );
     if ( ocas.insert(oca1).second ) {
       geom::Geometry* tmp = geomFact->createLineString( coords->clone() );
@@ -112,20 +110,20 @@ GeometryNoder::toGeometry(SegmentString::NonConstVect& nodedEdges)
     }
   }
 
-  std::auto_ptr<geom::Geometry> noded ( geomFact->createMultiLineString( lines ) );
+  std::unique_ptr<geom::Geometry> noded ( geomFact->createMultiLineString( lines ) );
 
   return noded;
 }
 
 /* public */
-std::auto_ptr<geom::Geometry> 
+std::unique_ptr<geom::Geometry>
 GeometryNoder::getNoded()
 {
   SegmentString::NonConstVect lineList;
   extractSegmentStrings(argGeom, lineList);
 
   Noder& noder = getNoder();
-  SegmentString::NonConstVect* nodedEdges = 0;
+  SegmentString::NonConstVect* nodedEdges = nullptr;
 
   try {
     noder.computeNodes( &lineList );
@@ -138,14 +136,14 @@ GeometryNoder::getNoded()
     throw ex;
   }
 
-  std::auto_ptr<geom::Geometry> noded = toGeometry(*nodedEdges);
+  std::unique_ptr<geom::Geometry> noded = toGeometry(*nodedEdges);
 
-  for ( unsigned int i = 0, n = nodedEdges->size(); i < n; ++i )
-    delete ( *nodedEdges )[i];
+  for (auto &elem : (*nodedEdges))
+    delete elem;
   delete nodedEdges;
 
-  for (size_t i=0, n=lineList.size(); i<n; ++i)
-    delete lineList[i];
+  for (auto &elem : lineList)
+    delete elem;
 
   return noded;
 }
@@ -185,7 +183,7 @@ GeometryNoder::getNoder()
 #endif
   }
   return *noder;
-  
+
 
 }
 

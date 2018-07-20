@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -63,7 +63,7 @@ void EdgeEndBundle::insert(EdgeEnd *e){
 	// Assert: direction is the same
 	edgeEnds->push_back(e);
 }
-  
+
 
 /**
 * This computes the overall edge label for the set of
@@ -161,7 +161,7 @@ void EdgeEndBundle::updateIM(IntersectionMatrix& im) {
 	Edge::updateIM(label, im);
 }
 
-string EdgeEndBundle::print() {
+string EdgeEndBundle::print() const {
 	string out="EdgeEndBundle--> Label: "+label.toString()+"\n";
 	for(vector<EdgeEnd*>::iterator it=edgeEnds->begin();it<edgeEnds->end();it++) {
 		EdgeEnd *e=*it;

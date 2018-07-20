@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -50,8 +50,8 @@ namespace algorithm { // geos::algorithm
 class GEOS_DLL MCPointInRing: public PointInRing {
 public:
 	MCPointInRing(const geom::LinearRing *newRing);
-	~MCPointInRing();
-	bool isInside(const geom::Coordinate& pt);
+	~MCPointInRing() override;
+	bool isInside(const geom::Coordinate& pt) override;
 
 	void testLineSegment(const geom::Coordinate& p,
 	                        const geom::LineSegment& seg);
@@ -63,7 +63,7 @@ public:
 		MCPointInRing *parent;
 	public:
 		MCSelecter(const geom::Coordinate& newP, MCPointInRing *prt);
-		void select(const geom::LineSegment& ls);
+		void select(const geom::LineSegment& ls) override;
 	};
 
 private:

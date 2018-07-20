@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -20,7 +20,7 @@
 #include <geos/simplify/TaggedLineSegment.h>
 #include <geos/geom/CoordinateSequence.h>
 #include <geos/geom/LineString.h>
-#include <geos/geom/Geometry.h> // for auto_ptr destructor 
+#include <geos/geom/Geometry.h> // for unique_ptr destructor
 #include <geos/geom/GeometryFactory.h>
 #include <geos/geom/CoordinateSequenceFactory.h>
 
@@ -88,7 +88,7 @@ TaggedLineString::init()
 			TaggedLineSegment* seg = new TaggedLineSegment(
 					pts->getAt(i),
 					pts->getAt(i+1),
-					parentLine, i);
+					parentLine, static_cast<unsigned int>(i));
 
 			segs.push_back(seg);
 		}
@@ -111,7 +111,7 @@ TaggedLineString::getMinimumSize() const
 }
 
 /*public*/
-const geom::LineString* 
+const geom::LineString*
 TaggedLineString::getParent() const
 {
 	return parentLine;
@@ -126,7 +126,7 @@ TaggedLineString::getParentCoordinates() const
 }
 
 /*public*/
-CoordinateSequence::AutoPtr
+CoordinateSequence::Ptr
 TaggedLineString::getResultCoordinates() const
 {
 
@@ -144,7 +144,7 @@ TaggedLineString::getResultCoordinates() const
 
 
 	CoordVect* v = pts.release();
-	return CoordinateSequence::AutoPtr(parentLine->getFactory()->getCoordinateSequenceFactory()->create(v));
+	return CoordinateSequence::Ptr(parentLine->getFactory()->getCoordinateSequenceFactory()->create(v));
 
 }
 
@@ -180,13 +180,13 @@ TaggedLineString::extractCoordinates(
 std::size_t
 TaggedLineString::getResultSize() const
 {
-	unsigned resultSegsSize = resultSegs.size();
+	auto resultSegsSize = resultSegs.size();
 	return resultSegsSize == 0 ? 0 : resultSegsSize + 1;
 }
 
 /*public*/
 TaggedLineSegment*
-TaggedLineString::getSegment(std::size_t i) 
+TaggedLineString::getSegment(std::size_t i)
 {
 	return segs[i];
 }
@@ -214,7 +214,7 @@ TaggedLineString::getSegments() const
 }
 
 /*public*/
-auto_ptr<Geometry>
+unique_ptr<Geometry>
 TaggedLineString::asLineString() const
 {
 	return parentLine->getFactory()->createLineString(
@@ -222,7 +222,7 @@ TaggedLineString::asLineString() const
 }
 
 /*public*/
-auto_ptr<Geometry>
+unique_ptr<Geometry>
 TaggedLineString::asLinearRing() const
 {
 	return parentLine->getFactory()->createLinearRing(
@@ -231,7 +231,7 @@ TaggedLineString::asLinearRing() const
 
 /*public*/
 void
-TaggedLineString::addToResult(auto_ptr<TaggedLineSegment> seg)
+TaggedLineString::addToResult(unique_ptr<TaggedLineSegment> seg)
 {
 #if GEOS_DEBUG
 	cerr << "TaggedLineString[" << this << "] adding "

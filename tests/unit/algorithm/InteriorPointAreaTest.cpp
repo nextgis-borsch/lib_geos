@@ -3,19 +3,19 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011      Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011      Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
 
-// 
-// Test Suite for geos::algorithm::InteriorPointArea 
+//
+// Test Suite for geos::algorithm::InteriorPointArea
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/geom/Coordinate.h>
 #include <geos/algorithm/InteriorPointArea.h>
@@ -39,7 +39,7 @@ namespace tut
       typedef geos::algorithm::InteriorPointArea InteriorPointArea;
 
       geos::io::WKTReader reader;
-      std::auto_ptr<Geometry> geom;
+      std::unique_ptr<Geometry> geom;
 
       test_interiorpointarea_data()
       {}

@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009 Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -79,9 +79,9 @@ IndexedNestedRingTester::isNonNested()
 
                         // Unable to find a ring point not a node of
 			// the search ring
-			assert(innerRingPt!=NULL);
+			assert(innerRingPt!=nullptr);
 
-			bool isInside = algorithm::CGAlgorithms::isPointInRing(	
+			bool isInside = algorithm::CGAlgorithms::isPointInRing(
 					*innerRingPt, searchRingPts);
 
 			if (isInside) {

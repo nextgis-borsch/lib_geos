@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -49,8 +49,8 @@ private:
 			geom::LineSegment *seg);
 public:
 	SIRtreePointInRing(geom::LinearRing *newRing);
-	~SIRtreePointInRing();
-	bool isInside(const geom::Coordinate& pt);
+	~SIRtreePointInRing() override;
+	bool isInside(const geom::Coordinate& pt) override;
 };
 
 } // namespace geos::algorithm

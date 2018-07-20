@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009  Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -41,7 +41,7 @@ namespace buffer { // geos.operation.buffer
 /** \brief
  * Simplifies a buffer input line to
  * remove concavities with shallow depth.
- * 
+ *
  * The most important benefit of doing this
  * is to reduce the number of points and the complexity of
  * shape which will be buffered.
@@ -49,17 +49,17 @@ namespace buffer { // geos.operation.buffer
  * the quantized fillet arcs (although this issue
  * should be eliminated in any case by the
  * offset curve generation logic).
- * 
+ *
  * A key aspect of the simplification is that it
  * affects inside (concave or inward) corners only.
  * Convex (outward) corners are preserved, since they
  * are required to ensure that the generated buffer curve
  * lies at the correct distance from the input geometry.
- * 
+ *
  * Another important heuristic used is that the end segments
  * of the input are never simplified.  This ensures that
  * the client buffer code is able to generate end caps faithfully.
- * 
+ *
  * No attempt is made to avoid self-intersections in the output.
  * This is acceptable for use for generating a buffer offset curve,
  * since the buffer algorithm is insensitive to invalid polygonal
@@ -87,7 +87,7 @@ public:
 	 * @param distanceTol simplification distance tolerance to use
 	 * @return a simplified version of the coordinate sequence
 	 */
-	static std::auto_ptr<geom::CoordinateSequence> simplify(
+	static std::unique_ptr<geom::CoordinateSequence> simplify(
 		const geom::CoordinateSequence& inputLine, double distanceTol);
 
 	BufferInputLineSimplifier(const geom::CoordinateSequence& input);
@@ -102,7 +102,7 @@ public:
 	 * @param distanceTol simplification distance tolerance to use
 	 * @return the simplified coordinate list
 	 */
-	std::auto_ptr<geom::CoordinateSequence> simplify(double distanceTol);
+	std::unique_ptr<geom::CoordinateSequence> simplify(double distanceTol);
 
 private:
 
@@ -124,7 +124,7 @@ private:
 	 */
 	unsigned int findNextNonDeletedIndex(unsigned int index) const;
 
-	std::auto_ptr<geom::CoordinateSequence> collapseLine() const;
+	std::unique_ptr<geom::CoordinateSequence> collapseLine() const;
 
 	bool isDeletable(int i0, int i1, int i2, double distanceTol) const;
 
@@ -172,8 +172,8 @@ private:
 	int angleOrientation;
 
     // Declare type as noncopyable
-    BufferInputLineSimplifier(const BufferInputLineSimplifier& other);
-    BufferInputLineSimplifier& operator=(const BufferInputLineSimplifier& rhs);
+    BufferInputLineSimplifier(const BufferInputLineSimplifier& other) = delete;
+    BufferInputLineSimplifier& operator=(const BufferInputLineSimplifier& rhs) = delete;
 };
 
 

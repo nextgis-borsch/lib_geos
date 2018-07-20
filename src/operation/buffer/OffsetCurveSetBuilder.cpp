@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -172,7 +172,7 @@ OffsetCurveSetBuilder::add(const Geometry& g)
 void
 OffsetCurveSetBuilder::addCollection(const GeometryCollection *gc)
 {
-	for (int i=0, n=gc->getNumGeometries(); i<n; i++) {
+	for (int i=0, n=static_cast<int>(gc->getNumGeometries()); i<n; i++) {
 		const Geometry *g=gc->getGeometryN(i);
 		add(*g);
 	}
@@ -203,7 +203,7 @@ OffsetCurveSetBuilder::addLineString(const LineString *line)
 #if GEOS_DEBUG
 	std::cerr<<__FUNCTION__<<": "<<line->toString()<<std::endl;
 #endif
-	std::auto_ptr<CoordinateSequence> coord(CoordinateSequence::removeRepeatedPoints(line->getCoordinatesRO()));
+	std::unique_ptr<CoordinateSequence> coord(CoordinateSequence::removeRepeatedPoints(line->getCoordinatesRO()));
 #if GEOS_DEBUG
 	std::cerr<<" After coordinate removal: "<<coord->toString()<<std::endl;
 #endif

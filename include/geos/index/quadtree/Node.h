@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -57,7 +57,7 @@ class GEOS_DLL Node: public NodeBase {
 private:
 
 	/// Owned by this class
-	std::auto_ptr<geom::Envelope> env;
+	std::unique_ptr<geom::Envelope> env;
 
 	geom::Coordinate centre;
 
@@ -66,42 +66,42 @@ private:
 	/**
 	 * Get the subquad for the index.
 	 * If it doesn't exist, create it.
-	 * 
+	 *
 	 * Ownership of the returned object belongs to this class.
 	 */
 	Node* getSubnode(int index);
 
-	std::auto_ptr<Node> createSubnode(int index);
+	std::unique_ptr<Node> createSubnode(int index);
 
 protected:
 
-	bool isSearchMatch(const geom::Envelope& searchEnv) const {
+	bool isSearchMatch(const geom::Envelope& searchEnv) const override {
 		return env->intersects(searchEnv);
 	}
 
 public:
 
 	// Create a node computing level from given envelope
-	static std::auto_ptr<Node> createNode(const geom::Envelope& env);
+	static std::unique_ptr<Node> createNode(const geom::Envelope& env);
 
 	/// Create a node containing the given node and envelope
 	//
 	/// @param node if not null, will be inserted to the returned node
 	/// @param addEnv minimum envelope to use for the node
 	///
-	static std::auto_ptr<Node> createExpanded(std::auto_ptr<Node> node,
+	static std::unique_ptr<Node> createExpanded(std::unique_ptr<Node> node,
 			const geom::Envelope& addEnv);
 
-	Node(std::auto_ptr<geom::Envelope> nenv, int nlevel)
+	Node(std::unique_ptr<geom::Envelope> nenv, int nlevel)
 		:
-		env(nenv),
+		env(std::move(nenv)),
 		centre((env->getMinX()+env->getMaxX())/2,
 			(env->getMinY()+env->getMaxY())/2),
 		level(nlevel)
 	{
 	}
 
-	virtual ~Node() {}
+	~Node() override {}
 
 	/// Return Envelope associated with this node
 	/// ownership retained by this object
@@ -120,9 +120,9 @@ public:
 	 */
 	NodeBase* find(const geom::Envelope *searchEnv);
 
-	void insertNode(std::auto_ptr<Node> node);
+	void insertNode(std::unique_ptr<Node> node);
 
-	std::string toString() const;
+	std::string toString() const override;
 
 };
 

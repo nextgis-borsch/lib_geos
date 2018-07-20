@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -41,10 +41,10 @@ namespace precision { // geos.precision
 
 
 /* private */
-auto_ptr<Geometry>
+unique_ptr<Geometry>
 GeometryPrecisionReducer::reducePointwise(const Geometry &geom)
 {
-	auto_ptr<GeometryEditor> geomEdit;
+	unique_ptr<GeometryEditor> geomEdit;
 
   if ( newFactory ) {
       geomEdit.reset( new GeometryEditor(newFactory) );
@@ -62,16 +62,16 @@ GeometryPrecisionReducer::reducePointwise(const Geometry &geom)
 
 	PrecisionReducerCoordinateOperation prco(targetPM, finalRemoveCollapsed);
 
-	std::auto_ptr<Geometry> g ( geomEdit->edit(&geom, &prco) );
+	std::unique_ptr<Geometry> g ( geomEdit->edit(&geom, &prco) );
 
 	return g;
 }
 
 /* public */
-auto_ptr<Geometry>
+unique_ptr<Geometry>
 GeometryPrecisionReducer::reduce(const Geometry &geom)
 {
-  auto_ptr<Geometry> reducePW = reducePointwise(geom);
+  unique_ptr<Geometry> reducePW = reducePointwise(geom);
 
   if ( isPointwise ) return reducePW;
 
@@ -85,7 +85,7 @@ GeometryPrecisionReducer::reduce(const Geometry &geom)
   // hack to fix topology.
   // TODO: implement snap-rounding and use that.
   return fixPolygonalTopology(*reducePW);
-  
+
 }
 
 
@@ -99,15 +99,15 @@ GeometryPrecisionReducer::GeometryPrecisionReducer(const GeometryFactory &change
 {}
 
 /* private */
-auto_ptr<Geometry>
+unique_ptr<Geometry>
 GeometryPrecisionReducer::fixPolygonalTopology(const geom::Geometry& geom )
 {
   /**
    * If precision model was *not* changed, need to flip
    * geometry to targetPM, buffer in that model, then flip back
    */
-  auto_ptr<Geometry> tmp;
-  GeometryFactory::unique_ptr tmpFactory;
+  unique_ptr<Geometry> tmp;
+  GeometryFactory::Ptr tmpFactory;
 
   const Geometry* geomToBuffer = &geom;
 
@@ -117,7 +117,7 @@ GeometryPrecisionReducer::fixPolygonalTopology(const geom::Geometry& geom )
     geomToBuffer = tmp.get();
   }
 
-  auto_ptr<Geometry> bufGeom ( geomToBuffer->buffer(0) );
+  unique_ptr<Geometry> bufGeom ( geomToBuffer->buffer(0) );
 
   if ( ! newFactory ) {
     // a slick way to copy the geometry with the original precision factory
@@ -128,11 +128,11 @@ GeometryPrecisionReducer::fixPolygonalTopology(const geom::Geometry& geom )
 }
 
 /* private */
-GeometryFactory::unique_ptr
+GeometryFactory::Ptr
 GeometryPrecisionReducer::createFactory( const GeometryFactory& oldGF,
                                          const PrecisionModel& newPM )
 {
-  GeometryFactory::unique_ptr newFactory(
+  GeometryFactory::Ptr newFactory(
     GeometryFactory::create(&newPM,
                         oldGF.getSRID(),
                         const_cast<CoordinateSequenceFactory*>(oldGF.getCoordinateSequenceFactory()))

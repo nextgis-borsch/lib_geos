@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -76,24 +76,24 @@ private:
 
 public:
 
-	MCIndexNoder(SegmentIntersector *nSegInt=NULL)
+	MCIndexNoder(SegmentIntersector *nSegInt=nullptr)
 		:
 		SinglePassNoder(nSegInt),
 		idCounter(0),
-		nodedSegStrings(NULL),
+		nodedSegStrings(nullptr),
 		nOverlaps(0)
 	{}
 
-	~MCIndexNoder();
+	~MCIndexNoder() override;
 
 	/// Return a reference to this instance's std::vector of MonotoneChains
 	std::vector<index::chain::MonotoneChain*>& getMonotoneChains() { return monoChains; }
 
 	index::SpatialIndex& getIndex();
 
-	std::vector<SegmentString*>* getNodedSubstrings() const;
+	std::vector<SegmentString*>* getNodedSubstrings() const override;
 
-	void computeNodes(std::vector<SegmentString*>* inputSegmentStrings);
+	void computeNodes(std::vector<SegmentString*>* inputSegmentStrings) override;
 
 	class SegmentOverlapAction : public index::chain::MonotoneChainOverlapAction {
 	public:
@@ -104,15 +104,15 @@ public:
 		{}
 
 		void overlap(index::chain::MonotoneChain& mc1, std::size_t start1,
-            index::chain::MonotoneChain& mc2, std::size_t start2);
+            index::chain::MonotoneChain& mc2, std::size_t start2) override;
     private:
         SegmentIntersector& si;
 
         // Declare type as noncopyable
-        SegmentOverlapAction(const SegmentOverlapAction& other);
-        SegmentOverlapAction& operator=(const SegmentOverlapAction& rhs);
+        SegmentOverlapAction(const SegmentOverlapAction& other) = delete;
+        SegmentOverlapAction& operator=(const SegmentOverlapAction& rhs) = delete;
 	};
-	
+
 };
 
 } // namespace geos.noding

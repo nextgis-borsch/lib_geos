@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -27,7 +27,7 @@
 #include <geos/inline.h>
 
 #include <functional> // std::mem_fun, std::bind1st
-#include <algorithm> // std::for_each 
+#include <algorithm> // std::for_each
 #include <vector>
 
 
@@ -69,7 +69,7 @@ void
 MCIndexSnapRounder::computeVertexSnaps(NodedSegmentString* e)
 {
 	CoordinateSequence& pts0 = *(e->getCoordinates());
-	for (unsigned int i=0, n=pts0.size()-1; i<n; ++i)
+	for (unsigned int i=0, n=static_cast<unsigned int>(pts0.size()-1); i<n; ++i)
 	{
 		HotPixel hotPixel(pts0[i], scaleFactor, li);
 		bool isNodeAdded = pointSnapper->snap(hotPixel, e, i);
@@ -96,14 +96,14 @@ MCIndexSnapRounder::computeVertexSnaps(SegmentString::NonConstVect& edges)
 
 /*private*/
 void
-MCIndexSnapRounder::snapRound(MCIndexNoder& noder, 
+MCIndexSnapRounder::snapRound(MCIndexNoder& noder,
 		SegmentString::NonConstVect* segStrings)
 {
 	vector<Coordinate> intersections;
  	findInteriorIntersections(noder, segStrings, intersections);
 	computeIntersectionSnaps(intersections);
 	computeVertexSnaps(*segStrings);
-	
+
 }
 
 /*public*/
@@ -126,7 +126,7 @@ void
 MCIndexSnapRounder::checkCorrectness(
 	SegmentString::NonConstVect& inputSegmentStrings)
 {
-	auto_ptr<SegmentString::NonConstVect> resultSegStrings(
+	unique_ptr<SegmentString::NonConstVect> resultSegStrings(
 		NodedSegmentString::getNodedSubstrings(inputSegmentStrings)
 	);
 

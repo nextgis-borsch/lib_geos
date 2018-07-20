@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  ***********************************************************************
@@ -21,11 +21,11 @@
 
 #include <geos/export.h>
 #include <geos/algorithm/PointLocator.h> // for composition
-#include <geos/geom/Geometry.h> // for auto_ptr visibility of dtor
+#include <geos/geom/Geometry.h> // for unique_ptr visibility of dtor
 #include <geos/geom/Location.h> // for Location::Value enum
 
 #include <vector>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -71,20 +71,20 @@ private:
 
 	algorithm::PointLocator ptLocator;
 
-	std::auto_ptr<geom::Geometry> linework;
+	std::unique_ptr<geom::Geometry> linework;
 
 	// this function has been obsoleted
-	std::auto_ptr<geom::Geometry> getLineWork(const geom::Geometry& geom);
+	std::unique_ptr<geom::Geometry> getLineWork(const geom::Geometry& geom);
 
 	/// Extracts linework for polygonal components.
 	//
 	/// @param g the geometry from which to extract
 	/// @return a lineal geometry containing the extracted linework
-	std::auto_ptr<geom::Geometry> extractLineWork(const geom::Geometry& geom);
+	std::unique_ptr<geom::Geometry> extractLineWork(const geom::Geometry& geom);
 
     // Declare type as noncopyable
-    FuzzyPointLocator(const FuzzyPointLocator& other);
-    FuzzyPointLocator& operator=(const FuzzyPointLocator& rhs);
+    FuzzyPointLocator(const FuzzyPointLocator& other) = delete;
+    FuzzyPointLocator& operator=(const FuzzyPointLocator& rhs) = delete;
 };
 
 } // namespace geos::operation::overlay::validate

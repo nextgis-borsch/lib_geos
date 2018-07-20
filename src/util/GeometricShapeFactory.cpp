@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -47,7 +47,7 @@ GeometricShapeFactory::GeometricShapeFactory(const GeometryFactory* factory)
 }
 
 void
-GeometricShapeFactory::setBase(const Coordinate& base) 
+GeometricShapeFactory::setBase(const Coordinate& base)
 {
 	dim.setBase(base);
 }
@@ -89,7 +89,7 @@ GeometricShapeFactory::createRectangle()
 	int ipt = 0;
 	int nSide = nPts / 4;
 	if (nSide < 1) nSide = 1;
-	std::auto_ptr<Envelope> env ( dim.getEnvelope() );
+	std::unique_ptr<Envelope> env ( dim.getEnvelope() );
 	double XsegLen = env->getWidth() / nSide;
 	double YsegLen = env->getHeight() / nSide;
 
@@ -99,34 +99,34 @@ GeometricShapeFactory::createRectangle()
 	for (i = 0; i < nSide; i++) {
 		double x = env->getMinX() + i * XsegLen;
 		double y = env->getMinY();
-		(*vc)[ipt++] = coord(x, y); 
+		(*vc)[ipt++] = coord(x, y);
 	}
 	for (i = 0; i < nSide; i++) {
 		double x = env->getMaxX();
 		double y = env->getMinY() + i * YsegLen;
-		(*vc)[ipt++] = coord(x, y); 
+		(*vc)[ipt++] = coord(x, y);
 	}
 	for (i = 0; i < nSide; i++) {
 		double x = env->getMaxX() - i * XsegLen;
 		double y = env->getMaxY();
-		(*vc)[ipt++] = coord(x, y); 
+		(*vc)[ipt++] = coord(x, y);
 	}
 	for (i = 0; i < nSide; i++) {
 		double x = env->getMinX();
 		double y = env->getMaxY() - i * YsegLen;
-		(*vc)[ipt++] = coord(x, y); 
+		(*vc)[ipt++] = coord(x, y);
 	}
 	(*vc)[ipt++] = (*vc)[0];
 	CoordinateSequence *cs = geomFact->getCoordinateSequenceFactory()->create(vc);
 	LinearRing* ring=geomFact->createLinearRing(cs);
-	Polygon* poly=geomFact->createPolygon(ring, NULL);
+	Polygon* poly=geomFact->createPolygon(ring, nullptr);
 	return poly;
 }
 
 Polygon*
 GeometricShapeFactory::createCircle()
 {
-	std::auto_ptr<Envelope> env ( dim.getEnvelope() );
+	std::unique_ptr<Envelope> env ( dim.getEnvelope() );
 	double xRadius = env->getWidth() / 2.0;
 	double yRadius = env->getHeight() / 2.0;
 
@@ -145,14 +145,14 @@ GeometricShapeFactory::createCircle()
 	(*pts)[iPt++] = (*pts)[0];
 	CoordinateSequence *cs=geomFact->getCoordinateSequenceFactory()->create(pts);
 	LinearRing* ring = geomFact->createLinearRing(cs);
-	Polygon* poly=geomFact->createPolygon(ring,NULL);
+	Polygon* poly=geomFact->createPolygon(ring,nullptr);
 	return poly;
 }
 
 LineString*
 GeometricShapeFactory::createArc(double startAng, double angExtent)
 {
-	std::auto_ptr<Envelope> env ( dim.getEnvelope() );
+	std::unique_ptr<Envelope> env ( dim.getEnvelope() );
 	double xRadius = env->getWidth() / 2.0;
 	double yRadius = env->getHeight() / 2.0;
 
@@ -161,8 +161,8 @@ GeometricShapeFactory::createArc(double startAng, double angExtent)
 	env.reset();
 
 	double angSize = angExtent;
-	if (angSize <= 0.0 || angSize > 2 * M_PI) 
-		angSize = 2 * M_PI; 
+	if (angSize <= 0.0 || angSize > 2 * M_PI)
+		angSize = 2 * M_PI;
 	double angInc = angSize / ( nPts - 1 );
 
 	vector<Coordinate> *pts = new vector<Coordinate>(nPts);
@@ -181,7 +181,7 @@ GeometricShapeFactory::createArc(double startAng, double angExtent)
 Polygon*
 GeometricShapeFactory::createArcPolygon(double startAng, double angExtent)
 {
-	std::auto_ptr<Envelope> env ( dim.getEnvelope() );
+	std::unique_ptr<Envelope> env ( dim.getEnvelope() );
 	double xRadius = env->getWidth() / 2.0;
 	double yRadius = env->getHeight() / 2.0;
 
@@ -190,8 +190,8 @@ GeometricShapeFactory::createArcPolygon(double startAng, double angExtent)
 	env.reset();
 
 	double angSize = angExtent;
-	if (angSize <= 0.0 || angSize > 2 * M_PI) 
-		angSize = 2 * M_PI; 
+	if (angSize <= 0.0 || angSize > 2 * M_PI)
+		angSize = 2 * M_PI;
 	double angInc = angSize / ( nPts - 1 );
 
 	vector<Coordinate> *pts = new vector<Coordinate>(nPts + 2);
@@ -207,7 +207,7 @@ GeometricShapeFactory::createArcPolygon(double startAng, double angExtent)
 
 	CoordinateSequence *cs = geomFact->getCoordinateSequenceFactory()->create(pts);
 	LinearRing* ring = geomFact->createLinearRing(cs);
-	Polygon* geom = geomFact->createPolygon(ring, 0);
+	Polygon* geom = geomFact->createPolygon(ring, nullptr);
 	return geom;
 }
 

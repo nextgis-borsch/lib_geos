@@ -1,7 +1,7 @@
-// 
+//
 // Test Suite for C-API GEOSGeom_setPrecision_r
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos_c.h>
 // std
@@ -31,7 +31,7 @@ namespace tut
             va_start(ap, fmt);
             std::vfprintf(stdout, fmt, ap);
             va_end(ap);
-        
+
             std::fprintf(stdout, "\n");
         }
 
@@ -50,14 +50,14 @@ namespace tut
         }
 
         test_capigeosgeomsetprecision_data()
-                : geom1_(0), geom2_(0), geom3_(0)
+                : geom1_(nullptr), geom2_(nullptr), geom3_(nullptr)
         {
             initGEOS(notice, notice);
             wktw_ = GEOSWKTWriter_create();
             GEOSWKTWriter_setTrim(wktw_, 1);
             GEOSWKTWriter_setRoundingPrecision(wktw_, 10);
             //GEOSWKTWriter_setOutputDimension(wktw_, 3);
-        }       
+        }
 
         ~test_capigeosgeomsetprecision_data()
         {
@@ -67,9 +67,9 @@ namespace tut
                 GEOSGeom_destroy(geom3_);
             GEOSWKTWriter_destroy(wktw_);
 
-            geom1_ = 0;
-            geom2_ = 0;
-            geom3_ = 0;
+            geom1_ = nullptr;
+            geom2_ = nullptr;
+            geom3_ = nullptr;
             finishGEOS();
         }
 
@@ -181,6 +181,6 @@ namespace tut
           "LINESTRING (0 0, 0 0)"
         ));
     }
- 
+
 } // namespace tut
 

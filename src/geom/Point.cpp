@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  * Copyright (C) 2005 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -48,10 +48,10 @@ Point::Point(CoordinateSequence *newCoords, const GeometryFactory *factory)
 	Geometry(factory),
 	coordinates(newCoords)
 {
-	if (coordinates.get()==NULL) {
+	if (coordinates.get()==nullptr) {
 		coordinates.reset(factory->getCoordinateSequenceFactory()->create());
 		return;
-	}        
+	}
 	if (coordinates->getSize() != 1)
 	{
 		throw util::IllegalArgumentException("Point coordinate list must contain a single element");
@@ -126,10 +126,19 @@ Point::getY() const
 	return getCoordinate()->y;
 }
 
+double
+Point::getZ() const
+{
+	if (isEmpty()) {
+		throw util::UnsupportedOperationException("getZ called on empty Point\n");
+	}
+	return getCoordinate()->z;
+}
+
 const Coordinate *
 Point::getCoordinate() const
 {
-	return coordinates->getSize()!=0 ? &(coordinates->getAt(0)) : NULL;
+	return coordinates->getSize()!=0 ? &(coordinates->getAt(0)) : nullptr;
 }
 
 string
@@ -141,17 +150,17 @@ Point::getGeometryType() const
 Geometry *
 Point::getBoundary() const
 {
-	return getFactory()->createGeometryCollection(NULL);
+	return getFactory()->createGeometryCollection(nullptr);
 }
 
-Envelope::AutoPtr
+Envelope::Ptr
 Point::computeEnvelopeInternal() const
 {
 	if (isEmpty()) {
-		return Envelope::AutoPtr(new Envelope());
+		return Envelope::Ptr(new Envelope());
 	}
 
-	return Envelope::AutoPtr(new Envelope(getCoordinate()->x,
+	return Envelope::Ptr(new Envelope(getCoordinate()->x,
 			getCoordinate()->x, getCoordinate()->y,
 			getCoordinate()->y));
 }
@@ -219,8 +228,8 @@ Point::equalsExact(const Geometry *other, double tolerance) const
 		return false;
 	}
 
-	// assume the isEquivalentClass would return false 
-	// if other is not a point 
+	// assume the isEquivalentClass would return false
+	// if other is not a point
 	assert(dynamic_cast<const Point*>(other));
 
 	if ( isEmpty() ) return other->isEmpty();

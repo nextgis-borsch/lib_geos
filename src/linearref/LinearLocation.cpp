@@ -3,7 +3,7 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
@@ -89,17 +89,6 @@ LinearLocation::normalize()
 		segmentFraction = 1.0;
 	}
 
-	if (componentIndex < 0)
-	{
-		componentIndex = 0;
-		segmentIndex = 0;
-		segmentFraction = 0.0;
-	}
-	if (segmentIndex < 0)
-	{
-		segmentIndex = 0;
-		segmentFraction = 0.0;
-	}
 	if (segmentFraction == 1.0)
 	{
 		segmentFraction = 0.0;
@@ -119,7 +108,7 @@ LinearLocation::clamp(const Geometry* linear)
 	if (segmentIndex >= linear->getNumPoints())
 	{
 		const LineString* line = dynamic_cast<const LineString*> (linear->getGeometryN(componentIndex));
-		segmentIndex = line->getNumPoints() - 1;
+		segmentIndex = static_cast<unsigned int>(line->getNumPoints() - 1);
 		segmentFraction = 1.0;
 	}
 }
@@ -152,7 +141,7 @@ LinearLocation::getSegmentLength(const Geometry* linearGeom) const
 	// ensure segment index is valid
 	unsigned int segIndex = segmentIndex;
 	if (segmentIndex >= lineComp->getNumPoints() - 1)
-		segIndex = lineComp->getNumPoints() - 2;
+		segIndex = static_cast<unsigned int>(lineComp->getNumPoints() - 2);
 
 	Coordinate p0 = lineComp->getCoordinateN(segIndex);
 	Coordinate p1 = lineComp->getCoordinateN(segIndex + 1);
@@ -163,9 +152,9 @@ LinearLocation::getSegmentLength(const Geometry* linearGeom) const
 void
 LinearLocation::setToEnd(const Geometry* linear)
 {
-	componentIndex = linear->getNumGeometries() - 1;
+	componentIndex = static_cast<unsigned int>(linear->getNumGeometries() - 1);
 	const LineString* lastLine = dynamic_cast<const LineString*>(linear->getGeometryN(componentIndex));
-	segmentIndex = lastLine->getNumPoints() - 1;
+	segmentIndex = static_cast<unsigned int>(lastLine->getNumPoints() - 1);
 	segmentFraction = 1.0;
 }
 
@@ -204,7 +193,7 @@ LinearLocation::getCoordinate(const Geometry* linearGeom) const
 	const LineString* lineComp = dynamic_cast<const LineString *> (linearGeom->getGeometryN(componentIndex));
 	if ( ! lineComp ) {
 		throw util::IllegalArgumentException("LinearLocation::getCoordinate only works with LineString geometries");
-	}  
+	}
 	Coordinate p0 = lineComp->getCoordinateN(segmentIndex);
 	if (segmentIndex >= lineComp->getNumPoints() - 1)
 		return p0;
@@ -213,7 +202,7 @@ LinearLocation::getCoordinate(const Geometry* linearGeom) const
 }
 
 /* public */
-std::auto_ptr<LineSegment>
+std::unique_ptr<LineSegment>
 LinearLocation::getSegment(const Geometry* linearGeom) const
 {
 	const LineString* lineComp = dynamic_cast<const LineString *> (linearGeom->getGeometryN(componentIndex));
@@ -221,22 +210,22 @@ LinearLocation::getSegment(const Geometry* linearGeom) const
 	// check for endpoint - return last segment of the line if so
 	if (segmentIndex >= lineComp->getNumPoints() - 1)
 	{
-		Coordinate prev = lineComp->getCoordinateN(lineComp->getNumPoints() - 2);
-		return std::auto_ptr<LineSegment>(new LineSegment(prev, p0));
+		Coordinate prev = lineComp->getCoordinateN(static_cast<int>(lineComp->getNumPoints() - 2));
+		return std::unique_ptr<LineSegment>(new LineSegment(prev, p0));
 	}
 	Coordinate p1 = lineComp->getCoordinateN(segmentIndex + 1);
-	return std::auto_ptr<LineSegment>(new LineSegment(p0, p1));
+	return std::unique_ptr<LineSegment>(new LineSegment(p0, p1));
 }
 
 /* public */
 bool
 LinearLocation::isValid(const Geometry* linearGeom) const
 {
-	if (componentIndex < 0 || componentIndex >= linearGeom->getNumGeometries())
+	if (componentIndex >= linearGeom->getNumGeometries())
 		return false;
 
 	const LineString* lineComp = dynamic_cast<const LineString*> (linearGeom->getGeometryN(componentIndex));
-	if (segmentIndex < 0 || segmentIndex > lineComp->getNumPoints())
+	if (segmentIndex > lineComp->getNumPoints())
 		return false;
 	if (segmentIndex == lineComp->getNumPoints() && segmentFraction != 0.0)
 		return false;
@@ -326,7 +315,7 @@ LinearLocation::isEndpoint(const Geometry& linearGeom) const
   const LineString& lineComp = dynamic_cast<const LineString&>(
       *(linearGeom.getGeometryN(componentIndex)) );
   // check for endpoint
-  unsigned int nseg = lineComp.getNumPoints() - 1;
+  auto nseg = lineComp.getNumPoints() - 1;
   return segmentIndex >= nseg
         || (segmentIndex == nseg && segmentFraction >= 1.0);
 

@@ -1,8 +1,8 @@
-// 
+//
 // Test Suite for geos::geom::Location class.
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/geom/Location.h>
 #include <geos/util/IllegalArgumentException.h>
@@ -65,18 +65,18 @@ namespace tut
     {
 		using geos::geom::Location;
 
-		try 
+		try
 		{
 			Location::toLocationSymbol(101);
 			Location::toLocationSymbol(-101);
-		
-			fail("IllegalArgumentException expected"); 
+
+			fail("IllegalArgumentException expected");
 		}
-		catch ( geos::util::IllegalArgumentException const& e ) 
-		{ 
-			const char* msg = e.what(); // ok 
-			ensure( msg != 0 );
-		} 
+		catch ( geos::util::IllegalArgumentException const& e )
+		{
+			const char* msg = e.what(); // ok
+			ensure( msg != nullptr );
+		}
     }
 
 } // namespace tut

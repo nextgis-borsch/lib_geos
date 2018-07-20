@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -27,7 +27,7 @@
 
 // Forward declarations
 namespace geos {
-	namespace geom { 
+	namespace geom {
 		class Coordinate;
 		class Geometry;
 	}
@@ -62,7 +62,7 @@ public:
 		pts(newPts)
 	{}
 
-	void filter_ro(const geom::Geometry *geom);
+	void filter_ro(const geom::Geometry *geom) override;
 
 	//void filter_rw(geom::Geometry * /*geom*/) {};
 };

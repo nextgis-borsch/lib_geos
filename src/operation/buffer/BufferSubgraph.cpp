@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -53,8 +53,8 @@ BufferSubgraph::BufferSubgraph()
 	finder(),
 	dirEdgeList(),
 	nodes(),
-	rightMostCoord(NULL),
-	env(NULL)
+	rightMostCoord(nullptr),
+	env(nullptr)
 {
 }
 
@@ -69,7 +69,7 @@ BufferSubgraph::create(Node *node)
 {
 	addReachable(node);
 
-	// We are assuming that dirEdgeList 
+	// We are assuming that dirEdgeList
 	// contains *at leas* ONE forward DirectedEdge
 	finder.findEdge(&dirEdgeList);
 
@@ -155,7 +155,7 @@ BufferSubgraph::computeNodeDepth(Node *n)
 	// throw(TopologyException *)
 {
 	// find a visited dirEdge to start at
-	DirectedEdge *startEdge=NULL;
+	DirectedEdge *startEdge=nullptr;
 
 	assert(dynamic_cast<DirectedEdgeStar *>(n->getEdges()));
 	DirectedEdgeStar *ees=static_cast<DirectedEdgeStar *>(n->getEdges());
@@ -176,7 +176,7 @@ BufferSubgraph::computeNodeDepth(Node *n)
 	//if (startEdge==null) return;
 
 	// only compute string append if assertion would fail
-	if (startEdge == NULL)
+	if (startEdge == nullptr)
 	{
 		throw util::TopologyException(
 			"unable to find edge to compute depths at",
@@ -263,7 +263,7 @@ BufferSubgraph::compareTo(BufferSubgraph *graph)
 void
 BufferSubgraph::computeDepths(DirectedEdge *startEdge)
 {
-	set<Node *> nodesVisited; 
+	set<Node *> nodesVisited;
 	list<Node*> nodeQueue; // Used to be a vector
 	Node *startNode=startEdge->getNode();
 	nodeQueue.push_back(startNode);
@@ -276,7 +276,7 @@ BufferSubgraph::computeDepths(DirectedEdge *startEdge)
 		//System.out.println(nodes.size() + " queue: " + nodeQueue.size());
 		Node *n=nodeQueue.front(); // [0];
 		//nodeQueue.erase(nodeQueue.begin());
-		nodeQueue.pop_front(); 
+		nodeQueue.pop_front();
 
 		nodesVisited.insert(n);
 
@@ -319,7 +319,7 @@ BufferSubgraph::contains(set<Node*>&nodeSet, Node *node)
 Envelope *
 BufferSubgraph::getEnvelope()
 {
-	if (env == NULL) {
+	if (env == nullptr) {
 		env = new Envelope();
 		std::size_t const size = dirEdgeList.size();
 		for(std::size_t i=0; i<size; ++i)

@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -54,8 +54,8 @@ RectangleIntersectionBuilder::reconnect()
   geom::LineString * line2 = lines.back();
   const geom::CoordinateSequence &cs2 = *line2->getCoordinatesRO();
 
-  const int n1 = cs1.size();
-  const int n2 = cs2.size();
+  const auto n1 = cs1.size();
+  const auto n2 = cs2.size();
 
   // Safety check against bad input to prevent segfaults
   if(n1==0 || n2==0)
@@ -140,7 +140,7 @@ void RectangleIntersectionBuilder::add(geom::Point * thePoint)
   points.push_back(thePoint);
 }
 
-std::auto_ptr<geom::Geometry>
+std::unique_ptr<geom::Geometry>
 RectangleIntersectionBuilder::build()
 {
   // Total number of objects
@@ -148,7 +148,7 @@ RectangleIntersectionBuilder::build()
   std::size_t n = polygons.size() + lines.size() + points.size();
 
   if(n == 0)
-	return std::auto_ptr<Geometry>(_gf.createGeometryCollection());
+	return std::unique_ptr<Geometry>(_gf.createGeometryCollection());
 
   std::vector<Geometry *> *geoms = new std::vector<Geometry *>;
   geoms->reserve(n);
@@ -165,7 +165,7 @@ RectangleIntersectionBuilder::build()
       geoms->push_back(*i);
   points.clear();
 
-  return std::auto_ptr<Geometry>(
+  return std::unique_ptr<Geometry>(
     (*geoms)[0]->getFactory()->buildGeometry(geoms)
   );
 }
@@ -229,7 +229,7 @@ double distance(const Rectangle & rect,
 				const std::vector<Coordinate> &ring,
 				const geom::LineString * line)
 {
-  double nr = ring.size();
+  auto nr = ring.size();
   const Coordinate &c1 = ring[nr-1];
 
   const CoordinateSequence * linecs = line->getCoordinatesRO();
@@ -241,7 +241,7 @@ double distance(const Rectangle & rect,
 double distance(const Rectangle & rect,
 				const std::vector<Coordinate> &ring)
 {
-  double nr = ring.size();
+  auto nr = ring.size();
   const Coordinate& c1 = ring[nr-1]; // TODO: ring.back() ?
   const Coordinate& c2 = ring[0]; // TODO: ring.front() ?
   return distance(rect, c1.x, c1.y, c2.x, c2.y);
@@ -277,7 +277,7 @@ normalize_ring(std::vector<Coordinate> &ring)
   // Find the "smallest" coordinate
 
   int best_pos = 0;
-  int n = ring.size();
+  int n = static_cast<int>(ring.size());
   for(int pos = 0; pos<n; ++pos)
 	{
     // TODO: use CoordinateLessThan ?
@@ -353,7 +353,7 @@ void
 RectangleIntersectionBuilder::close_ring(const Rectangle & rect,
 				std::vector<Coordinate> * ring)
 {
-  double nr = ring->size();
+  auto nr = ring->size();
   Coordinate &c2 = (*ring)[0];
   Coordinate &c1 = (*ring)[nr-1];
   double x2 = c2.x;
@@ -392,11 +392,11 @@ RectangleIntersectionBuilder::reconnectPolygons(const Rectangle & rect)
 	  // Reconnect all lines into one or more linearrings
 	  // using box boundaries if necessary
 
-    std::vector<Coordinate> *ring = NULL;
+    std::vector<Coordinate> *ring = nullptr;
 
-	  while(!lines.empty() || ring != NULL)
+	  while(!lines.empty() || ring != nullptr)
 		{
-		  if(ring == NULL)
+		  if(ring == nullptr)
 			{
 			  ring = new std::vector<Coordinate>();
 			  LineString *line = lines.front();
@@ -430,12 +430,12 @@ RectangleIntersectionBuilder::reconnectPolygons(const Rectangle & rect)
         geom::CoordinateSequence *shell_cs = _csf.create(ring);
         geom::LinearRing *shell = _gf.createLinearRing(shell_cs);
 	      exterior.push_back(make_pair(shell, new LinearRingVect()));
-			  ring = NULL;
+			  ring = nullptr;
 			}
 		  else
 			{
 			  LineString * line = *best_pos;
-			  int nr = ring->size();
+			  auto nr = ring->size();
         const CoordinateSequence& cs = *line->getCoordinatesRO();
 			  close_boundary(rect, ring,
 							 (*ring)[nr-1].x,

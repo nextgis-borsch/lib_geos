@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -53,7 +53,7 @@ CommonBits::zeroLowerBits(int64 bits, int nBits)
 int
 CommonBits::getBit(int64 bits, int i)
 {
-	int64 mask = (1 << i);
+	int64 mask = (1ull << i);
 	return (bits & mask) != 0 ? 1 : 0;
 }
 

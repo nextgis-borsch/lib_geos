@@ -3,7 +3,7 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009-2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009-2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2008-2010 Safe Software Inc.
  * Copyright (C) 2005-2007 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
@@ -81,7 +81,7 @@ namespace {
 
 // Debug routine
 template <class Iterator>
-std::auto_ptr<Geometry>
+std::unique_ptr<Geometry>
 convertSegStrings(const GeometryFactory* fact, Iterator it, Iterator et)
 {
   std::vector<Geometry*> lines;
@@ -91,7 +91,7 @@ convertSegStrings(const GeometryFactory* fact, Iterator it, Iterator et)
     lines.push_back(line);
     ++it;
   }
-  return std::auto_ptr<Geometry>(fact->buildGeometry(lines));
+  return std::unique_ptr<Geometry>(fact->buildGeometry(lines));
 }
 
 }
@@ -151,7 +151,7 @@ BufferBuilder::bufferLineSingleSided( const Geometry* g, double distance,
    BufferParameters modParams = bufParams;
    modParams.setEndCapStyle(BufferParameters::CAP_FLAT);
    modParams.setSingleSided(false); // ignore parameter for areal-only geometries
-   std::auto_ptr<Geometry> buf;
+   std::unique_ptr<Geometry> buf;
 
    // This is a (temp?) hack to workaround the fact that
    // BufferBuilder BufferParamaters are immutable after
@@ -163,7 +163,7 @@ BufferBuilder::bufferLineSingleSided( const Geometry* g, double distance,
    }
 
    // Create MultiLineStrings from this polygon.
-   std::auto_ptr<Geometry> bufLineString ( buf->getBoundary() );
+   std::unique_ptr<Geometry> bufLineString ( buf->getBoundary() );
 
 #ifdef GEOS_DEBUG_SSB
    std::cerr << "input|" << *l << std::endl;
@@ -175,7 +175,7 @@ BufferBuilder::bufferLineSingleSided( const Geometry* g, double distance,
    std::vector< CoordinateSequence* > lineList;
 
    {
-       std::auto_ptr< CoordinateSequence > coords(g->getCoordinates());
+       std::unique_ptr< CoordinateSequence > coords(g->getCoordinates());
        curveBuilder.getSingleSidedLineCurve(coords.get(), distance,
            lineList, leftSide, !leftSide);
        coords.reset();
@@ -188,7 +188,7 @@ BufferBuilder::bufferLineSingleSided( const Geometry* g, double distance,
       CoordinateSequence* seq = lineList[i];
 
       // SegmentString takes ownership of CoordinateSequence
-      SegmentString* ss = new NodedSegmentString(seq, NULL);
+      SegmentString* ss = new NodedSegmentString(seq, nullptr);
       curveList.push_back( ss );
    }
    lineList.clear();
@@ -221,7 +221,7 @@ BufferBuilder::bufferLineSingleSided( const Geometry* g, double distance,
    for (size_t i=0, n=curveList.size(); i<n; ++i) delete curveList[i];
    curveList.clear();
 
-   std::auto_ptr<Geometry> singleSided ( geomFact->createMultiLineString(
+   std::unique_ptr<Geometry> singleSided ( geomFact->createMultiLineString(
       singleSidedNodedEdges ) );
 
 #ifdef GEOS_DEBUG_SSB
@@ -235,7 +235,7 @@ BufferBuilder::bufferLineSingleSided( const Geometry* g, double distance,
    //       diverge from original offset curves due to the addition of
    //       intersections with caps and joins curves
    using geos::operation::overlay::snap::SnapOverlayOp;
-   std::auto_ptr<Geometry> intersectedLines = SnapOverlayOp::overlayOp(*singleSided, *bufLineString, OverlayOp::opINTERSECTION);
+   std::unique_ptr<Geometry> intersectedLines = SnapOverlayOp::overlayOp(*singleSided, *bufLineString, OverlayOp::opINTERSECTION);
 
 #ifdef GEOS_DEBUG_SSB
      std::cerr << "intersection" << "|" << *intersectedLines << std::endl;
@@ -244,7 +244,7 @@ BufferBuilder::bufferLineSingleSided( const Geometry* g, double distance,
    // Merge result lines together.
    LineMerger lineMerge;
    lineMerge.add( intersectedLines.get() );
-   std::auto_ptr< std::vector< LineString* > > mergedLines (
+   std::unique_ptr< std::vector< LineString* > > mergedLines (
 	lineMerge.getMergedLineStrings() );
 
    // Convert the result into a std::vector< Geometry* >.
@@ -255,8 +255,8 @@ BufferBuilder::bufferLineSingleSided( const Geometry* g, double distance,
    {
       // Remove end points if they are a part of the original line to be
       // buffered.
-      CoordinateSequence::AutoPtr coords(mergedLines->back()->getCoordinates());
-      if ( NULL != coords.get() )
+      CoordinateSequence::Ptr coords(mergedLines->back()->getCoordinates());
+      if ( nullptr != coords.get() )
       {
          // Use 98% of the buffer width as the point-distance requirement - this
          // is to ensure that the point that is "distance" +/- epsilon is not
@@ -368,7 +368,7 @@ BufferBuilder::buffer(const Geometry *g, double distance)
 	// throw(GEOSException *)
 {
 	const PrecisionModel *precisionModel=workingPrecisionModel;
-	if (precisionModel==NULL)
+	if (precisionModel==nullptr)
 		precisionModel=g->getPrecisionModel();
 
 	assert(precisionModel);
@@ -410,8 +410,8 @@ BufferBuilder::buffer(const Geometry *g, double distance)
 	std::cerr << std::endl << edgeList << std::endl;
 #endif
 
-	Geometry* resultGeom=NULL;
-	std::auto_ptr< std::vector<Geometry*> > resultPolyList;
+	Geometry* resultGeom=nullptr;
+	std::unique_ptr< std::vector<Geometry*> > resultPolyList;
 	std::vector<BufferSubgraph*> subgraphList;
 
 	try {
@@ -476,14 +476,14 @@ Noder*
 BufferBuilder::getNoder(const PrecisionModel* pm)
 {
 	// this doesn't change workingNoder precisionModel!
-	if (workingNoder != NULL) return workingNoder;
+	if (workingNoder != nullptr) return workingNoder;
 
 	// otherwise use a fast (but non-robust) noder
 
 	if ( li ) // reuse existing IntersectionAdder and LineIntersector
 	{
 		li->setPrecisionModel(pm);
-		assert(intersectionAdder!=NULL);
+		assert(intersectionAdder!=nullptr);
 	}
 	else
 	{
@@ -581,7 +581,7 @@ BufferBuilder::insertUniqueEdge(Edge *e)
 	// fast lookup
 	Edge *existingEdge = edgeList.findEqualEdge(e);
 	// If an identical edge already exists, simply update its label
-	if (existingEdge != NULL) {
+	if (existingEdge != nullptr) {
 		Label& existingLabel = existingEdge->getLabel();
 		Label labelToMerge = e->getLabel();
 
@@ -694,7 +694,7 @@ BufferBuilder::buildSubgraphs(const std::vector<BufferSubgraph*>& subgraphList,
 geom::Geometry*
 BufferBuilder::createEmptyResultGeometry() const
 {
-	geom::Geometry* emptyGeom = geomFact->createPolygon(NULL, NULL);
+	geom::Geometry* emptyGeom = geomFact->createPolygon(nullptr, nullptr);
 	return emptyGeom;
 }
 

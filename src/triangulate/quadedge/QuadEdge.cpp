@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -24,7 +24,7 @@ namespace quadedge { //geos.triangulate.quadedge
 
 using namespace geos::geom;
 
-std::auto_ptr<QuadEdge>
+std::unique_ptr<QuadEdge>
 QuadEdge::makeEdge(const Vertex &o, const Vertex &d)
 {
 	QuadEdge *q0 = new QuadEdge();
@@ -47,13 +47,13 @@ QuadEdge::makeEdge(const Vertex &o, const Vertex &d)
 	base->setOrig(o);
 	base->setDest(d);
 
-	return std::auto_ptr<QuadEdge>(base);
+	return std::unique_ptr<QuadEdge>(base);
 }
 
-std::auto_ptr<QuadEdge>
-QuadEdge::connect(QuadEdge &a, QuadEdge &b) 
+std::unique_ptr<QuadEdge>
+QuadEdge::connect(QuadEdge &a, QuadEdge &b)
 {
-	std::auto_ptr<QuadEdge> q0 = makeEdge(a.dest(), b.orig());
+	std::unique_ptr<QuadEdge> q0 = makeEdge(a.dest(), b.orig());
 	splice(*q0, a.lNext());
 	splice(q0->sym(), b);
 	return q0;
@@ -89,7 +89,7 @@ QuadEdge::swap(QuadEdge &e)
 	e.setDest(b.dest());
 }
 
-QuadEdge::QuadEdge() : _rot(NULL), vertex(), next(NULL), data(NULL), isAlive(true)
+QuadEdge::QuadEdge() : _rot(nullptr), vertex(), next(nullptr), data(nullptr), isAlive(true)
 { }
 
 QuadEdge::~QuadEdge()
@@ -106,13 +106,13 @@ QuadEdge::free()
 			if(_rot->_rot->_rot)
 			{
 				delete _rot->_rot->_rot;
-				_rot->_rot->_rot = NULL;
+				_rot->_rot->_rot = nullptr;
 			}
 			delete _rot->_rot;
-			_rot->_rot = NULL;
+			_rot->_rot = nullptr;
 		}
 		delete _rot;
-		_rot = NULL;
+		_rot = nullptr;
 	}
 }
 
@@ -121,7 +121,7 @@ QuadEdge::getPrimary() const
 {
 	if (orig().getCoordinate().compareTo(dest().getCoordinate()) <= 0)
 		return *this;
-	else 
+	else
 		return sym();
 }
 
@@ -165,10 +165,10 @@ QuadEdge::equalsOriented(const QuadEdge &qe) const
 	return false;
 }
 
-std::auto_ptr<LineSegment>
+std::unique_ptr<LineSegment>
 QuadEdge::toLineSegment() const
 {
-	return std::auto_ptr<geom::LineSegment>(
+	return std::unique_ptr<geom::LineSegment>(
 			new geom::LineSegment(vertex.getCoordinate(), dest().getCoordinate()));
 }
 

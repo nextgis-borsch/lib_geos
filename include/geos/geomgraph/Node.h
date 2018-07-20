@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -68,13 +68,13 @@ public:
 
 	Node(const geom::Coordinate& newCoord, EdgeEndStar* newEdges);
 
-	virtual ~Node();
+	~Node() override;
 
 	virtual const geom::Coordinate& getCoordinate() const;
 
 	virtual EdgeEndStar* getEdges();
 
-	virtual bool isIsolated() const;
+	bool isIsolated() const override;
 
 	/** \brief
 	 * Add the edge to the list of edges at this node
@@ -140,7 +140,7 @@ protected:
 	/** \brief
 	 * Basic nodes do not compute IMs
 	 */
-	virtual void computeIM(geom::IntersectionMatrix& /*im*/) {}
+	void computeIM(geom::IntersectionMatrix& /*im*/) override {}
 
 private:
 
@@ -158,11 +158,11 @@ Node::testInvariant() const
 #ifndef NDEBUG
 	if (edges)
 	{
-		// Each EdgeEnd in the star has this Node's 
+		// Each EdgeEnd in the star has this Node's
 		// coordinate as first coordinate
 		for (EdgeEndStar::iterator
 				it=edges->begin(), itEnd=edges->end();
-				it != itEnd; it++) 
+				it != itEnd; it++)
 		{
 			EdgeEnd* e=*it;
 			assert(e);
@@ -173,7 +173,7 @@ Node::testInvariant() const
 #if 0 // We can't rely on numerical stability with FP computations
 	// ztot is the sum of doubnle sin zvals vector
 	double ztot_check=0.0;
-	for (std::vector<double>::const_iterator 
+	for (std::vector<double>::const_iterator
 			i = zvals.begin(), e = zvals.end();
 			i != e;
 			i++)

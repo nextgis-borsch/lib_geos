@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -76,9 +76,9 @@ public:
 
 	SimpleSnapRounder(const geom::PrecisionModel& newPm);
 
-	std::vector<SegmentString*>* getNodedSubstrings() const;
+	std::vector<SegmentString*>* getNodedSubstrings() const override;
 
-	void computeNodes(std::vector<SegmentString*>* inputSegmentStrings);
+	void computeNodes(std::vector<SegmentString*>* inputSegmentStrings) override;
 
 	void add(const SegmentString* segStr);
 
@@ -135,8 +135,8 @@ private:
 	void computeVertexSnaps(NodedSegmentString* e0, NodedSegmentString* e1);
 
     // Declare type as noncopyable
-    SimpleSnapRounder(const SimpleSnapRounder& other);
-    SimpleSnapRounder& operator=(const SimpleSnapRounder& rhs);
+    SimpleSnapRounder(const SimpleSnapRounder& other) = delete;
+    SimpleSnapRounder& operator=(const SimpleSnapRounder& rhs) = delete;
 };
 
 } // namespace geos::noding::snapround

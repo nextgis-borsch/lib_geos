@@ -2,7 +2,7 @@
 // Test Suite for PreparedGeometry's touches() functions
 
 // tut
-#include <tut.hpp>
+#include <tut/tut.hpp>
 #include <utility.h>
 // geos
 #include <geos/geom/prep/PreparedGeometryFactory.h>
@@ -23,10 +23,10 @@ namespace tut {
 
 struct test_preparedgeometrytouches_data
 {
-    typedef std::auto_ptr<geos::geom::prep::PreparedGeometry> PrepGeomAutoPtr;
+    typedef std::unique_ptr<geos::geom::prep::PreparedGeometry> PrepGeomAutoPtr;
     typedef geos::geom::GeometryFactory GeometryFactory;
 
-    geos::geom::GeometryFactory::unique_ptr factory;
+    geos::geom::GeometryFactory::Ptr factory;
     geos::io::WKTReader reader;
     GeometryPtr g1;
     GeometryPtr g2;
@@ -36,10 +36,10 @@ struct test_preparedgeometrytouches_data
     test_preparedgeometrytouches_data()
         : factory(GeometryFactory::create())
         , reader(factory.get())
-        , g1(0)
-        , g2(0)
-        , pg1(0)
-        , pg2(0)
+        , g1(nullptr)
+        , g2(nullptr)
+        , pg1(nullptr)
+        , pg2(nullptr)
     {}
     ~test_preparedgeometrytouches_data()
     {

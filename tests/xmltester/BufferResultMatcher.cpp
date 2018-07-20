@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009  Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009  Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -70,7 +70,7 @@ BufferResultMatcher::isSymDiffAreaInTolerance(
 	const geom::Geometry& actualBuffer,
 	const geom::Geometry& expectedBuffer)
 {
-	typedef std::auto_ptr<geom::Geometry> GeomPtr;
+	typedef std::unique_ptr<geom::Geometry> GeomPtr;
 
 	using namespace operation::overlay;
 	using geos::geom::BinaryOp;
@@ -80,12 +80,12 @@ BufferResultMatcher::isSymDiffAreaInTolerance(
 	                   overlayOp(OverlayOp::opSYMDIFFERENCE));
 
 	double areaDiff = diff->getArea();
-	
-	// can't get closer than difference area = 0 ! 
+
+	// can't get closer than difference area = 0 !
 	// This also handles case when symDiff is empty
 	if (areaDiff <= 0.0) return true;
 
-	if (area <= 0) return false; 
+	if (area <= 0) return false;
 	double frac = areaDiff / area;
 
 	bool ret = frac < MAX_RELATIVE_AREA_DIFFERENCE;
@@ -101,7 +101,7 @@ BufferResultMatcher::isBoundaryHausdorffDistanceInTolerance(
 	const geom::Geometry& actualBuffer,
 	const geom::Geometry& expectedBuffer, double distance)
 {
-	typedef std::auto_ptr<geom::Geometry> GeomPtr;
+	typedef std::unique_ptr<geom::Geometry> GeomPtr;
 
 	using geos::algorithm::distance::DiscreteHausdorffDistance;
 

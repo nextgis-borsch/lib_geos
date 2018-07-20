@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  *
@@ -54,13 +54,13 @@ namespace noding { // geos::noding
  * All noded substrings are initialized with the same context object.
  *
  */
-class GEOS_DLL NodedSegmentString : public NodableSegmentString 
+class GEOS_DLL NodedSegmentString : public NodableSegmentString
 {
 public:
 
     // TODO: provide a templated method using an output iterator
     template <class II>
-    static void getNodedSubstrings(II from, II too_far, 
+    static void getNodedSubstrings(II from, II too_far,
         SegmentString::NonConstVect* resultEdgelist)
     {
         for (II i=from; i != too_far; ++i)
@@ -101,7 +101,7 @@ public:
         , pts(newPts)
     {}
 
-	~NodedSegmentString()
+	~NodedSegmentString() override
 	{
 		delete pts;
 	}
@@ -110,25 +110,25 @@ public:
 	 * Adds an intersection node for a given point and segment to this segment string.
 	 * If an intersection already exists for this exact location, the existing
 	 * node will be returned.
-	 * 
+	 *
 	 * @param intPt the location of the intersection
 	 * @param segmentIndex the index of the segment containing the intersection
 	 * @return the intersection node for the point
 	 */
-	SegmentNode* addIntersectionNode( geom::Coordinate * intPt, std::size_t segmentIndex) 
+	SegmentNode* addIntersectionNode( geom::Coordinate * intPt, std::size_t segmentIndex)
 	{
 		std::size_t normalizedSegmentIndex = segmentIndex;
 
 		// normalize the intersection point location
 		std::size_t nextSegIndex = normalizedSegmentIndex + 1;
-		if (nextSegIndex < size()) 
+		if (nextSegIndex < size())
 		{
-			geom::Coordinate const& nextPt = 
+			geom::Coordinate const& nextPt =
                 getCoordinate(static_cast<unsigned int>(nextSegIndex));
 
 			// Normalize segment index if intPt falls on vertex
 			// The check for point equality is 2D only - Z values are ignored
-			if ( intPt->equals2D( nextPt )) 
+			if ( intPt->equals2D( nextPt ))
 			{
 				normalizedSegmentIndex = nextSegIndex;
 			}
@@ -143,24 +143,24 @@ public:
 
 	const SegmentNodeList& getNodeList() const;
 
-	virtual unsigned int size() const
+	unsigned int size() const override
 	{
 		return static_cast<unsigned int>(pts->size());
 	}
 
-	virtual const geom::Coordinate& getCoordinate(unsigned int i) const;
+	const geom::Coordinate& getCoordinate(unsigned int i) const override;
 
-	virtual geom::CoordinateSequence* getCoordinates() const;
+	geom::CoordinateSequence* getCoordinates() const override;
 
-	virtual bool isClosed() const;
+	bool isClosed() const override;
 
-	virtual std::ostream& print(std::ostream& os) const;
+	std::ostream& print(std::ostream& os) const override;
 
 
 	/** \brief
 	 * Gets the octant of the segment starting at vertex index.
 	 *
-	 * @param index the index of the vertex starting the segment. 
+	 * @param index the index of the vertex starting the segment.
 	 *        Must not be the last index in the vertex list
 	 * @return the octant of the segment at the vertex
 	 */

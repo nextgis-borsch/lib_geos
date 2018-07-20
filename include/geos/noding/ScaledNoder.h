@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -74,11 +74,11 @@ public:
 		isScaled(nScaleFactor!=1.0)
 	{}
 
-	~ScaledNoder();
+	~ScaledNoder() override;
 
-	std::vector<SegmentString*>* getNodedSubstrings() const;
+	std::vector<SegmentString*>* getNodedSubstrings() const override;
 
-	void computeNodes(std::vector<SegmentString*>* inputSegStr);
+	void computeNodes(std::vector<SegmentString*>* inputSegStr) override;
 
 	//void filter(Coordinate& c);
 
@@ -117,8 +117,8 @@ private:
     mutable std::vector<geom::CoordinateSequence*> newCoordSeq;
 
     // Declare type as noncopyable
-    ScaledNoder(const ScaledNoder& other);
-    ScaledNoder& operator=(const ScaledNoder& rhs);
+    ScaledNoder(const ScaledNoder& other) = delete;
+    ScaledNoder& operator=(const ScaledNoder& rhs) = delete;
 };
 
 } // namespace geos.noding

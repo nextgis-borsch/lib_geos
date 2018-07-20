@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2005-2006 Refractions Research Inc.
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -86,7 +86,7 @@ namespace geom { // geos::geom
 
 
 /*
- * Return current GEOS version 
+ * Return current GEOS version
  */
 string
 geosversion()
@@ -108,13 +108,13 @@ Geometry::GeometryChangedFilter Geometry::geometryChangedFilter;
 
 Geometry::Geometry(const GeometryFactory *newFactory)
 	:
-	envelope(NULL),
+	envelope(nullptr),
 	_factory(newFactory),
-	_userData(NULL)
+	_userData(nullptr)
 {
-	if ( _factory == NULL ) {
+	if ( _factory == nullptr ) {
 		_factory = GeometryFactory::getDefaultInstance();
-	} 
+	}
 	SRID=_factory->getSRID();
 	_factory->addRef();
 }
@@ -123,13 +123,13 @@ Geometry::Geometry(const Geometry &geom)
 	:
 	SRID(geom.getSRID()),
 	_factory(geom._factory),
-	_userData(NULL)
+	_userData(nullptr)
 {
 	if ( geom.envelope.get() )
 	{
 		envelope.reset(new Envelope(*(geom.envelope)));
 	}
-	//factory=geom.factory; 
+	//factory=geom.factory;
 	//envelope(new Envelope(*(geom.envelope.get())));
 	//SRID=geom.getSRID();
 	//_userData=NULL;
@@ -137,7 +137,7 @@ Geometry::Geometry(const Geometry &geom)
 }
 
 bool
-Geometry::hasNonEmptyElements(const vector<Geometry *>* geometries) 
+Geometry::hasNonEmptyElements(const vector<Geometry *>* geometries)
 {
 	for (size_t i=0; i<geometries->size(); i++) {
 		if (!(*geometries)[i]->isEmpty()) {
@@ -148,7 +148,7 @@ Geometry::hasNonEmptyElements(const vector<Geometry *>* geometries)
 }
 
 bool
-Geometry::hasNullElements(const CoordinateSequence* list) 
+Geometry::hasNullElements(const CoordinateSequence* list)
 {
 	size_t npts=list->getSize();
 	for (size_t i=0; i<npts; ++i) {
@@ -160,17 +160,17 @@ Geometry::hasNullElements(const CoordinateSequence* list)
 }
 
 bool
-Geometry::hasNullElements(const vector<Geometry *>* lrs) 
+Geometry::hasNullElements(const vector<Geometry *>* lrs)
 {
 	size_t n=lrs->size();
 	for (size_t i=0; i<n; ++i) {
-		if ((*lrs)[i]==NULL) {
+		if ((*lrs)[i]==nullptr) {
 			return true;
 		}
 	}
 	return false;
 }
-	
+
 /* public */
 bool
 Geometry::isWithinDistance(const Geometry *geom,double cDistance) const
@@ -198,7 +198,7 @@ Point*
 Geometry::getCentroid() const
 {
 	Coordinate centPt;
-	if ( ! getCentroid(centPt) ) return NULL;
+	if ( ! getCentroid(centPt) ) return nullptr;
 
 	// We don't use createPointFromInternalCoord here
 	// because ::getCentroid() takes care about rounding
@@ -223,13 +223,13 @@ Geometry::getInteriorPoint() const
 	int dim=getDimension();
 	if (dim==0) {
 		InteriorPointPoint intPt(this);
-		if ( ! intPt.getInteriorPoint(interiorPt) ) return NULL;
+		if ( ! intPt.getInteriorPoint(interiorPt) ) return nullptr;
 	} else if (dim==1) {
 		InteriorPointLine intPt(this);
-		if ( ! intPt.getInteriorPoint(interiorPt) ) return NULL;
+		if ( ! intPt.getInteriorPoint(interiorPt) ) return nullptr;
 	} else {
 		InteriorPointArea intPt(this);
-		if ( ! intPt.getInteriorPoint(interiorPt) ) return NULL;
+		if ( ! intPt.getInteriorPoint(interiorPt) ) return nullptr;
 	}
 	Point *p=getFactory()->createPointFromInternalCoord(&interiorPt, this);
 	return p;
@@ -256,7 +256,7 @@ void
 Geometry::geometryChangedAction()
 {
 	//delete envelope;
-	envelope.reset(NULL);
+	envelope.reset(nullptr);
 }
 
 bool
@@ -288,7 +288,7 @@ Geometry::disjoint(const Geometry *g) const
 	if (! getEnvelopeInternal()->intersects(g->getEnvelopeInternal()))
 		return true;
 #endif
-	auto_ptr<IntersectionMatrix> im ( relate(g) );
+	unique_ptr<IntersectionMatrix> im ( relate(g) );
 	bool res=im->isDisjoint();
 	return res;
 }
@@ -301,7 +301,7 @@ Geometry::touches(const Geometry *g) const
 	if (! getEnvelopeInternal()->intersects(g->getEnvelopeInternal()))
 		return false;
 #endif
-	auto_ptr<IntersectionMatrix> im ( relate(g) );
+	unique_ptr<IntersectionMatrix> im ( relate(g) );
 	bool res=im->isTouches(getDimension(), g->getDimension());
 	return res;
 }
@@ -341,7 +341,7 @@ Geometry::intersects(const Geometry *g) const
 		return predicate::RectangleIntersects::intersects(*p, *this);
 	}
 
-	auto_ptr<IntersectionMatrix> im ( relate(g) );
+	unique_ptr<IntersectionMatrix> im ( relate(g) );
 	bool res=im->isIntersects();
 	return res;
 }
@@ -363,7 +363,7 @@ Geometry::covers(const Geometry* g) const
 		return true;
 	}
 
-	auto_ptr<IntersectionMatrix> im(relate(g));
+	unique_ptr<IntersectionMatrix> im(relate(g));
 	return im->isCovers();
 }
 
@@ -376,7 +376,7 @@ Geometry::crosses(const Geometry *g) const
 	if (! getEnvelopeInternal()->intersects(g->getEnvelopeInternal()))
 		return false;
 #endif
-	auto_ptr<IntersectionMatrix> im ( relate(g) );
+	unique_ptr<IntersectionMatrix> im ( relate(g) );
 	bool res=im->isCrosses(getDimension(), g->getDimension());
 	return res;
 }
@@ -406,7 +406,7 @@ Geometry::contains(const Geometry *g) const
 	//	return predicate::RectangleContains::contains((const Polygon&)*g, *this);
 	//}
 
-	auto_ptr<IntersectionMatrix> im ( relate(g) );
+	unique_ptr<IntersectionMatrix> im ( relate(g) );
 	bool res=im->isContains();
 	return res;
 }
@@ -419,7 +419,7 @@ Geometry::overlaps(const Geometry *g) const
 	if (! getEnvelopeInternal()->intersects(g->getEnvelopeInternal()))
 		return false;
 #endif
-	auto_ptr<IntersectionMatrix> im ( relate(g) );
+	unique_ptr<IntersectionMatrix> im ( relate(g) );
 	bool res=im->isOverlaps(getDimension(), g->getDimension());
 	return res;
 }
@@ -427,7 +427,7 @@ Geometry::overlaps(const Geometry *g) const
 bool
 Geometry::relate(const Geometry *g, const string &intersectionPattern) const
 {
-	auto_ptr<IntersectionMatrix> im ( relate(g) );
+	unique_ptr<IntersectionMatrix> im ( relate(g) );
 	bool res=im->matches(intersectionPattern);
 	return res;
 }
@@ -444,7 +444,7 @@ Geometry::equals(const Geometry *g) const
 	if (isEmpty()) return g->isEmpty();
 	else if (g->isEmpty()) return isEmpty();
 
-	auto_ptr<IntersectionMatrix> im ( relate(g) );
+	unique_ptr<IntersectionMatrix> im ( relate(g) );
 	bool res=im->isEquals(getDimension(), g->getDimension());
 	return res;
 }
@@ -544,7 +544,7 @@ Geometry::Union(const Geometry *other) const
 	if ( isEmpty() ) return other->clone();
 	if ( other->isEmpty() ) return clone();
 
-	Geometry *out = NULL;
+	Geometry *out = nullptr;
 
 #ifdef SHORTCIRCUIT_PREDICATES
 	// if envelopes are disjoint return a MULTI geom or
@@ -562,7 +562,7 @@ Geometry::Union(const Geometry *other) const
 		v->reserve(ngeomsThis+ngeomsOther);
 
 
-		if ( NULL != (coll = dynamic_cast<const GeometryCollection *>(this)) )
+		if ( nullptr != (coll = dynamic_cast<const GeometryCollection *>(this)) )
 		{
 			for (size_t i=0; i<ngeomsThis; ++i)
 				v->push_back(coll->getGeometryN(i)->clone());
@@ -570,7 +570,7 @@ Geometry::Union(const Geometry *other) const
 			v->push_back(this->clone());
 		}
 
-		if ( NULL != (coll = dynamic_cast<const GeometryCollection *>(other)) )
+		if ( nullptr != (coll = dynamic_cast<const GeometryCollection *>(other)) )
 		{
 			for (size_t i=0; i<ngeomsOther; ++i)
 				v->push_back(coll->getGeometryN(i)->clone());
@@ -587,7 +587,7 @@ Geometry::Union(const Geometry *other) const
 }
 
 /* public */
-Geometry::AutoPtr
+Geometry::Ptr
 Geometry::Union() const
 {
   using geos::operation::geounion::UnaryUnionOp;
@@ -626,7 +626,7 @@ Geometry::symDifference(const Geometry *other) const
 		v->reserve(ngeomsThis+ngeomsOther);
 
 
-		if ( NULL != (coll = dynamic_cast<const GeometryCollection *>(this)) )
+		if ( nullptr != (coll = dynamic_cast<const GeometryCollection *>(this)) )
 		{
 			for (size_t i=0; i<ngeomsThis; ++i)
 				v->push_back(coll->getGeometryN(i)->clone());
@@ -634,7 +634,7 @@ Geometry::symDifference(const Geometry *other) const
 			v->push_back(this->clone());
 		}
 
-		if ( NULL != (coll = dynamic_cast<const GeometryCollection *>(other)) )
+		if ( nullptr != (coll = dynamic_cast<const GeometryCollection *>(other)) )
 		{
 			for (size_t i=0; i<ngeomsOther; ++i)
 				v->push_back(coll->getGeometryN(i)->clone());
@@ -699,7 +699,7 @@ Geometry::getClassSortIndex() const
 	else if ( typeid(*this) == typeid(MultiLineString)    ) return 4;
 	else if ( typeid(*this) == typeid(Polygon)            ) return 5;
 	else if ( typeid(*this) == typeid(MultiPolygon)       ) return 6;
-	else 
+	else
 	{
 		assert(typeid(*this) == typeid(GeometryCollection)); // unsupported class
 		return 7;
@@ -769,7 +769,7 @@ Geometry::compare(vector<Geometry *> a, vector<Geometry *> b) const
 
 /**
  *  Returns the minimum distance between this Geometry
- *  and the other Geometry 
+ *  and the other Geometry
  *
  * @param  other  the Geometry from which to compute the distance
  */

@@ -1,16 +1,16 @@
-// 
+//
 // Test Suite for geos::algorithm::distance::DiscreteHausdorffDistance
 // Ported from JTS junit/algorithm/distance/DiscreteHausdorffDistanceTest.java rev. 1.2
 
 
-#include <tut.hpp>
+#include <tut/tut.hpp>
 // geos
 #include <geos/platform.h>
 #include <geos/io/WKTReader.h>
 #include <geos/algorithm/distance/DiscreteHausdorffDistance.h>
 #include <geos/geom/PrecisionModel.h>
 #include <geos/geom/GeometryFactory.h>
-#include <geos/geom/Geometry.h> // required for use in auto_ptr
+#include <geos/geom/Geometry.h> // required for use in unique_ptr
 #include <geos/geom/Coordinate.h>
 // std
 #include <cmath>
@@ -24,7 +24,7 @@ namespace geos {
 	}
 }
 
-using namespace geos::geom; 
+using namespace geos::geom;
 using namespace geos::algorithm::distance; // for Location
 
 namespace tut
@@ -36,7 +36,7 @@ namespace tut
 	// Test data, not used
 	struct test_DiscreteHausdorffDistance_data {
 
-	typedef std::auto_ptr<Geometry> GeomPtr;
+	typedef std::unique_ptr<Geometry> GeomPtr;
 
 	test_DiscreteHausdorffDistance_data()
 		:
@@ -73,7 +73,7 @@ namespace tut
 	}
 
 	PrecisionModel pm;
-	GeometryFactory::unique_ptr gf;
+	GeometryFactory::Ptr gf;
   geos::io::WKTReader reader;
 
 	};
@@ -94,7 +94,7 @@ namespace tut
 	template<>
 	template<>
 	void object::test<1>()
-	{         
+	{
 runTest("LINESTRING (0 0, 2 1)", "LINESTRING (0 0, 2 0)", 1.0);
 	}
 
@@ -102,7 +102,7 @@ runTest("LINESTRING (0 0, 2 1)", "LINESTRING (0 0, 2 0)", 1.0);
 	template<>
 	template<>
 	void object::test<2>()
-	{         
+	{
 runTest("LINESTRING (0 0, 2 0)", "LINESTRING (0 1, 1 2, 2 1)", 2.0);
 	}
 
@@ -110,7 +110,7 @@ runTest("LINESTRING (0 0, 2 0)", "LINESTRING (0 1, 1 2, 2 1)", 2.0);
 	template<>
 	template<>
 	void object::test<3>()
-	{         
+	{
 runTest("LINESTRING (0 0, 2 0)", "MULTIPOINT (0 1, 1 0, 2 1)", 1.0);
 	}
 
@@ -122,7 +122,7 @@ runTest("LINESTRING (0 0, 2 0)", "MULTIPOINT (0 1, 1 0, 2 1)", 1.0);
 	template<>
 	template<>
 	void object::test<4>()
-	{         
+	{
 runTest("LINESTRING (130 0, 0 0, 0 150)", "LINESTRING (10 10, 10 150, 130 10)", 14.142135623730951);
 // densifying provides accurate HD
 runTest("LINESTRING (130 0, 0 0, 0 150)", "LINESTRING (10 10, 10 150, 130 10)", 0.5, 70.0);

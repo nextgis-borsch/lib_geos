@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  * Copyright (C) 2005 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -63,13 +63,13 @@ public:
 
 	friend class GeometryFactory;
 
-	virtual ~MultiPolygon();
+	~MultiPolygon() override;
 
 	/// Returns surface dimension (2)
-	Dimension::DimensionType getDimension() const;
+	Dimension::DimensionType getDimension() const override;
 
 	/// Returns 1 (MultiPolygon boundary is MultiLineString)
-	int getBoundaryDimension() const;
+	int getBoundaryDimension() const override;
 
 	/** \brief
 	 * Computes the boundary of this geometry
@@ -77,17 +77,19 @@ public:
 	 * @return a lineal geometry (which may be empty)
 	 * @see Geometry#getBoundary
 	 */
-	Geometry* getBoundary() const;
+	Geometry* getBoundary() const override;
 
-	std::string getGeometryType() const;
+	std::string getGeometryType() const override;
 
-	virtual GeometryTypeId getGeometryTypeId() const;
+	GeometryTypeId getGeometryTypeId() const override;
 
-	bool isSimple() const;
+	bool isSimple() const override;
 
-	bool equalsExact(const Geometry *other, double tolerance=0) const;
+	bool equalsExact(const Geometry *other, double tolerance=0) const override;
 
-	Geometry *clone() const;
+	Geometry *clone() const override;
+
+	Geometry *reverse() const override;
 
 protected:
 

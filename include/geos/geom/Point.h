@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  * Copyright (C) 2005 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -25,15 +25,15 @@
 #include <geos/platform.h>
 #include <geos/geom/Geometry.h> // for inheritance
 #include <geos/geom/Puntal.h> // for inheritance
-#include <geos/geom/CoordinateSequence.h> // for proper use of auto_ptr<>
-#include <geos/geom/Envelope.h> // for proper use of auto_ptr<>
+#include <geos/geom/CoordinateSequence.h> // for proper use of unique_ptr<>
+#include <geos/geom/Envelope.h> // for proper use of unique_ptr<>
 #include <geos/geom/Dimension.h> // for Dimension::DimensionType
 
 #include <geos/inline.h>
 
 #include <string>
 #include <vector>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -59,12 +59,12 @@ namespace geom { // geos::geom
  * Implementation of Point.
  *
  * A Point is valid iff:
- * 
+ *
  * - the coordinate which defines it is a valid coordinate
  *   (i.e does not have an NaN X or Y ordinate)
  *
  */
-class GEOS_DLL Point : public virtual Geometry, public Puntal 
+class GEOS_DLL Point : public virtual Geometry, public Puntal
 {
 
 public:
@@ -74,7 +74,7 @@ public:
 	/// A vector of const Point pointers
 	typedef std::vector<const Point *> ConstVect;
 
-	virtual ~Point();
+	~Point() override;
 
 	/**
 	 * Creates and returns a full copy of this {@link Point} object.
@@ -82,24 +82,24 @@ public:
 	 *
 	 * @return a clone of this instance
 	 */
-	Geometry *clone() const { return new Point(*this); }
+	Geometry *clone() const override { return new Point(*this); }
 
-	CoordinateSequence* getCoordinates(void) const;
+	CoordinateSequence* getCoordinates(void) const override;
 
 	const CoordinateSequence* getCoordinatesRO() const;
 
-	size_t getNumPoints() const;
-	bool isEmpty() const;
-	bool isSimple() const;
+	size_t getNumPoints() const override;
+	bool isEmpty() const override;
+	bool isSimple() const override;
 
 	/// Returns point dimension (0)
-	Dimension::DimensionType getDimension() const;
+	Dimension::DimensionType getDimension() const override;
 
 	/// Returns coordinate dimension.
-	virtual int getCoordinateDimension() const;
+	int getCoordinateDimension() const override;
 
 	/// Returns Dimension::False (Point has no boundary)
-	int getBoundaryDimension() const;
+	int getBoundaryDimension() const override;
 
 	/**
 	 * Gets the boundary of this geometry.
@@ -109,30 +109,31 @@ public:
 	 * @return an empty GeometryCollection
 	 * @see Geometry::getBoundary
 	 */
-	Geometry* getBoundary() const;
+	Geometry* getBoundary() const override;
 
 	double getX() const;
 	double getY() const;
-	const Coordinate* getCoordinate() const;
-	std::string getGeometryType() const;
-	virtual GeometryTypeId getGeometryTypeId() const;
-	void apply_ro(CoordinateFilter *filter) const;
-	void apply_rw(const CoordinateFilter *filter);
-	void apply_ro(GeometryFilter *filter) const;
-	void apply_rw(GeometryFilter *filter);
-	void apply_rw(GeometryComponentFilter *filter);
-	void apply_ro(GeometryComponentFilter *filter) const;
-	void apply_rw(CoordinateSequenceFilter& filter);
-	void apply_ro(CoordinateSequenceFilter& filter) const;
+  double getZ() const;
+	const Coordinate* getCoordinate() const override;
+	std::string getGeometryType() const override;
+	GeometryTypeId getGeometryTypeId() const override;
+	void apply_ro(CoordinateFilter *filter) const override;
+	void apply_rw(const CoordinateFilter *filter) override;
+	void apply_ro(GeometryFilter *filter) const override;
+	void apply_rw(GeometryFilter *filter) override;
+	void apply_rw(GeometryComponentFilter *filter) override;
+	void apply_ro(GeometryComponentFilter *filter) const override;
+	void apply_rw(CoordinateSequenceFilter& filter) override;
+	void apply_ro(CoordinateSequenceFilter& filter) const override;
 
-	bool equalsExact(const Geometry *other, double tolerance=0) const;
+	bool equalsExact(const Geometry *other, double tolerance=0) const override;
 
-	void normalize(void)
+	void normalize(void) override
 	{
 		// a Point is always in normalized form
 	}
 
-  	Geometry* reverse() const
+  	Geometry* reverse() const override
 	{
 		return clone();
 	}
@@ -150,21 +151,21 @@ protected:
 	 *	the empty geometry.
 	 *
 	 * @param newFactory the GeometryFactory used to create this geometry
-	 */  
+	 */
 	Point(CoordinateSequence *newCoords, const GeometryFactory *newFactory);
 
-	Point(const Point &p); 
+	Point(const Point &p);
 
-	Envelope::AutoPtr computeEnvelopeInternal() const;
+	Envelope::Ptr computeEnvelopeInternal() const override;
 
-	int compareToSameClass(const Geometry *p) const;
+	int compareToSameClass(const Geometry *p) const override;
 
 private:
 
 	/**
 	 *  The <code>Coordinate</code> wrapped by this <code>Point</code>.
 	 */
-	std::auto_ptr<CoordinateSequence> coordinates;
+	std::unique_ptr<CoordinateSequence> coordinates;
 };
 
 } // namespace geos::geom

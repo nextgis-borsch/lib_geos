@@ -3,13 +3,13 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2009      Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2009      Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2001-2002 Vivid Solutions Inc.
  * Copyright (C) 2005 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -81,7 +81,7 @@ EndpointInfo::EndpointInfo(const Coordinate& newPt)
 IsSimpleOp::IsSimpleOp()
 	:
 	isClosedEndpointsInInterior(true),
-	geom(0),
+	geom(nullptr),
 	nonSimpleLocation()
 {}
 
@@ -171,11 +171,11 @@ IsSimpleOp::isSimpleLinearGeometry(const Geometry *geom)
 	if (geom->isEmpty()) return true;
 	GeometryGraph graph(0,geom);
 	LineIntersector li;
-	std::auto_ptr<SegmentIntersector> si (graph.computeSelfNodes(&li,true));
+	std::unique_ptr<SegmentIntersector> si (graph.computeSelfNodes(&li,true));
 
 	// if no self-intersection, must be simple
 	if (!si->hasIntersection()) return true;
-	
+
 	if (si->hasProperIntersection())
 	{
 		nonSimpleLocation.reset(
@@ -183,13 +183,13 @@ IsSimpleOp::isSimpleLinearGeometry(const Geometry *geom)
 		);
 		return false;
 	}
-	
+
 	if (hasNonEndpointIntersection(graph)) return false;
 
 	if ( isClosedEndpointsInInterior ) {
 		if (hasClosedEndpointIntersection(graph)) return false;
 	}
-	
+
 	return true;
 }
 
@@ -269,11 +269,11 @@ IsSimpleOp::addEndpoint(
 	map<const Coordinate*,EndpointInfo*,CoordinateLessThen>::iterator it=endPoints.find(p);
 	EndpointInfo *eiInfo;
 	if (it==endPoints.end()) {
-		eiInfo=NULL;
+		eiInfo=nullptr;
 	} else {
 		eiInfo=it->second;
 	}
-	if (eiInfo==NULL) {
+	if (eiInfo==nullptr) {
 		eiInfo=new EndpointInfo(*p);
 		endPoints[p]=eiInfo;
 	}

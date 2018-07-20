@@ -3,11 +3,11 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2012 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2012 Sandro Santilli <strk@kbt.io>
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************/
@@ -19,7 +19,7 @@ namespace {
   /* Could these be portably stored in thread-specific space ? */
   bool requested = false;
 
-  geos::util::Interrupt::Callback *callback = 0;
+  geos::util::Interrupt::Callback *callback = nullptr;
 }
 
 namespace geos {

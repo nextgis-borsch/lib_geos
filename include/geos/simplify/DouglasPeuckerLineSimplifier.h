@@ -7,7 +7,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -21,7 +21,7 @@
 
 #include <geos/export.h>
 #include <vector>
-#include <memory> // for auto_ptr
+#include <memory> // for unique_ptr
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -47,15 +47,15 @@ class GEOS_DLL DouglasPeuckerLineSimplifier {
 public:
 
 	typedef std::vector<short int> BoolVect;
-	typedef std::auto_ptr<BoolVect> BoolVectAutoPtr;
+	typedef std::unique_ptr<BoolVect> BoolVectAutoPtr;
 
 	typedef std::vector<geom::Coordinate> CoordsVect;
-	typedef std::auto_ptr<CoordsVect> CoordsVectAutoPtr;
+	typedef std::unique_ptr<CoordsVect> CoordsVectAutoPtr;
 
 
 	/** \brief
 	 * Returns a newly allocated Coordinate vector, wrapped
-	 * into an auto_ptr
+	 * into an unique_ptr
 	 */
 	static CoordsVectAutoPtr simplify(
 			const CoordsVect& nPts,
@@ -75,7 +75,7 @@ public:
 
 	/** \brief
 	 * Returns a newly allocated Coordinate vector, wrapped
-	 * into an auto_ptr
+	 * into an unique_ptr
 	 */
 	CoordsVectAutoPtr simplify();
 
@@ -88,8 +88,8 @@ private:
 	void simplifySection(std::size_t i, std::size_t j);
 
     // Declare type as noncopyable
-    DouglasPeuckerLineSimplifier(const DouglasPeuckerLineSimplifier& other);
-    DouglasPeuckerLineSimplifier& operator=(const DouglasPeuckerLineSimplifier& rhs);
+    DouglasPeuckerLineSimplifier(const DouglasPeuckerLineSimplifier& other) = delete;
+    DouglasPeuckerLineSimplifier& operator=(const DouglasPeuckerLineSimplifier& rhs) = delete;
 };
 
 } // namespace geos::simplify

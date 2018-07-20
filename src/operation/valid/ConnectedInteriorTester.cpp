@@ -9,7 +9,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -17,16 +17,16 @@
  * Last port: operation/valid/ConnectedInteriorTester.java rev. 1.15 (JTS-1.10)
  *
  **********************************************************************
- * 
+ *
  * TODO:
  *
  *  - Remove heap allocation of GeometryFactory (might use a singleton)
- *  - Track MaximalEdgeRing references: we might be deleting them 
+ *  - Track MaximalEdgeRing references: we might be deleting them
  *    leaving dangling refs around.
  *
  **********************************************************************/
 
-#include <geos/operation/valid/ConnectedInteriorTester.h> 
+#include <geos/operation/valid/ConnectedInteriorTester.h>
 #include <geos/operation/overlay/MaximalEdgeRing.h>
 #include <geos/operation/overlay/MinimalEdgeRing.h>
 #include <geos/operation/overlay/OverlayNodeFactory.h>
@@ -124,8 +124,8 @@ ConnectedInteriorTester::isInteriorsConnected()
 
 	/*
 	 * Mark all the edges for the edgeRings corresponding to the shells
-	 * of the input polygons. 
-	 * 
+	 * of the input polygons.
+	 *
 	 * Only ONE ring gets marked for each shell - if there are others
 	 * which remain unmarked this indicates a disconnected interior.
 	 */
@@ -205,7 +205,7 @@ ConnectedInteriorTester::buildEdgeRings(std::vector<EdgeEnd*> *dirEdges,
 	//std::vector<MinimalEdgeRing*> minEdgeRings;
 	for(EdgeEnds::size_type i=0, n=dirEdges->size(); i<n; ++i)
 	{
-#ifdef GEOS_CAST_PARANOIA 
+#ifdef GEOS_CAST_PARANOIA
 		assert(dynamic_cast<DirectedEdge*>((*dirEdges)[i]));
 #endif
 		DirectedEdge *de=static_cast<DirectedEdge*>((*dirEdges)[i]);
@@ -215,7 +215,7 @@ ConnectedInteriorTester::buildEdgeRings(std::vector<EdgeEnd*> *dirEdges,
 #endif
 
 		// if this edge has not yet been processed
-		if(de->isInResult() && de->getEdgeRing()==NULL)
+		if(de->isInResult() && de->getEdgeRing()==nullptr)
 		{
 			MaximalEdgeRing* er = new MaximalEdgeRing(de,
 			                                   geometryFactory.get());
@@ -260,7 +260,7 @@ ConnectedInteriorTester::visitInteriorRing(const LineString *ring, PlanarGraph &
 {
 	// can't visit an empty ring
 	if(ring->isEmpty()) return;
-   
+
 	const CoordinateSequence *pts=ring->getCoordinatesRO();
 	const Coordinate& pt0=pts->getAt(0);
 
@@ -271,13 +271,13 @@ ConnectedInteriorTester::visitInteriorRing(const LineString *ring, PlanarGraph &
     	const Coordinate& pt1=findDifferentPoint(pts, pt0);
 	Edge *e=graph.findEdgeInSameDirection(pt0, pt1);
 	DirectedEdge *de=static_cast<DirectedEdge*>(graph.findEdgeEnd(e));
-	DirectedEdge *intDe=NULL;
+	DirectedEdge *intDe=nullptr;
 	if (de->getLabel().getLocation(0,Position::RIGHT)==Location::INTERIOR) {
 		intDe=de;
 	} else if (de->getSym()->getLabel().getLocation(0,Position::RIGHT)==Location::INTERIOR) {
 		intDe=de->getSym();
 	}
-	assert(intDe!=NULL); // unable to find dirEdge with Interior on RHS
+	assert(intDe!=nullptr); // unable to find dirEdge with Interior on RHS
 	visitLinkedDirectedEdges(intDe);
 }
 
@@ -290,7 +290,7 @@ ConnectedInteriorTester::visitLinkedDirectedEdges(DirectedEdge *start)
 	//Debug.println(de);
 	do {
 		// found null Directed Edge
-		assert(de!=NULL);
+		assert(de!=nullptr);
 
 		de->setVisited(true);
 		de=de->getNext();
@@ -328,7 +328,7 @@ ConnectedInteriorTester::hasUnvisitedShellEdge(std::vector<EdgeRing*> *edgeRings
 
 		/*
 		 * the edgeRing is CW ring which surrounds the INT
-		 * of the area, so check all edges have been visited. 
+		 * of the area, so check all edges have been visited.
 		 * If any are unvisited, this is a disconnected part
 		 * of the interior
 		 */

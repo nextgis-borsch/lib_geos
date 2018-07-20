@@ -8,7 +8,7 @@
  *
  * This is free software; you can redistribute and/or modify it under
  * the terms of the GNU Lesser General Public Licence as published
- * by the Free Software Foundation. 
+ * by the Free Software Foundation.
  * See the COPYING file for more information.
  *
  **********************************************************************
@@ -110,8 +110,8 @@ public:
 private:
 
     // Declare type as noncopyable
-    NodeMap(const NodeMap& other);
-    NodeMap& operator=(const NodeMap& rhs);
+    NodeMap(const NodeMap& other) = delete;
+    NodeMap& operator=(const NodeMap& rhs) = delete;
 };
 
 } // namespace geos.geomgraph

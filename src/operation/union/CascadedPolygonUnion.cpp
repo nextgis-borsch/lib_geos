@@ -3,7 +3,7 @@
  * GEOS - Geometry Engine Open Source
  * http://geos.osgeo.org
  *
- * Copyright (C) 2011 Sandro Santilli <strk@keybit.net>
+ * Copyright (C) 2011 Sandro Santilli <strk@kbt.io>
  * Copyright (C) 2006 Refractions Research Inc.
  *
  * This is free software; you can redistribute and/or modify it under
@@ -75,9 +75,9 @@ check_valid(const geos::geom::Geometry& g, const std::string& label, bool doThro
         << err->getCoordinate() << ")"
         << std::endl
 #ifdef GEOS_DEBUG_CASCADED_UNION_PRINT_INVALID
-        << "<A>" << std::endl
-        << g.toString()
-        << std::endl
+        << "<a>" << std::endl
+        << g.toString() << std::endl
+        << "</a>" << std::endl
 #endif
         ;
 #endif // GEOS_DEBUG_CASCADED_UNION
@@ -127,7 +127,7 @@ geom::Geometry* CascadedPolygonUnion::Union(const geom::MultiPolygon* multipoly)
 geom::Geometry* CascadedPolygonUnion::Union()
 {
     if (inputPolys->empty())
-        return NULL;
+        return nullptr;
 
     geomFactory = inputPolys->front()->getFactory();
 
@@ -146,7 +146,7 @@ geom::Geometry* CascadedPolygonUnion::Union()
         index.insert(g->getEnvelopeInternal(), g);
     }
 
-    std::auto_ptr<index::strtree::ItemsList> itemTree (index.itemsTree());
+    std::unique_ptr<index::strtree::ItemsList> itemTree (index.itemsTree());
 
     return unionTree(itemTree.get());
 }
@@ -158,7 +158,7 @@ geom::Geometry* CascadedPolygonUnion::unionTree(
      * Recursively unions all subtrees in the list into single geometries.
      * The result is a list of Geometry's only
      */
-    std::auto_ptr<GeometryListHolder> geoms(reduceToGeometries(geomTree));
+    std::unique_ptr<GeometryListHolder> geoms(reduceToGeometries(geomTree));
     return binaryUnion(geoms.get());
 }
 
@@ -171,7 +171,7 @@ geom::Geometry* CascadedPolygonUnion::binaryUnion(GeometryListHolder* geoms,
     std::size_t start, std::size_t end)
 {
     if (end - start <= 1) {
-        return unionSafe(geoms->getGeometry(start), NULL);
+        return unionSafe(geoms->getGeometry(start), nullptr);
     }
     else if (end - start == 2) {
         return unionSafe(geoms->getGeometry(start), geoms->getGeometry(start + 1));
@@ -179,8 +179,8 @@ geom::Geometry* CascadedPolygonUnion::binaryUnion(GeometryListHolder* geoms,
     else {
         // recurse on both halves of the list
         std::size_t mid = (end + start) / 2;
-        std::auto_ptr<geom::Geometry> g0 (binaryUnion(geoms, start, mid));
-        std::auto_ptr<geom::Geometry> g1 (binaryUnion(geoms, mid, end));
+        std::unique_ptr<geom::Geometry> g0 (binaryUnion(geoms, start, mid));
+        std::unique_ptr<geom::Geometry> g1 (binaryUnion(geoms, mid, end));
         return unionSafe(g0.get(), g1.get());
     }
 }
@@ -188,13 +188,13 @@ geom::Geometry* CascadedPolygonUnion::binaryUnion(GeometryListHolder* geoms,
 GeometryListHolder*
 CascadedPolygonUnion::reduceToGeometries(index::strtree::ItemsList* geomTree)
 {
-    std::auto_ptr<GeometryListHolder> geoms (new GeometryListHolder());
+    std::unique_ptr<GeometryListHolder> geoms (new GeometryListHolder());
 
     typedef index::strtree::ItemsList::iterator iterator_type;
     iterator_type end = geomTree->end();
     for (iterator_type i = geomTree->begin(); i != end; ++i) {
         if ((*i).get_type() == index::strtree::ItemsListItem::item_is_list) {
-            std::auto_ptr<geom::Geometry> geom (unionTree((*i).get_itemslist()));
+            std::unique_ptr<geom::Geometry> geom (unionTree((*i).get_itemslist()));
             geoms->push_back_owned(geom.get());
             geom.release();
         }
@@ -212,12 +212,12 @@ CascadedPolygonUnion::reduceToGeometries(index::strtree::ItemsList* geomTree)
 geom::Geometry*
 CascadedPolygonUnion::unionSafe(geom::Geometry* g0, geom::Geometry* g1)
 {
-    if (g0 == NULL && g1 == NULL)
-        return NULL;
+    if (g0 == nullptr && g1 == nullptr)
+        return nullptr;
 
-    if (g0 == NULL)
+    if (g0 == nullptr)
         return g1->clone();
-    if (g1 == NULL)
+    if (g1 == nullptr)
         return g0->clone();
 
     return unionOptimized(g0, g1);
@@ -252,18 +252,30 @@ CascadedPolygonUnion::unionUsingEnvelopeIntersection(geom::Geometry* g0,
     check_valid(*g1, "unionUsingEnvelopeIntersection g1");
 #endif
 
-    std::auto_ptr<geom::Geometry> g0Int(extractByEnvelope(common, g0, disjointPolys));
-    std::auto_ptr<geom::Geometry> g1Int(extractByEnvelope(common, g1, disjointPolys));
+    std::unique_ptr<geom::Geometry> g0Int(extractByEnvelope(common, g0, disjointPolys));
+    std::unique_ptr<geom::Geometry> g1Int(extractByEnvelope(common, g1, disjointPolys));
 
 #if GEOS_DEBUG_CASCADED_UNION
     check_valid(*g0Int, "unionUsingEnvelopeIntersection g0Int");
     check_valid(*g1Int, "unionUsingEnvelopeIntersection g1Int");
 #endif
 
-    std::auto_ptr<geom::Geometry> u(unionActual(g0Int.get(), g1Int.get()));
+    std::unique_ptr<geom::Geometry> u(unionActual(g0Int.get(), g1Int.get()));
 
 #if GEOS_DEBUG_CASCADED_UNION
-    check_valid(*u, "unionUsingEnvelopeIntersection unionActual return");
+    if ( ! check_valid(*u, "unionUsingEnvelopeIntersection unionActual return") )
+    {
+#if GEOS_DEBUG_CASCADED_UNION_PRINT_INVALID
+      std::cerr << " union between the following is invalid"
+        << "<a>" << std::endl
+        << *g0Int << std::endl
+        << "</a>" << std::endl
+        << "<b>" << std::endl
+        << *g1Int << std::endl
+        << "</b>" << std::endl
+        ;
+#endif
+    }
 #endif
 
     if ( disjointPolys.empty() ) return u.release();
@@ -288,7 +300,7 @@ CascadedPolygonUnion::unionUsingEnvelopeIntersection(geom::Geometry* g0,
     std::cerr << "unionUsingEnvelopeIntersection: " << polysOn.size() << "/" << disjointPolys.size() << " polys intersect union of final thing" << std::endl;
 #endif
 
-    std::auto_ptr<geom::Geometry> ret;
+    std::unique_ptr<geom::Geometry> ret;
     if ( polysOn.empty() ) {
       disjointPolys.push_back(u.get());
       ret.reset( geom::util::GeometryCombiner::combine(disjointPolys));
@@ -355,11 +367,11 @@ CascadedPolygonUnion::extractByEnvelope(geom::Envelope const& env,
 geom::Geometry*
 CascadedPolygonUnion::unionActual(geom::Geometry* g0, geom::Geometry* g1)
 {
-    return restrictToPolygons(std::auto_ptr<geom::Geometry>(g0->Union(g1))).release();
+    return restrictToPolygons(std::unique_ptr<geom::Geometry>(g0->Union(g1))).release();
 }
 
-std::auto_ptr<geom::Geometry>
-CascadedPolygonUnion::restrictToPolygons(std::auto_ptr<geom::Geometry> g)
+std::unique_ptr<geom::Geometry>
+CascadedPolygonUnion::restrictToPolygons(std::unique_ptr<geom::Geometry> g)
 {
     using namespace geom;
     using namespace std;
@@ -372,7 +384,7 @@ CascadedPolygonUnion::restrictToPolygons(std::auto_ptr<geom::Geometry> g)
     geom::util::PolygonExtracter::getPolygons(*g, polygons);
 
     if (polygons.size() == 1)
-      return std::auto_ptr<Geometry>(polygons[0]->clone());
+      return std::unique_ptr<Geometry>(polygons[0]->clone());
 
     typedef vector<Geometry *> GeomVect;
 
@@ -381,7 +393,7 @@ CascadedPolygonUnion::restrictToPolygons(std::auto_ptr<geom::Geometry> g)
     for (Polygon::ConstVect::size_type i=0; i<n; ++i) {
         (*newpolys)[i] = polygons[i]->clone();
     }
-    return auto_ptr<Geometry>(
+    return unique_ptr<Geometry>(
       g->getFactory()->createMultiPolygon(newpolys)
     );
 
