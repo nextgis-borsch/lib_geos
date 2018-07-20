@@ -36,6 +36,8 @@ if(NOT OSX_FRAMEWORK)
 
   target_link_libraries(${LIB_NAME} ${EXPORT_TARGETS})
 
+  set_property(TARGET ${LIB_NAME} PROPERTY CXX_STANDARD 11)
+
   if (WIN32)
     set_target_properties(${LIB_NAME}
       PROPERTIES
