@@ -81,7 +81,6 @@ namespace tut
     //
     // Test Cases
     //
-
     template<>
     template<>
     void object::test<1>()
