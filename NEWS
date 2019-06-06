@@ -1,5 +1,33 @@
-3.7.0 changes
+Changes in 3.7.2
+2018-05-02
+
+- Bug fixes / improvements
+  - Envelope constructor using strtod (#875 Paul Ramsey)
+  - Failure in CMake for OSX Framework (#936 Paul Ramsey)
+  - Polygon build failure in Overlay difference (#789 Paul Ramsey)
+  - Invalid union result from valid polygon inputs (#838)
+
+
+Changes in 3.7.1
+2018-11-29
+
+- Bug fixes / improvements
+  - Fix crash in GEOSCoordSeq_isCCW with empty coordseq
+    (#927, Sergey Fedoseev)
+  - Fix crash in GEOSInterpolate with empty LineString
+    (#926, Sergey Fedoseev)
+  - Fix crash in GEOSUnaryUnion with empty LineString
+    (#928, Sergey Fedoseev)
+  - Fix memory leak in SIRtree::insert (#919, Dan Baston)
+  - Reduce required autoconf to 2.63
+    (#56, John Harvey)
+  - Fix incorrect return values on error from GEOSLength
+    GEOSisValidDetail (#941, Dan Baston)
+
+
+Changes in 3.7.0
 2018-09-10
+
 - New things:
   - CAPI: GEOSDistanceIndexed (#795, Dan Baston)
   - CAPI: GEOSCoordSeq_isCCW (#870, Dan Baston)
