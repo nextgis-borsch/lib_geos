@@ -28,9 +28,7 @@ if(UNIX)
   set(libdir ${prefix}/${INSTALL_LIB_DIR})
 
   if(installdest)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/geos-config.in
-                   ${CMAKE_CURRENT_BINARY_DIR}/geos-config @ONLY)
-
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/geos-config.cmake ${CMAKE_CURRENT_BINARY_DIR}/geos-config)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/geos-config
       DESTINATION ${installdest}
       PERMISSIONS

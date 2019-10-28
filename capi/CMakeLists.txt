@@ -16,6 +16,14 @@ if(WIN32)
     add_definitions("-DGEOS_DLL_EXPORT=1")
 endif()
 
+# Copy these over so they match the @VARIABLES@ used by autoconf
+# in geos_c.h.in
+
+configure_file(
+  ${CMAKE_CURRENT_LIST_DIR}/geos_c.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/geos_c.h
+  @ONLY)
+
 set(geos_c_SOURCES
   geos_c.cpp
   geos_ts_c.cpp)
@@ -84,9 +92,3 @@ else()
         )
     endif()
 endif()
-
-#################################################################################
-# Group source files for IDE source explorers (e.g. Visual Studio)
-#################################################################################
-
-source_group("Header Files" FILES ${geos_capi_HEADERS})

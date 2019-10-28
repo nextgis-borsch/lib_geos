@@ -24,6 +24,21 @@ else()
   set(installdest ${INSTALL_INC_DIR})
 endif()
 
+set(VERSION ${GEOS_VERSION})
+set(VERSION_MAJOR ${GEOS_VERSION_MAJOR})
+set(VERSION_MINOR ${GEOS_VERSION_MINOR})
+set(VERSION_PATCH ${GEOS_VERSION_PATCH})
+
+configure_file(${CMAKE_CURRENT_LIST_DIR}/geos/version.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/geos/version.h
+  @ONLY)
+
+unset(VERSION)
+unset(VERSION_MAJOR)
+unset(VERSION_MINOR)
+unset(VERSION_PATCH)
+
+
 set(ROOT_HEADERS
     ${CMAKE_CURRENT_BINARY_DIR}/geos/platform.h
     ${CMAKE_CURRENT_BINARY_DIR}/geos/version.h
@@ -38,18 +53,3 @@ install(DIRECTORY geos/
     PATTERN "*.h"
     PATTERN "*.inl"
     PATTERN ".svn" EXCLUDE)
-
-# Some post-processing for the framework
-# luckily GEOS uses header subdir already, just need to change case
-#if(APPLE AND GEOS_ENABLE_MACOSX_FRAMEWORK)
-#  install(CODE
-#    "execute_process(COMMAND find \"${installdest}\" -name *.* -print0
-#    COMMAND xargs -0 sed -E -i \"\" \"s,# *include[[:space:]]+<geos/,#include <GEOS/,g\")")
-#  install(CODE
-#    "execute_process(COMMAND ln -sfh Versions/Current/Headers \"${INSTALL_LIB_DIR}/${FRAMEWORK_NAME}.framework/Headers\")")
-#endif()
-
-#################################################################################
-# Group source files for IDE source explorers (e.g. Visual Studio)
-#################################################################################
-GenerateSourceGroups(include)

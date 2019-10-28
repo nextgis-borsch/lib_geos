@@ -29,14 +29,13 @@ if(OSX_FRAMEWORK)
     set(LIB_NAME ${PROJECT_NAME})
     add_library(${LIB_NAME} SHARED ${geos_SOURCES} ${geos_c_SOURCES} ${geos_HHEADERS})
 
-    math(EXPR CVERSION "${VERSION_MAJOR} + 1")
  	# VERSION = current version, SOVERSION = compatibility version
     set_target_properties(${LIB_NAME}
     PROPERTIES
     CLEAN_DIRECT_OUTPUT 1
     FRAMEWORK TRUE
-    VERSION "${CVERSION}.${VERSION_MINOR}.${VERSION_PATCH}"
-    	  SOVERSION ${CVERSION}
+    VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}"
+    	  SOVERSION ${VERSION_MAJOR}
     FRAMEWORK_VERSION ${FRAMEWORK_VERSION}
     #    BUILD_WITH_INSTALL_RPATH TRUE
     #    INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}"
@@ -51,22 +50,6 @@ if(OSX_FRAMEWORK)
     set(EXPORT_TARGETS ${EXPORT_TARGETS} ${LIB_NAME} PARENT_SCOPE)
 
     # install(TARGETS ${LIB_NAME} FRAMEWORK DESTINATION ${INSTALL_LIB_DIR})
-
-    if(GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT)
-        # Unix compatibility option, provides typical bin/lib/include folder
-        # structure for framework-challenged projects
-
-        set(GEOS_FWDIR "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME}.framework")
-        set(GEOS_FWDIR_VER "${GEOS_FWDIR}/Versions/${VERSION_MAJOR}")
-        install(CODE "execute_process(COMMAND mkdir -p \"${GEOS_FWDIR_VER}/unix/bin\")")
-        install(CODE "execute_process(COMMAND mkdir -p \"${GEOS_FWDIR_VER}/unix/include\")")
-        install(CODE "execute_process(COMMAND mkdir -p \"${GEOS_FWDIR_VER}/unix/lib\")")
-        install(CODE "execute_process(COMMAND ln -sfh ../../Headers \"${GEOS_FWDIR_VER}/unix/include/geos\")")
-        install(CODE "execute_process(COMMAND ln -sf ../../Headers/geos_c.h \"${GEOS_FWDIR_VER}/unix/include/geos_c.h\")")
-        install(CODE "execute_process(COMMAND ln -sf ../../${PROJECT_NAME} \"${GEOS_FWDIR_VER}/unix/lib/libgeos.dylib\")")
-        install(CODE "execute_process(COMMAND ln -sf ../../${PROJECT_NAME} \"${GEOS_FWDIR_VER}/unix/lib/libgeos_c.dylib\")")
-        install(CODE "execute_process(COMMAND ln -sfh Versions/Current/unix \"${GEOS_FWDIR}/unix\")")
-    endif()
 
 else()
     set(LIB_NAME ${PROJECT_NAME})
@@ -163,7 +146,3 @@ if(NOT SKIP_INSTALL_LIBRARIES AND NOT SKIP_INSTALL_ALL)
   install(EXPORT ${PACKAGE_UPPER_NAME}Targets DESTINATION ${INSTALL_CMAKECONF_DIR} COMPONENT dev)
 endif()
 
-#################################################################################
-# Group source files for IDE source explorers (e.g. Visual Studio)
-#################################################################################
-GenerateSourceGroups(src)

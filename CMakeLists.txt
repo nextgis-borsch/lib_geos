@@ -3,7 +3,7 @@
 # Main GEOS build configuration file for CMake build system
 #
 # Copyright (C) 2009 Mateusz Loskot <mateusz@loskot.net>
-# Copyright (C) 2016-2018, NextGIS <info@nextgis.com>
+# Copyright (C) 2016-2019, NextGIS <info@nextgis.com>
 #
 # This is free software; you can redistribute and/or modify it under
 # the terms of the GNU Lesser General Public Licence as published
@@ -111,43 +111,29 @@ add_definitions(-DUSE_UNSTABLE_GEOS_CPP_API)
 # Check custom global options
 #################################################################################
 
-option(GEOS_ENABLE_TESTS
-  "Set to OFF|ON (default) to control build of GEOS tests package" ON)
-
 option(GEOS_ENABLE_INLINE
   "Set to OFF|ON (default) to control GEOS compilation with small functions inlining" ON)
 
-if(NOT MSVC)
-  option(GEOS_ENABLE_ASSERT
-    "Set to ON|OFF (default) to build GEOS with assert() macro enabled" OFF)
-endif()
-
-set(GEOS_BUILD_STATIC BUILD_STATIC_LIBS)
-set(GEOS_BUILD_SHARED BUILD_SHARED_LIBS)
-
-# option(GEOS_BUILD_STATIC
-#   "Set to OFF|ON (default) to build GEOS static libraries" ON)
-#
-# option(GEOS_BUILD_SHARED
-#   "Set to OFF|ON (default) to build GEOS shared libraries" ON)
+set(GEOS_BUILD_STATIC ${BUILD_STATIC_LIBS})
+set(GEOS_BUILD_SHARED ${BUILD_SHARED_LIBS})
 
 if(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
   option(GEOS_ENABLE_FLOATSTORE
     "Set to OFF|ON (default) to control IEEE754 conformance and remove extra precision" ON)
 endif()
 
-# if(APPLE)
-#   option(GEOS_ENABLE_MACOSX_FRAMEWORK
-#     "Set to ON|OFF (default) to build GEOS as a Mac OS X framework" OFF)
-#   option(GEOS_ENABLE_MACOSX_FRAMEWORK_UNIXCOMPAT
-#     "Set to ON|OFF (default) to add Unix compatibility to the Mac OS X framework" OFF)
-# endif()
-
 #################################################################################
 # Setup C/C++ compiler options
 #################################################################################
-set(CMAKE_CXX_STANDARD 98)
+set(CMAKE_CXX_STANDARD 11 CACHE STRING "C++ standard version to use (default is 11)")
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if (POLICY CMP0092)
+  # dont set /W3 warning flags by default, we already
+  # set /W4 anyway
+  cmake_policy(SET CMP0092 NEW)
+endif()
 
 if(NOT MSVC_IDE)
   if(NOT CMAKE_BUILD_TYPE)
@@ -208,7 +194,7 @@ elseif(MSVC)
 
     add_definitions(-D_SCL_SECURE_NO_WARNINGS)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-    add_definitions(-DNOMINMAX)
+    add_definitions(-DNOMINMAX -DTTMATH_NOASM) # Disable TTMath ASM support on Windows due to build issues
   endif()
 
 endif()
@@ -236,58 +222,6 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake"
   IMMEDIATE @ONLY)
 
-#################################################################################
-# Setup C/C++ library features
-#################################################################################
-# check header files
-include(CheckIncludeFiles)
-
-check_include_files(stdint.h HAVE_STDINT_H)
-check_include_files(inttypes.h HAVE_INTTYPES_H)
-check_include_files(ieeefp.h HAVE_IEEEFP_H)
-
-# check types and sizes
-include(CheckTypeSize)
-
-if(MSVC)
-  check_type_size("__int64" HAVE_INT64_T_64)
-else()
-  if(HAVE_STDINT_H OR HAVE_INTTYPES_H)
-    check_type_size("int64_t" HAVE_INT64_T_64)
-  else()
-    check_type_size("long long int" HAVE_LONG_LONG_INT_64)
-  endif()
-endif()
-
-# check functions and macros
-include(CheckPrototypeExists)
-include(CheckSymbolExists)
-
-check_prototype_exists(isnan cmath HAVE_STD_ISNAN)
-if(NOT HAVE_STD_ISNAN)
-  if(MSVC)
-    check_prototype_exists(_isnan float.h HAVE_ISNAN)
-  elseif(APPLE)
-    check_prototype_exists(__isnand math.h HAVE_ISNAND_XCODE)
-    if(NOT HAVE_ISNAND_XCODE)
-      check_prototype_exists(__inline_isnand math.h HAVE_INLINE_ISNAND_XCODE)
-    endif()
-  else()
-    check_symbol_exists(isnan math.h HAVE_ISNAN)
-  endif()
-endif()
-
-check_prototype_exists(isfinite cmath HAVE_STD_ISFINITE)
-
-if(NOT HAVE_STD_ISFINITE)
-  if(MSVC)
-    check_prototype_exists(_finite float.h HAVE_FINITE)
-  else()
-    #CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
-    check_symbol_exists(isfinite math.h HAVE_ISFINITE)
-  endif()
-endif()
-
 ################################################################################
 # Setup build directories
 #################################################################################
@@ -313,71 +247,7 @@ include_directories(${PROJECT_BINARY_DIR}/capi)
 # for including build-specific version.h, platform.h and geos_c.h
 include_directories(${PROJECT_BINARY_DIR}/include)
 
-# for geos_ts.cpp which does #include "../geos_revision.h" whereas
-# CMake generates geos_revision.h in build directory,
-# to not to pollute source tree.
-configure_file (
-   "${PROJECT_SOURCE_DIR}/tools/geos_revision_cmake.h.in"
-   "${PROJECT_BINARY_DIR}/geos_revision.h" )
-
 include_directories(${PROJECT_BINARY_DIR})
-
-#################################################################################
-# Setup checks and generate config headers
-#################################################################################
-
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/platform.h)
-    if(NOT SUPPRESS_VERBOSE_OUTPUT)
-        message(STATUS "Disabling existing ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/platform.h")
-    endif()
-
-  if(${CMAKE_MAJOR_VERSION} EQUAL 2 AND ${CMAKE_MINOR_VERSION} EQUAL 6)
-    file(REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/platform.h)
-    set(PH_RESULT "removed")
-  else()
-    file(RENAME
-      ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/platform.h
-      ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/platform.h.disabled)
-      set(PH_RESULT "renamed")
-  endif()
-
-    if(NOT SUPPRESS_VERBOSE_OUTPUT)
-        message(STATUS "Disabling existing ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/platform.h - ${PH_RESULT}")
-    endif()
-endif()
-
-if(NOT SUPPRESS_VERBOSE_OUTPUT)
-message(STATUS "Generating GEOS ${PROJECT_BINARY_DIR}/include/geos/platform.h")
-endif()
-configure_file(${PROJECT_SOURCE_DIR}/include/geos/platform.h.cmake
-  ${PROJECT_BINARY_DIR}/include/geos/platform.h)
-
-if(NOT SUPPRESS_VERBOSE_OUTPUT)
-message(STATUS "Generating GEOS ${PROJECT_BINARY_DIR}/include/geos/version.h")
-endif()
-configure_file(${PROJECT_SOURCE_DIR}/include/geos/version.h.in
-  ${PROJECT_BINARY_DIR}/include/geos/version.h @ONLY)
-
-if(NOT SUPPRESS_VERBOSE_OUTPUT)
-message(STATUS "Generating GEOS ${PROJECT_BINARY_DIR}/capi/geos_c.h")
-endif()
-configure_file(${PROJECT_SOURCE_DIR}/capi/geos_c.h.in
-  ${PROJECT_BINARY_DIR}/capi/geos_c.h @ONLY)
-
-#################################################################################
-# Configure tests
-#################################################################################
-
-if(GEOS_ENABLE_TESTS)
- enable_testing()
-  # Define "make check" as alias for "make test"
-  add_custom_target(check COMMAND ctest)
-endif()
-
-#################################################################################
-# Configure subdirectories
-#################################################################################
-include(GenerateSourceGroups)
 
 set(EXPORT_TARGETS)
 set(PACKAGE_NAME ${PROJECT_NAME})
@@ -386,7 +256,10 @@ string(TOUPPER ${PACKAGE_NAME} PACKAGE_UPPER_NAME)
 add_subdirectory(include)
 add_subdirectory(src)
 add_subdirectory(capi)
-add_subdirectory(tests)
+include(CTest)
+if(BUILD_TESTING)
+  add_subdirectory(tests)
+endif()
 add_subdirectory(tools)
 
 #################################################################################
@@ -425,10 +298,3 @@ get_cpack_filename(${VERSION} PROJECT_CPACK_FILENAME)
 set(CPACK_PACKAGE_FILE_NAME ${PROJECT_CPACK_FILENAME})
 
 include(CPack)
-
-#################################################################################
-# DEBUG settings - TODO: make a summary
-
-if(NOT SUPPRESS_VERBOSE_OUTPUT)
-    message(STATUS "CMake ${CMAKE_VERSION} successfully configured ${PROJECT_NAME} using ${CMAKE_GENERATOR} generator")
-endif()

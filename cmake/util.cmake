@@ -21,60 +21,56 @@
 ################################################################################
 function(check_version major minor patch api_carrent api_rev api_age jts_port)
 
-    set(VERSION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/include/geos/version.h.vc)
-
+    set(VERSION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/Version.txt)
     file(READ ${VERSION_FILE} VERSION1_H_CONTENTS)
 
-    string(REGEX MATCH "GEOS_VERSION_MAJOR[ \t]+([0-9]+)"
-        GEOS_VERSION_MAJOR ${VERSION1_H_CONTENTS})
-    string (REGEX MATCH "([0-9]+)"
-        GEOS_VERSION_MAJOR ${GEOS_VERSION_MAJOR})
-    string(REGEX MATCH "GEOS_VERSION_MINOR[ \t]+([0-9]+)"
-        GEOS_VERSION_MINOR ${VERSION1_H_CONTENTS})
-    string (REGEX MATCH "([0-9]+)"
-        GEOS_VERSION_MINOR ${GEOS_VERSION_MINOR})
-    string(REGEX MATCH "GEOS_VERSION_PATCH[ \t]+([0-9]+)"
-        GEOS_VERSION_PATCH ${VERSION1_H_CONTENTS})
-    string (REGEX MATCH "([0-9]+)"
-        GEOS_VERSION_PATCH ${GEOS_VERSION_PATCH})
-    string(REGEX MATCH "GEOS_JTS_PORT[ \t]+([0-9.\"]+)"
-        GEOS_JTS_PORT ${VERSION1_H_CONTENTS})
-    string (REGEX MATCH "([0-9.]+)"
-        GEOS_JTS_PORT ${GEOS_JTS_PORT})
+    string(REGEX MATCH "GEOS_VERSION_MAJOR=([0-9]+)" _ ${VERSION1_H_CONTENTS})
+    set(_version_major ${CMAKE_MATCH_1})
+    string(REGEX MATCH "GEOS_VERSION_MINOR=([0-9]+)" _ ${VERSION1_H_CONTENTS})
+    set(_version_minor ${CMAKE_MATCH_1})
+    string(REGEX MATCH "GEOS_VERSION_PATCH=([0-9]+)" _ ${VERSION1_H_CONTENTS})
+    set(_version_patch ${CMAKE_MATCH_1})
+    # OPTIONS: "", "dev", "rc1" etc.
+    string(REGEX MATCH "GEOS_PATCH_WORD=([a-zA-Z0-9]+)" _ ${VERSION1_H_CONTENTS})
+    set(_version_patch_word ${CMAKE_MATCH_1})
+
+    # Version of JTS this release is bound to
+    string(REGEX MATCH "JTS_PORT=([0-9a-zA-Z\\.]+)" _ ${VERSION1_H_CONTENTS})
+    set(JTS_PORT ${CMAKE_MATCH_1})
+
+    # Version of public C API
+    string(REGEX MATCH "CAPI_INTERFACE_CURRENT=([0-9]+)" _ ${VERSION1_H_CONTENTS})
+    set(_version_capi_current ${CMAKE_MATCH_1})
+    string(REGEX MATCH "CAPI_INTERFACE_REVISION=([0-9]+)" _ ${VERSION1_H_CONTENTS})
+    set(_version_capi_revision ${CMAKE_MATCH_1})
+    string(REGEX MATCH "CAPI_INTERFACE_AGE=([0-9]+)" _ ${VERSION1_H_CONTENTS})
+    set(_version_capi_age ${CMAKE_MATCH_1})
+
+    unset(VERSION1_H_CONTENTS)
 
     # GEOS release version
-    set(VERSION_MAJOR ${GEOS_VERSION_MAJOR})
-    set(VERSION_MINOR ${GEOS_VERSION_MINOR})
-    set(VERSION_PATCH ${GEOS_VERSION_PATCH})
-    # JTS_PORT is the version of JTS this release is bound to
-    set(JTS_PORT ${GEOS_JTS_PORT})
+    set(VERSION_MAJOR ${_version_major})
+    set(VERSION_MINOR ${_version_minor})
+    set(VERSION_PATCH ${_version_patch})
 
-    file(READ ${CMAKE_CURRENT_SOURCE_DIR}/capi/geos_c.h.in VERSION2_H_CONTENTS)
+     # GEOS C API version
+    set(CAPI_INTERFACE_CURRENT ${_version_capi_current})
+    set(CAPI_INTERFACE_REVISION ${_version_capi_revision})
+    set(CAPI_INTERFACE_AGE ${_version_capi_age})
 
-    string(REGEX MATCH "GEOS_CAPI_VERSION_MAJOR[ \t]+([0-9]+)"
-        GEOS_CAPI_VERSION_MAJOR ${VERSION2_H_CONTENTS})
-    string (REGEX MATCH "([0-9]+)"
-        GEOS_CAPI_VERSION_MAJOR ${GEOS_CAPI_VERSION_MAJOR})
-    string(REGEX MATCH "GEOS_CAPI_VERSION_MINOR[ \t]+([0-9]+)"
-        GEOS_CAPI_VERSION_MINOR ${VERSION2_H_CONTENTS})
-    string (REGEX MATCH "([0-9]+)"
-        GEOS_CAPI_VERSION_MINOR ${GEOS_CAPI_VERSION_MINOR})
-    string(REGEX MATCH "GEOS_CAPI_VERSION_PATCH[ \t]+([0-9]+)"
-        GEOS_CAPI_VERSION_PATCH ${VERSION2_H_CONTENTS})
-    string (REGEX MATCH "([0-9]+)"
-        GEOS_CAPI_VERSION_PATCH ${GEOS_CAPI_VERSION_PATCH})
+    math(EXPR _version_capi_major "${_version_capi_current} - ${_version_capi_age}")
+    set(CAPI_VERSION_MAJOR ${_version_capi_major})
+    set(CAPI_VERSION_MINOR ${_version_capi_age})
+    set(CAPI_VERSION_PATCH ${_version_capi_revision})
+    set(CAPI_VERSION "${_version_capi_major}.${_version_capi_age}.${_version_capi_revision}")
 
-    # GEOS C API version
-    set(CAPI_INTERFACE_CURRENT ${GEOS_CAPI_VERSION_MAJOR})
-    set(CAPI_INTERFACE_REVISION ${GEOS_CAPI_VERSION_MINOR})
-    set(CAPI_INTERFACE_AGE ${GEOS_CAPI_VERSION_PATCH})
 
     set(${major} ${VERSION_MAJOR} PARENT_SCOPE)
     set(${minor} ${VERSION_MINOR} PARENT_SCOPE)
     set(${patch} ${VERSION_PATCH} PARENT_SCOPE)
-    set(${api_carrent} ${CAPI_INTERFACE_CURRENT} PARENT_SCOPE)
-    set(${api_rev} ${CAPI_INTERFACE_REVISION} PARENT_SCOPE)
-    set(${api_age} ${CAPI_INTERFACE_AGE} PARENT_SCOPE)
+    set(${api_carrent} ${CAPI_VERSION_MAJOR} PARENT_SCOPE)
+    set(${api_rev} ${CAPI_VERSION_MINOR} PARENT_SCOPE)
+    set(${api_age} ${CAPI_VERSION_PATCH} PARENT_SCOPE)
     set(${jts_port} ${JTS_PORT} PARENT_SCOPE)
 
     # Store version string in file for installer needs

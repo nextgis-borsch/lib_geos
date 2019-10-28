@@ -1,45 +1,42 @@
-#################################################################################
+################################################################################
+# Part of CMake configuration for GEOS
 #
-# GEOS unit tests build configuration for CMake build system
-#
-# Copyright (C) 2009 Mateusz Loskot <mateusz@loskot.net>
+# Copyright (C) 2018 Mateusz Loskot <mateusz@loskot.net>
+# Copyright (C) 2019 Daniel Baston <dbaston@gmail.com>
 #
 # This is free software; you can redistribute and/or modify it under
 # the terms of the GNU Lesser General Public Licence as published
 # by the Free Software Foundation.
 # See the COPYING file for more information.
-#
-#################################################################################
+################################################################################
+file(GLOB_RECURSE _sources ${CMAKE_CURRENT_LIST_DIR}/*.cpp CONFIGURE_DEPEND)
+add_executable(test_geos_unit ${_sources})
+unset(_sources)
 
-set(STATUS_MESSAGE "Enable GEOS Unit Tests build")
-set(STATUS_RESULT "OFF")
-
-if(GEOS_ENABLE_TESTS)
-  include_directories(${CMAKE_SOURCE_DIR}/capi)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tut)
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-  file(GLOB_RECURSE geos_unit_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
-
-  add_executable(geos_unit ${geos_unit_SOURCES})
-  if(OSX_FRAMEWORK)
-      target_link_libraries(geos_unit ${PROJECT_NAME})
-  else()
-      target_link_libraries(geos_unit ${PROJECT_NAME} ${PROJECT_NAME}_c)
-  endif()
-
-  set_property(TARGET geos_unit PROPERTY CXX_STANDARD 11)
-
-  add_test(geos_unit ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/geos_unit)
-
-  set(STATUS_RESULT "ON")
+if(OSX_FRAMEWORK)
+  set(LIBS geos)
+else()
+  set(LIBS geos geos_c)
 endif()
 
-if(NOT SUPPRESS_VERBOSE_OUTPUT)
-message(STATUS "${STATUS_MESSAGE} - ${STATUS_RESULT}")
-endif()
+target_link_libraries(test_geos_unit PRIVATE ${LIBS})
+target_include_directories(test_geos_unit
+  PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>)
 
-#################################################################################
-# Group source files for IDE source explorers (e.g. Visual Studio)
-#################################################################################
-GenerateSourceGroups(tests/unit)
+file(GLOB_RECURSE _testfiles ${CMAKE_CURRENT_LIST_DIR}/**/*.cpp CONFIGURE_DEPEND)
+foreach(_testfile ${_testfiles})
+    string(REPLACE ${CMAKE_CURRENT_LIST_DIR}/ "" _testname ${_testfile})
+    string(REPLACE "Test.cpp" "" _testname ${_testname})
+    string(REPLACE "/" "-" _cmake_testname  ${_testname})
+    string(REPLACE "/" "::" _testname ${_testname})
+    if (NOT ${_testname} MATCHES "^capi::")
+      string(CONCAT _testname "geos::" ${_testname})
+    endif()
+    add_test(NAME unit-${_cmake_testname} COMMAND test_geos_unit ${_testname})
+endforeach()
+unset(_cmake_testname)
+unset(_testfile)
+unset(_testfiles)
+unset(_testname)
+
