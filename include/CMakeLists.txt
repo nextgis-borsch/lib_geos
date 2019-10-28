@@ -40,7 +40,6 @@ unset(VERSION_PATCH)
 
 
 set(ROOT_HEADERS
-    ${CMAKE_CURRENT_BINARY_DIR}/geos/platform.h
     ${CMAKE_CURRENT_BINARY_DIR}/geos/version.h
 )
 

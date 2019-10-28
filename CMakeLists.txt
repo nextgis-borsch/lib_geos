@@ -244,7 +244,7 @@ include_directories(${PROJECT_SOURCE_DIR}/include)
 # for including build-specific GEOS C API headers
 include_directories(${PROJECT_BINARY_DIR}/capi)
 
-# for including build-specific version.h, platform.h and geos_c.h
+# for including build-specific version.h and geos_c.h
 include_directories(${PROJECT_BINARY_DIR}/include)
 
 include_directories(${PROJECT_BINARY_DIR})
