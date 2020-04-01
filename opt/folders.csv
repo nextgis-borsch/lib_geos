@@ -105,6 +105,7 @@ tests/unit/geom/prep/PreparedGeometry,tests/unit/geom/prep/PreparedGeometry,,cpp
 tests/unit/geom/util,tests/unit/geom/util,,cpp
 tests/unit/index/quadtree,tests/unit/index/quadtree,,cpp
 tests/unit/index/strtree,tests/unit/index/strtree,,cpp
+tests/unit/index/chain,tests/unit/index/chain,,cpp
 tests/unit/io,tests/unit/io,,cpp
 tests/unit/linearref,tests/unit/linearref,,cpp
 tests/unit/noding,tests/unit/noding,,cpp
