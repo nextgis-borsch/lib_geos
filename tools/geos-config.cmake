@@ -1,8 +1,8 @@
 #!/bin/sh
 
 prefix=@CMAKE_INSTALL_PREFIX@
-exec_prefix=@CMAKE_INSTALL_PREFIX@/bin
-libdir=@CMAKE_INSTALL_PREFIX@/lib
+exec_prefix=@INSTALL_BIN_DIR@
+libdir=@INSTALL_LIB_DIR@
 
 usage()
 {
@@ -41,28 +41,28 @@ case $1 in
       echo @GEOS_VERSION@
       ;;
     --cflags)
-      echo -I@CMAKE_INSTALL_PREFIX@/include
+      echo -I@INSTALL_INC_DIR@
       ;;
     --libs)
-      echo -L@CMAKE_INSTALL_PREFIX@/lib -lgeos-@GEOS_VERSION_MAJOR@
+      echo -L@INSTALL_LIB_DIR@ -lgeos-@GEOS_VERSION@
       ;;
     --clibs)
-      echo -L@CMAKE_INSTALL_PREFIX@/lib -lgeos_c
+      echo -L@INSTALL_LIB_DIR@ -lgeos_c
       ;;
     --cclibs)
-      echo -L@CMAKE_INSTALL_PREFIX@/lib -lgeos
+      echo -L@INSTALL_LIB_DIR@ -lgeos
       ;;
     --static-clibs)
-      echo -L@CMAKE_INSTALL_PREFIX@/lib -lgeos_c -lgeos -lm
+      echo -L@INSTALL_LIB_DIR@ -lgeos_c -lgeos -lm
       ;;
     --static-cclibs)
-      echo -L@CMAKE_INSTALL_PREFIX@/lib -lgeos -lm
+      echo -L@INSTALL_LIB_DIR@ -lgeos -lm
       ;;
     --ldflags)
-      echo -L@CMAKE_INSTALL_PREFIX@/lib 
+      echo -L@INSTALL_LIB_DIR@
       ;;
     --includes)
-      echo @CMAKE_INSTALL_PREFIX@/include
+      echo @INSTALL_INC_DIR@
       ;;
     --jtsport)
     echo @JTS_PORT@
