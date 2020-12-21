@@ -33,6 +33,7 @@ struct test_wkbreader_data {
     geos::io::WKBReader wkbreader;
     geos::io::WKBWriter xdrwkbwriter;
     geos::io::WKBWriter ndrwkbwriter;
+    geos::io::WKBWriter ndr3dwkbwriter;
     geos::io::WKTReader wktreader;
 
     typedef std::unique_ptr<geos::geom::Geometry> GeomPtr;
@@ -46,8 +47,30 @@ struct test_wkbreader_data {
         xdrwkbwriter(2, geos::io::WKBConstants::wkbXDR),
         // 2D only, NDR (little endian)
         ndrwkbwriter(2, geos::io::WKBConstants::wkbNDR),
+        // 3D only, NDR (little endian)
+        ndr3dwkbwriter(3, geos::io::WKBConstants::wkbNDR),
         wktreader(gf.get())
     {}
+
+    GeomPtr
+    readHex(const std::string& hexwkb)
+    {
+        std::stringstream hexin(hexwkb);
+        GeomPtr g(wkbreader.readHEX(hexin));
+        return g;
+    }
+
+    void
+    testInput(const std::string& hexwkb,
+              const std::string& expected)
+    {
+        std::stringstream hexin(hexwkb);
+        GeomPtr g(wkbreader.readHEX(hexin));
+        std::stringstream ndr_out;
+        ndr3dwkbwriter.writeHEX(*g, ndr_out);
+        ensure_equals("hex output",
+                      ndr_out.str(), expected.c_str());
+    }
 
     void
     testInputNdr(const std::string& WKT,
@@ -380,6 +403,175 @@ void object::test<15>
         "01060000A0E6100000020000000103000080020000000500000000000000000000000000000000000000000000000000594000000000000000000000000000002440000000000000594000000000000024400000000000002440000000000000594000000000000024400000000000000000000000000000594000000000000000000000000000000000000000000000594005000000000000000000F03F000000000000F03F0000000000005940000000000000F03F000000000000224000000000000059400000000000002240000000000000224000000000000059400000000000002240000000000000F03F0000000000005940000000000000F03F000000000000F03F00000000000059400103000080010000000500000000000000000022C00000000000000000000000000000494000000000000022C000000000000024400000000000004940000000000000F0BF00000000000024400000000000004940000000000000F0BF0000000000000000000000000000494000000000000022C000000000000000000000000000004940"
     );
 }
+
+
+// 16 - Read a empty multipoint
+template<>
+template<>
+void object::test<16>
+()
+{
+
+    testInputOutput(
+        // WKT
+        "MULTIPOINT EMPTY",
+        // NDR HEXWKB
+        "010400000000000000",
+        // XDR HEXWKB
+        "000000000400000000"
+    );
+
+}
+
+
+// 17 - Read a empty linestring
+template<>
+template<>
+void object::test<17>
+()
+{
+
+    testInputOutput(
+        // WKT
+        "LINESTRING EMPTY",
+        // NDR HEXWKB
+        "010200000000000000",
+        // XDR HEXWKB
+        "000000000200000000"
+    );
+
+}
+
+
+// 18 - Read a empty polygon
+template<>
+template<>
+void object::test<18>
+()
+{
+
+    testInputOutput(
+        // WKT
+        "POLYGON EMPTY",
+        // NDR HEXWKB
+        "010300000000000000",
+        // XDR HEXWKB
+        "000000000300000000"
+    );
+
+}
+
+// 19 - Read a empty collection
+template<>
+template<>
+void object::test<19>
+()
+{
+
+    testInputOutput(
+        // WKT
+        "GEOMETRYCOLLECTION EMPTY",
+        // NDR HEXWKB
+        "010700000000000000",
+        // XDR HEXWKB
+        "000000000700000000"
+    );
+
+}
+
+
+// POINT M (1 2 3)
+template<>
+template<>
+void object::test<20>
+()
+{
+    testInput(
+        "01D1070000000000000000F03F00000000000000400000000000000840",
+        "0101000000000000000000F03F0000000000000040"
+    );
+
+}
+
+// POINT ZM (1 2 3 4)
+template<>
+template<>
+void object::test<21>
+()
+{
+    testInput(
+        "01B90B0000000000000000F03F000000000000004000000000000008400000000000001040",
+        "0101000080000000000000F03F00000000000000400000000000000840"
+    );
+
+}
+
+// LINESTRING M (1 2 3, 4 5 6)
+template<>
+template<>
+void object::test<22>
+()
+{
+    testInput(
+        "01D207000002000000000000000000F03F00000000000000400000000000000840000000000000104000000000000014400000000000001840",
+        "010200000002000000000000000000F03F000000000000004000000000000010400000000000001440"
+    );
+
+}
+
+// LINESTRING ZM (1 2 3 4, 5 6 7 8)
+template<>
+template<>
+void object::test<23>
+()
+{
+    testInput(
+        "01BA0B000002000000000000000000F03F000000000000004000000000000008400000000000001040000000000000144000000000000018400000000000001C400000000000002040",
+        "010200008002000000000000000000F03F00000000000000400000000000000840000000000000144000000000000018400000000000001C40"
+    );
+
+}
+
+// EMPTY WKB TESTS
+template<>
+template<>
+void object::test<24>
+()
+{
+    GeomPtr g;
+
+    // POINT EMPTY
+    g = readHex(std::string("0101000000000000000000F87F000000000000F87F"));
+    ensure_equals("POINT EMPTY isEmpty", g->isEmpty(), 1);
+    ensure_equals("POINT EMPTY getCoordinateDimension", g->getCoordinateDimension(), 2);
+
+    // POINT Z EMPTY
+    g = readHex(std::string("0101000080000000000000F87F000000000000F87F000000000000F87F"));
+    ensure_equals("POINT Z EMPTY isEmpty", g->isEmpty(), 1);
+    ensure_equals("POINT Z EMPTY getCoordinateDimension", g->getCoordinateDimension(), 3);
+
+    // LINESTRING EMPTY
+    g = readHex(std::string("010200000000000000"));
+    ensure_equals("LINESTRING EMPTY isEmpty", g->isEmpty(), 1);
+    ensure_equals("LINESTRING EMPTY getCoordinateDimension", g->getCoordinateDimension(), 2);
+
+    // LINESTRING Z EMPTY
+    g = readHex(std::string("010200008000000000"));
+    ensure_equals("LINESTRING Z EMPTY isEmpty", g->isEmpty(), 1);
+    ensure_equals("LINESTRING Z EMPTY getCoordinateDimension", g->getCoordinateDimension(), 3);
+
+    // POLYGON EMPTY
+    g = readHex(std::string("010300000000000000"));
+    ensure_equals("POLYGON EMPTY isEmpty", g->isEmpty(), 1);
+    ensure_equals("POLYGON EMPTY getCoordinateDimension", g->getCoordinateDimension(), 2);
+
+    // POLYGON Z EMPTY
+    g = readHex(std::string("010300008000000000"));
+    ensure_equals("POLYGON Z EMPTY isEmpty", g->isEmpty(), 1);
+    ensure_equals("POLYGON Z EMPTY getCoordinateDimension", g->getCoordinateDimension(), 3);
+
+}
+
 
 } // namespace tut
 

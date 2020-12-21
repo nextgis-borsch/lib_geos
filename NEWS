@@ -1,18 +1,32 @@
-Changes in 3.8.1
-2020-03-10
 
-- Bug fixes / improvements
-  - Stack allocate line segments in OverlapUnion (Paul Ramsey)
-  - Avoid returning non-empty CoordinateSequence from empty Point
-    (#1001, Dan Baston)
-  - Avoid assertion failure with MSVC 2017 / 2019 (#1002, Dan Baston)
-  - Remove whitespace from end of GEOSversion() output (azhi)
-  - Improve performance of GEOSisValid (#1008, Dan Baston)
-  - Avoid changing MultiLineString component order in GEOSReverse
-    (#1013, Dan Baston)
-  - Fix missing vtable for LineString and CoordinateArraySequenceFactory
-    (#299 and #1016, Evgen Bodunov)
-  - Reduce performance regression in GEOSBuffer (#1020)
+Changes in 3.9.0
+2020-12-09
+
+- New things:
+  - OverlayNG engine from JTS, now the default (Martin Davis, Paul Ramsey)
+  - MaximumInscribedCircle and LargestEmptyCircle (JTS-530, Paul Ramsey)
+  - CAPI: Fixed precision overlay operations (Sandro Santilli)
+  - CAPI: GEOSPreparedNearestPoints (#1007, Sandro Santilli)
+  - CAPI: GEOSPreparedDistance (#1066, Sandro Santilli)
+  - CAPI: GEOSGeom_setPrecision uses OverlayNG (Paul Ramsey)
+  - SimpleSTRTree spatial index implementation (Paul Ramsey)
+  - Add support for pkg-config for GEOS C API (#1073, Mike Taves)
+
+- Improvements:
+  - Stack allocate segments in OverlapUnion (Paul Ramsey)
+  - Improve performance of GEOSisValid (Dan Baston)
+  - Update geos-config tool for consistency
+    and escape paths (https://git.osgeo.org/gitea/geos/geos/pulls/99)
+    changes mostly affect CMake MSVC builds (#1015, Mike Taves)
+  - Testing on Rasberry Pi 32-bit (berrie) (#1017, Bruce Rindahl, Regina Obe)
+  - Replace ttmath with JTS DD double-double implementation (Paul Ramsey)
+  - Fix bug in DistanceOp for geometries with empty components (#1026, Paul Ramsey)
+  - Remove undefined behaviour in CAPI (#1021, Greg Troxel)
+  - Fix buffering issue (#1022, JTS-525, Paul Ramsey)
+  - MinimumBoundingCircle.getMaximumDiameter fix (JTS-533, Paul Ramsey)
+
+- Changes:
+  - Drop SWIG bindings, including for Ruby and Python (#1076, Mike Taves)
 
 Changes in 3.8.0
 2019-10-10

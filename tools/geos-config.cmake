@@ -1,12 +1,11 @@
 #!/bin/sh
 
-prefix=@CMAKE_INSTALL_PREFIX@
-exec_prefix=${prefix}/@INSTALL_BIN_DIR@
-libdir=${prefix}/@INSTALL_LIB_DIR@
+prefix=@ESCAPED_INSTALL_PREFIX@
+libdir=${prefix}/lib
 
 usage()
 {
-    cat <<EOF
+  cat <<EOF
 Usage: geos-config [OPTIONS]
 Options:
      [--prefix]
@@ -21,7 +20,7 @@ Options:
      [--includes]
      [--jtsport]
 EOF
-    exit $1
+  exit $1
 }
 
 if test $# -eq 0; then
@@ -29,22 +28,21 @@ if test $# -eq 0; then
 fi
 
 while test $# -gt 0; do
-case "$1" in
+  case "$1" in
     -*=*) optarg=`echo "$1" | sed 's/[-_a-zA-Z0-9]*=//'` ;;
     *) optarg= ;;
-esac
-case $1 in
+  esac
+  case $1 in
     --prefix)
-      echo @CMAKE_INSTALL_PREFIX@
+      echo ${prefix}
       ;;
     --version)
       echo @GEOS_VERSION@
       ;;
-    --cflags)
-      echo -I${prefix}/include
-      ;;
     --libs)
-      echo -L${libdir} -lgeos-@GEOS_VERSION@
+      # TODO: make an alias for --clibs
+      # see http://trac.osgeo.org/geos/ticket/497
+      echo -L${libdir} -lgeos-@GEOS_VERSION_MAJOR@
       ;;
     --clibs)
       echo -L${libdir} -lgeos_c
@@ -58,6 +56,9 @@ case $1 in
     --static-cclibs)
       echo -L${libdir} -lgeos -lm
       ;;
+    --cflags)
+      echo -I${prefix}/include
+      ;;
     --ldflags)
       echo -L${libdir}
       ;;
@@ -65,7 +66,7 @@ case $1 in
       echo ${prefix}/include
       ;;
     --jtsport)
-    echo @JTS_PORT@
+      echo @JTS_PORT@
       ;;
     *)
       usage 1 1>&2

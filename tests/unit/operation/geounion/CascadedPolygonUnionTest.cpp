@@ -3,6 +3,7 @@
 
 // tut
 #include <tut/tut.hpp>
+#include <utility.h>
 // geos
 #include <geos/operation/union/CascadedPolygonUnion.h>
 #include <geos/geom/GeometryFactory.h>
@@ -67,20 +68,14 @@ unionCascaded(
 }
 
 void
-p_test_runner(test_cascadedpolygonuniontest_data& t,
+p_test_runner(
               std::vector<geos::geom::Polygon*>* geoms)
 {
     std::unique_ptr<geos::geom::Geometry> union1(unionIterated(geoms));
     std::unique_ptr<geos::geom::Geometry> union2(unionCascaded(geoms));
-
-    // For now we compare the WKT representations of the two generated
-    // geometries which works well for simple geometries only.
-    // More complex geometries require to use special similarity measure
-    // criteria instead.
-    std::string iterated(t.wktwriter.writeFormatted(union1.get()));
-    std::string cascaded(t.wktwriter.writeFormatted(union2.get()));
-
-    ensure_equals(iterated, cascaded);
+    union1->normalize();
+    union2->normalize();
+    ensure_equals_geometry(union1.get(), union2.get(), 0.000001);
 }
 
 void
@@ -113,7 +108,7 @@ void object::test<1>
         g.push_back(geom);
     }
 
-    p_test_runner(*this, &g);
+    p_test_runner(&g);
 
     for_each(g.begin(), g.end(), delete_geometry);
 }

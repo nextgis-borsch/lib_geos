@@ -14,21 +14,20 @@
 
 namespace tut {
 // dummy data, not used
-struct test_monotonechainbuilder_data {
+struct test_monotonechain_data {
     geos::io::WKTReader wktreader;
     geos::io::WKTWriter wktwriter;
 
-    test_monotonechainbuilder_data()
+    test_monotonechain_data()
         :
-        wktreader(),
-        wktwriter()
+        wktreader()
     {}
 };
 
-typedef test_group<test_monotonechainbuilder_data> group;
+typedef test_group<test_monotonechain_data> group;
 typedef group::object object;
 
-group test_monotonechainbuilder_group("geos::index::chain::MonotoneChainBuilder");
+group test_monotonechain_group("geos::index::chain::MonotoneChainBuilder");
 
 //
 // Test Cases
@@ -59,10 +58,12 @@ void object::test<1>
 
     for (int i = 0; i < 5; ++i)
     {
+        auto csx = cs->getOrdinate(i, 0);
+        auto csy = cs->getOrdinate(i, 1);
         // std::cout << csx << ", " << csy << std::endl;
         // std::cout << x[i] << ", " << y[i] << std::endl;
-        ensure_equals("x", cs->getOrdinate(i, 0), x[i], 0.0001);
-        ensure_equals("y", cs->getOrdinate(i, 1), y[i], 0.0001);
+        ensure_equals("x", csx, x[i], 0.01);
+        ensure_equals("y", csy, y[i], 0.01);
     }
 
 }

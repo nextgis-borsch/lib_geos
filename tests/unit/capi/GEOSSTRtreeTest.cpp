@@ -62,7 +62,6 @@ struct test_capistrtree_data {
 
         std::fprintf(stdout, "\n");
     }
-
 };
 
 typedef test_group<test_capistrtree_data> group;
@@ -251,13 +250,86 @@ void object::test<7>
     GEOSSTRtree* tree = GEOSSTRtree_create(16);
     GEOSGeometry* q = GEOSGeomFromWKT("POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))");
     GEOSSTRtree_query(tree, q, [](void* item, void* userdata) {
-        assert(item); // make unused parameter warning go away
-        assert(userdata);
+        (void)(item); // make unused parameter warning go away
+        (void)(userdata); // make unused parameter warning go away
     }, nullptr);
 
     GEOSGeom_destroy(q);
     GEOSSTRtree_destroy(tree);
 }
+
+// querying tree with box
+template<>
+template<>
+void object::test<8>
+()
+{
+    GEOSSTRtree* tree = GEOSSTRtree_create(10);
+
+    GEOSGeometry* g = GEOSGeomFromWKT("POINT (2 3)");
+    int payload = 876;
+    GEOSSTRtree_insert(tree, g, &payload);
+
+    GEOSGeometry* q = GEOSGeomFromWKT("POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))");
+
+    typedef std::vector<int*> IList;
+    IList items;
+    ensure_equals(items.size(), 0);
+    GEOSSTRtree_query(
+        tree,
+        q,
+        [](void* item, void* userdata) {
+            IList* il = (IList*)userdata;
+            il->push_back((int*)item);
+        },
+        &items);
+
+    ensure_equals(items.size(), 1);
+
+    ensure_equals(*(items[0]), payload);
+
+    GEOSGeom_destroy(q);
+    GEOSGeom_destroy(g);
+    GEOSSTRtree_destroy(tree);
+}
+
+
+// Index a null pointer
+template<>
+template<>
+void object::test<9>
+()
+{
+    GEOSSTRtree* tree = GEOSSTRtree_create(10);
+
+    GEOSGeometry* g = GEOSGeomFromWKT("POINT (2 3)");
+    GEOSSTRtree_insert(tree, g, (void*)0);
+
+    GEOSGeometry* q = GEOSGeomFromWKT("POLYGON ((0 0, 10 0, 10 10, 0 10, 0 0))");
+
+    typedef std::vector<int*> IList;
+    IList items;
+    ensure_equals(items.size(), 0);
+    GEOSSTRtree_query(
+        tree,
+        q,
+        [](void* item, void* userdata) {
+            IList* il = (IList*)userdata;
+            il->push_back((int*)item);
+        },
+        &items);
+
+    ensure_equals(items.size(), 1);
+
+    ensure_equals(items[0], (void*)0);
+
+    GEOSGeom_destroy(q);
+    GEOSGeom_destroy(g);
+    GEOSSTRtree_destroy(tree);
+}
+
+
+
 
 } // namespace tut
 

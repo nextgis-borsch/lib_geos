@@ -36,10 +36,9 @@ struct test_linemerger_data {
 
     std::vector<const geos::geom::Geometry*> inpGeoms;
     std::vector<const geos::geom::Geometry*> expGeoms;
-    LineVect* mrgGeoms;
 
     test_linemerger_data()
-        : wktreader(), wktwriter(), mrgGeoms(nullptr)
+        : wktreader(), wktwriter()
     {
         wktwriter.setTrim(true);
     }
@@ -48,10 +47,6 @@ struct test_linemerger_data {
     {
         delAll(inpGeoms);
         delAll(expGeoms);
-        if(mrgGeoms) {
-            delAll(*mrgGeoms);
-            delete mrgGeoms;
-        }
     }
 
     GeomPtr
@@ -79,8 +74,8 @@ struct test_linemerger_data {
         readWKT(expectedWKT, expGeoms);
 
         lineMerger.add(&inpGeoms);
-        mrgGeoms = lineMerger.getMergedLineStrings();
-        compare(expGeoms, *mrgGeoms, compareDirections);
+        auto mrgGeoms = lineMerger.getMergedLineStrings();
+        compare(expGeoms, mrgGeoms, compareDirections);
 
     }
 
@@ -110,10 +105,8 @@ struct test_linemerger_data {
     contains(TargetContainer& actualGeometries,
              const Geom* g, bool exact)
     {
-        for(typename TargetContainer::const_iterator
-                i = actualGeometries.begin(),
-                e = actualGeometries.end(); i != e; ++i) {
-            Geom* element = dynamic_cast<Geom*>(*i);
+        for(const auto& e : actualGeometries) {
+            Geom* element = dynamic_cast<Geom*>(e.get());
             if(exact && element->equalsExact(g)) {
                 return true;
             }
@@ -268,31 +261,6 @@ void object::test<7>
     doTest(inpWKT, expWKT);
 }
 
-// Merge union of segments of a triangle
-template<> template<>
-void object::test<8>
-()
-{
-    GeomPtr line1(readWKT("LINESTRING(0 0, 0 5)"));
-    GeomPtr line2(readWKT("LINESTRING(0 5, 5 5)"));
-    GeomPtr line3(readWKT("LINESTRING(5 5, 5 0)"));
-    GeomPtr line4(readWKT("LINESTRING(5 0, 0 0)"));
-    // Union segments incrementally
-    GeomPtr lines12(line1->Union(line2.get()));
-    GeomPtr lines123(lines12->Union(line3.get()));
-    GeomPtr lines1234(lines123->Union(line4.get()));
-
-    // MultiLineString expected by design, see corresponding test in OverlayOpUnionTest
-    ensure_equals(lines1234->getGeometryTypeId(), geos::geom::GEOS_MULTILINESTRING);
-
-    // Merge MultiLineString into LineString
-    LineMerger lineMerger;
-    lineMerger.add(lines1234.get());
-    mrgGeoms = lineMerger.getMergedLineStrings();
-
-    GeomPtr expected(readWKT("LINESTRING(0 0, 0 5, 5 5, 5 0, 0 0)"));
-    ensure(contains(*mrgGeoms, expected.get(), true));
-}
 
 } // namespace tut
 

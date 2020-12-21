@@ -34,10 +34,12 @@
 #include <geos/geom/PrecisionModel.h>
 #include <geos/geom/prep/PreparedGeometry.h>
 #include <geos/geom/prep/PreparedGeometryFactory.h>
-#include <geos/geom/BinaryOp.h>
 #include <geos/geom/util/Densifier.h>
 #include <geos/operation/overlay/OverlayOp.h>
 #include <geos/operation/overlay/snap/GeometrySnapper.h>
+#include <geos/operation/overlayng/OverlayNG.h>
+#include <geos/operation/overlayng/OverlayNGRobust.h>
+#include <geos/operation/overlayng/UnaryUnionNG.h>
 #include <geos/operation/buffer/BufferBuilder.h>
 #include <geos/operation/buffer/BufferParameters.h>
 #include <geos/operation/buffer/BufferOp.h>
@@ -46,17 +48,16 @@
 #include <geos/precision/MinimumClearance.h>
 #include <geos/util.h>
 #include <geos/util/Interrupt.h>
-//#include <geos/geomgraph.h>
 #include <geos/io/WKBReader.h>
 #include <geos/io/WKBWriter.h>
 #include <geos/io/WKTReader.h>
 #include <geos/io/WKTWriter.h>
-#include <geos/opRelate.h>
-#include <geos/opPolygonize.h>
-#include <geos/opLinemerge.h>
+#include <geos/operation/relate/RelateOp.h>
+#include <geos/operation/polygonize/Polygonizer.h>
+#include <geos/operation/linemerge/LineMerger.h>
 #include <geos/profiler.h>
 #include <geos/unload.h>
-#include <geos/opValid.h>
+#include <geos/operation/valid/IsValidOp.h>
 #include "XMLTester.h"
 #include "BufferResultMatcher.h"
 #include "SingleSidedBufferResultMatcher.h"
@@ -84,14 +85,14 @@
 #include "Stackwalker.h"
 #endif
 
-// Geometry methods do use BinaryOp internally
-#undef USE_BINARYOP
-
 using namespace geos;
 using namespace geos::operation::polygonize;
 using namespace geos::operation::linemerge;
 using namespace geos::geom::prep;
 using std::runtime_error;
+using geos::operation::overlayng::OverlayNG;
+using geos::operation::overlayng::UnaryUnionNG;
+using geos::operation::overlayng::OverlayNGRobust;
 
 namespace {
 
@@ -167,7 +168,12 @@ getIndent(unsigned int numIndents)
 void
 tolower(std::string& str)
 {
-    std::transform(str.begin(), str.end(), str.begin(), (int(*)(int))std::tolower);
+    std::transform(
+        str.begin(),
+        str.end(),
+        str.begin(),
+        [](char c){ return (char)std::tolower(c); }
+        );
 }
 
 std::string
@@ -212,6 +218,9 @@ checkOverlaySuccess(geom::Geometry const& gRes, geom::Geometry const& gRealRes)
 static int
 checkBufferSuccess(geom::Geometry const& gRes, geom::Geometry const& gRealRes, double dist)
 {
+
+    using geos::xmltester::BufferResultMatcher;
+
     int success = 1;
     do {
 
@@ -234,11 +243,7 @@ checkBufferSuccess(geom::Geometry const& gRes, geom::Geometry const& gRealRes, d
                       << std::endl;
         }
 
-
-        geos::xmltester::BufferResultMatcher matcher;
-        if(! matcher.isBufferResultMatch(gRealRes,
-                                         gRes,
-                                         dist)) {
+        if(!BufferResultMatcher::isBufferResultMatch(gRealRes, gRes, dist)) {
             std::cerr << "BufferResultMatcher FAILED" << std::endl;
             success = 0;
             break;
@@ -303,7 +308,7 @@ XMLTester::XMLTester()
     testValidOutput(false),
     testValidInput(false),
     sqlOutput(false),
-    HEXWKB_output(false)
+    HEXWKB_output(true)
 {
     setVerbosityLevel(0);
 }
@@ -407,7 +412,7 @@ XMLTester::run(const std::string& source)
                   //       The 'WITH OIDS' parameter is supported back to
                   //       PostgreSQL 7.2, so if you run an older version
                   //       rebuild with the next line commented out.
-                  << " WITH OIDS"
+                  //<< " WITH OIDS"
 
                   << ";" << std::endl;
     }
@@ -499,6 +504,7 @@ XMLTester::parseRun(const tinyxml2::XMLNode* node)
     factory = geom::GeometryFactory::create(pm.get());
     wktreader.reset(new io::WKTReader(factory.get()));
     wktwriter.reset(new io::WKTWriter());
+    wktwriter->setTrim(true);
     wkbreader.reset(new io::WKBReader(*factory));
     wkbwriter.reset(new io::WKBWriter());
 
@@ -734,9 +740,102 @@ XMLTester::printGeom(const geom::Geometry* g)
         return s2.str();
     }
     else {
+        wktwriter->setRoundingPrecision(16);
         return wktwriter->write(g);
     }
 }
+
+/**
+* Computes the maximum area delta value
+* resulting from identity equations over the overlay operations.
+* The delta value is normalized to the total area of the geometries.
+* If the overlay operations are computed correctly
+* the area delta is expected to be very small (e.g. < 1e-6).
+*/
+double
+XMLTester::areaDelta(const geom::Geometry* a, const geom::Geometry* b, std::string& rsltMaxDiffOp, double maxDiff, std::stringstream& ss)
+{
+    double areaA = a == nullptr ? 0 : a->getArea();
+    double areaB = b == nullptr ? 0 : b->getArea();
+
+    // if an input is non-polygonal delta is 0
+    if (areaA == 0 || areaB == 0)
+      return 0;
+
+    std::unique_ptr<geom::Geometry> geomU = OverlayNGRobust::Union(a, b);
+    std::unique_ptr<geom::Geometry> geomI = OverlayNGRobust::Intersection(a, b);
+    std::unique_ptr<geom::Geometry> geomDab = OverlayNGRobust::Difference(a, b);
+    std::unique_ptr<geom::Geometry> geomDba = OverlayNGRobust::Difference(b, a);
+    std::unique_ptr<geom::Geometry> geomSD = OverlayNGRobust::SymDifference(a, b);
+
+    double areaU   = geomU->getArea();
+    double areaI   = geomI->getArea();
+    double areaDab = geomDab->getArea();
+    double areaDba = geomDba->getArea();
+    double areaSD  = geomSD->getArea();
+
+
+    double maxDelta = 0;
+
+    // & : intersection
+    // - : difference
+    // + : union
+    // ^ : symdifference
+
+    double delta = std::abs(areaA - areaI - areaDab);
+    if (delta > maxDelta) {
+        rsltMaxDiffOp = "A = ( A & B ) + ( A - B )";
+        maxDelta = delta;
+    }
+
+    delta = std::abs(areaB - areaI - areaDba);
+    if (delta > maxDelta) {
+        rsltMaxDiffOp = "B = ( A & B ) + ( B - A )";
+        maxDelta = delta;
+    }
+
+    delta = std::abs(areaDab + areaDba - areaSD);
+    if (delta > maxDelta) {
+        maxDelta = delta;
+        rsltMaxDiffOp = "( A ^ B ) = ( A - B ) + ( B - A )";
+    }
+
+    delta = std::abs(areaI + areaSD - areaU);
+    if (delta > maxDelta) {
+        maxDelta = delta;
+        rsltMaxDiffOp = "( A + B ) = ( A & B ) + ( A ^ B )";
+    }
+
+    delta = std::abs(areaU - areaI - areaDab - areaDba);
+    if (delta > maxDelta) {
+        maxDelta = delta;
+        rsltMaxDiffOp = "( A + B ) = ( A & B ) + ( A - B ) + ( A - B )";
+    }
+
+    // normalize the area delta value
+    double diffScore = maxDelta / (areaA + areaB);
+
+    if (diffScore > maxDiff) {
+        ss << std::endl << "A" << std::endl;
+        ss << *a;
+        ss << std::endl << "B" << std::endl;
+        ss << *b;
+        ss << std::endl << "geomU" << std::endl;
+        ss << *geomU;
+        ss << std::endl << "geomI" << std::endl;
+        ss << *geomI;
+        ss << std::endl << "geomDab" << std::endl;
+        ss << *geomDab;
+        ss << std::endl << "geomDba" << std::endl;
+        ss << *geomDba;
+        ss << std::endl << "geomSD" << std::endl;
+        ss << *geomSD;
+        ss << std::endl;
+    }
+
+    return diffScore;
+}
+
 
 void
 XMLTester::parseTest(const tinyxml2::XMLNode* node)
@@ -891,11 +990,286 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
 
             profile.start();
 
-#ifndef USE_BINARYOP
             GeomPtr gRealRes(gA->intersection(gB));
-#else
-            GeomPtr gRealRes = BinaryOp(gA, gB, overlayOp(OverlayOp::opINTERSECTION));
-#endif
+
+            profile.stop();
+
+            gRealRes->normalize();
+
+            if(gRes->compareTo(gRealRes.get()) == 0) {
+                success = 1;
+            }
+
+            actual_result = printGeom(gRealRes.get());
+            expected_result = printGeom(gRes.get());
+
+            if(testValidOutput) {
+                success &= int(testValid(gRealRes.get(), "result"));
+            }
+        }
+
+        else if(opName == "intersectionng") {
+
+            GeomPtr gRes(parseGeometry(opRes, "expected"));
+            gRes->normalize();
+
+            profile.start();
+
+            GeomPtr gRealRes = OverlayNG::overlay(gA, gB, OverlayNG::INTERSECTION);
+
+            profile.stop();
+
+            gRealRes->normalize();
+
+            if(gRes->compareTo(gRealRes.get()) == 0) {
+                success = 1;
+            }
+
+            actual_result = printGeom(gRealRes.get());
+            expected_result = printGeom(gRes.get());
+
+            if(testValidOutput) {
+                success &= int(testValid(gRealRes.get(), "result"));
+            }
+        }
+
+        else if(opName == "unionng") {
+
+            GeomPtr gRes(parseGeometry(opRes, "expected"));
+            gRes->normalize();
+
+            profile.start();
+
+            GeomPtr gRealRes = OverlayNG::overlay(gA, gB, OverlayNG::UNION);
+
+            profile.stop();
+
+            gRealRes->normalize();
+
+            if(gRes->compareTo(gRealRes.get()) == 0) {
+                success = 1;
+            }
+
+            actual_result = printGeom(gRealRes.get());
+            expected_result = printGeom(gRes.get());
+
+            if(testValidOutput) {
+                success &= int(testValid(gRealRes.get(), "result"));
+            }
+        }
+
+        else if(opName == "differenceng") {
+
+            GeomPtr gRes(parseGeometry(opRes, "expected"));
+            gRes->normalize();
+
+            profile.start();
+
+            const geom::Geometry* dgA = gA;
+            const geom::Geometry* dgB = gB;
+
+            // Swap arguments if necessary
+            if((opArg1 == "B" || opArg1 == "b") && gB) {
+                dgA = gB;
+                dgB = gA;
+            }
+
+            GeomPtr gRealRes = OverlayNG::overlay(dgA, dgB, OverlayNG::DIFFERENCE);
+
+            profile.stop();
+
+            gRealRes->normalize();
+
+            if(gRes->compareTo(gRealRes.get()) == 0) {
+                success = 1;
+            }
+
+            actual_result = printGeom(gRealRes.get());
+            expected_result = printGeom(gRes.get());
+
+            if(testValidOutput) {
+                success &= int(testValid(gRealRes.get(), "result"));
+            }
+        }
+
+        else if(opName == "symdifferenceng") {
+
+            GeomPtr gRes(parseGeometry(opRes, "expected"));
+            gRes->normalize();
+
+            profile.start();
+
+            GeomPtr gRealRes = OverlayNG::overlay(gA, gB, OverlayNG::SYMDIFFERENCE);
+
+            profile.stop();
+
+            gRealRes->normalize();
+
+            if(gRes->compareTo(gRealRes.get()) == 0) {
+                success = 1;
+            }
+
+            actual_result = printGeom(gRealRes.get());
+            expected_result = printGeom(gRes.get());
+
+            if(testValidOutput) {
+                success &= int(testValid(gRealRes.get(), "result"));
+            }
+        }
+
+
+        else if(opName == "intersectionsr") {
+
+            GeomPtr gRes(parseGeometry(opRes, "expected"));
+            gRes->normalize();
+            double precision = 1.0;
+
+            if(opArg3 != "") {
+                precision = std::atof(opArg3.c_str());
+            }
+
+            profile.start();
+            geom::PrecisionModel precMod(precision);
+            GeomPtr gRealRes = OverlayNG::overlay(gA, gB, OverlayNG::INTERSECTION, &precMod);
+
+            profile.stop();
+
+            gRealRes->normalize();
+
+            if(gRes->compareTo(gRealRes.get()) == 0) {
+                success = 1;
+            }
+
+            actual_result = printGeom(gRealRes.get());
+            expected_result = printGeom(gRes.get());
+
+            if(testValidOutput) {
+                success &= int(testValid(gRealRes.get(), "result"));
+            }
+        }
+
+        else if(opName == "intersectionsin") {
+
+            GeomPtr gRes(parseGeometry(opRes, "expected"));
+            gRes->normalize();
+            double precision = 1.0;
+
+            if(opArg3 != "") {
+                precision = std::atof(opArg3.c_str());
+            }
+
+            profile.start();
+            geom::PrecisionModel precMod(precision);
+            GeomPtr gRealRes = OverlayNGRobust::Intersection(gA, gB);
+
+            profile.stop();
+
+            gRealRes->normalize();
+
+            if(gRes->compareTo(gRealRes.get()) == 0) {
+                success = 1;
+            }
+
+            actual_result = printGeom(gRealRes.get());
+            expected_result = printGeom(gRes.get());
+
+            if(testValidOutput) {
+                success &= int(testValid(gRealRes.get(), "result"));
+            }
+        }
+
+
+        else if(opName == "unionsr") {
+
+            GeomPtr gRes(parseGeometry(opRes, "expected"));
+            gRes->normalize();
+            double precision = 1.0;
+            GeomPtr gRealRes;
+
+            if (gB) {
+                geom::PrecisionModel precMod(precision);
+                gRealRes = OverlayNG::overlay(gA, gB, OverlayNG::UNION, &precMod);
+                if(opArg3 != "") {
+                    precision = std::atof(opArg3.c_str());
+                }
+            }
+            else {
+                geom::PrecisionModel precMod(precision);
+
+                // gRealRes = OverlayNG::geomunion(gA, &precMod);
+                gRealRes = UnaryUnionNG::Union(gA, precMod);
+                if(opArg2 != "") {
+                    precision = std::atof(opArg2.c_str());
+                }
+            }
+
+            gRealRes->normalize();
+
+            if(gRes->compareTo(gRealRes.get()) == 0) {
+                success = 1;
+            }
+
+            actual_result = printGeom(gRealRes.get());
+            expected_result = printGeom(gRes.get());
+
+            if(testValidOutput) {
+                success &= int(testValid(gRealRes.get(), "result"));
+            }
+        }
+
+        else if(opName == "differencesr") {
+
+            GeomPtr gRes(parseGeometry(opRes, "expected"));
+            gRes->normalize();
+            double precision = 1.0;
+
+            if(opArg3 != "") {
+                precision = std::atof(opArg3.c_str());
+            }
+
+            const geom::Geometry* dgA = gA;
+            const geom::Geometry* dgB = gB;
+
+            // Swap arguments if necessary
+            if((opArg1 == "B" || opArg1 == "b") && gB) {
+                dgA = gB;
+                dgB = gA;
+            }
+
+            profile.start();
+            geom::PrecisionModel precMod(precision);
+            GeomPtr gRealRes = OverlayNG::overlay(dgA, dgB, OverlayNG::DIFFERENCE, &precMod);
+
+            profile.stop();
+
+            gRealRes->normalize();
+
+            if(gRes->compareTo(gRealRes.get()) == 0) {
+                success = 1;
+            }
+
+            actual_result = printGeom(gRealRes.get());
+            expected_result = printGeom(gRes.get());
+
+            if(testValidOutput) {
+                success &= int(testValid(gRealRes.get(), "result"));
+            }
+        }
+
+
+        else if(opName == "symdifferencesr") {
+
+            GeomPtr gRes(parseGeometry(opRes, "expected"));
+            gRes->normalize();
+            double precision = 1.0;
+
+            if(opArg3 != "") {
+                precision = std::atof(opArg3.c_str());
+            }
+
+            profile.start();
+            geom::PrecisionModel precMod(precision);
+            GeomPtr gRealRes = OverlayNG::overlay(gA, gB, OverlayNG::SYMDIFFERENCE, &precMod);
 
             profile.stop();
 
@@ -943,11 +1317,7 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
 
             GeomPtr gRealRes;
             if(gB) {
-#ifndef USE_BINARYOP
                 gRealRes = gA->Union(gB);
-#else
-                gRealRes = BinaryOp(gA, gB, overlayOp(OverlayOp::opUNION));
-#endif
             }
             else {
                 gRealRes = gA->Union();
@@ -970,11 +1340,7 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
             GeomPtr gRes(parseGeometry(opRes, "expected"));
             gRes->normalize();
 
-#ifndef USE_BINARYOP
             GeomPtr gRealRes(gA->difference(gB));
-#else
-            GeomPtr gRealRes = BinaryOp(gA, gB, overlayOp(OverlayOp::opDIFFERENCE));
-#endif
 
             gRealRes->normalize();
 
@@ -994,11 +1360,7 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
             GeomPtr gRes(parseGeometry(opRes, "expected"));
             gRes->normalize();
 
-#ifndef USE_BINARYOP
             GeomPtr gRealRes(gA->symDifference(gB));
-#else
-            GeomPtr gRealRes = BinaryOp(gA, gB, overlayOp(OverlayOp::opSYMDIFFERENCE));
-#endif
 
             gRealRes->normalize();
 
@@ -1513,8 +1875,8 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
 
             auto polys = plgnzr.getPolygons();
             std::vector<geom::Geometry*>* newgeoms = new std::vector<geom::Geometry*>;
-            for(unsigned int i = 0; i < polys->size(); i++) {
-                newgeoms->push_back((*polys)[i].release());
+            for(unsigned int i = 0; i < polys.size(); i++) {
+                newgeoms->push_back(polys[i].release());
             }
 
             GeomPtr gRealRes(factory->createGeometryCollection(newgeoms));
@@ -1545,11 +1907,9 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
 
             LineMerger merger;
             merger.add(p_gT);
-            std::unique_ptr< std::vector<geom::LineString*> > lines(merger.getMergedLineStrings());
-            std::vector<geom::Geometry*>* newgeoms = new std::vector<geom::Geometry*>(lines->begin(),
-                    lines->end());
+            auto lines = merger.getMergedLineStrings();
 
-            GeomPtr gRealRes(factory->createGeometryCollection(newgeoms));
+            GeomPtr gRealRes(factory->createGeometryCollection(std::move(lines)));
             gRealRes->normalize();
 
             if(gRes->compareTo(gRealRes.get()) == 0) {
@@ -1564,6 +1924,69 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
             }
         }
 
+        else if(opName == "overlayareatest") {
+
+            std::string maxDiffOp;
+            std::stringstream p_tmp;
+            double maxDiff = 1e-6;
+            double areaDiff = areaDelta(gA, gB, maxDiffOp, maxDiff, p_tmp);
+
+            // Debug output of actual geometries returned
+            if (areaDiff < maxDiff && false) {
+                std::cout << p_tmp.str();
+            }
+
+            p_tmp.str("");
+            p_tmp << maxDiffOp << ": " << areaDiff;
+            actual_result = p_tmp.str();
+            p_tmp.str("");
+            p_tmp << maxDiff;
+            expected_result = p_tmp.str();
+
+            if (areaDiff < maxDiff)
+                success = 1;
+        }
+
+        else if(opName == "unionlength") {
+
+            char* rest;
+            GeomPtr result = OverlayNGRobust::Union(gA);
+            double resultLength = result->getLength();
+            double expectedLength = std::strtod(opRes.c_str(), &rest);
+            if(rest == opRes.c_str()) {
+                throw std::runtime_error("malformed testcase: missing expected length 'unionlength' op");
+            }
+
+            std::stringstream ss;
+            ss << resultLength;
+            actual_result = ss.str();
+
+            if (std::abs(expectedLength-resultLength) / expectedLength < 1e-3) {
+                success = 1;
+            }
+
+        }
+
+        else if(opName == "unionarea") {
+
+            char* rest;
+            GeomPtr result = OverlayNGRobust::Union(gA);
+            double resultArea  = result->getArea();
+            double expectedArea = std::strtod(opRes.c_str(), &rest);
+            if(rest == opRes.c_str()) {
+                throw std::runtime_error("malformed testcase: missing expected area 'unionarea' op");
+            }
+
+            std::stringstream ss;
+            ss << resultArea;
+            actual_result = ss.str();
+
+            if (std::abs(expectedArea-resultArea) / expectedArea < 1e-3) {
+                success = 1;
+            }
+
+        }
+
         else if(opName == "areatest") {
             char* rest;
             double toleratedDiff = std::strtod(opRes.c_str(), &rest);
@@ -1576,12 +1999,7 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
             if(verbose > 1) {
                 std::cerr << "Running intersection for areatest" << std::endl;
             }
-#ifndef USE_BINARYOP
             GeomPtr gI(gA->intersection(gB));
-#else
-            GeomPtr gI = BinaryOp(gA, gB,
-                                  overlayOp(OverlayOp::opINTERSECTION));
-#endif
 
             if(testValidOutput) {
                 validOut &= int(testValid(gI.get(), "areatest intersection"));
@@ -1591,12 +2009,7 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
                 std::cerr << "Running difference(A,B) for areatest" << std::endl;
             }
 
-#ifndef USE_BINARYOP
             GeomPtr gDab(gA->difference(gB));
-#else
-            GeomPtr gDab = BinaryOp(gA, gB,
-                                    overlayOp(OverlayOp::opDIFFERENCE));
-#endif
 
             if(testValidOutput) {
                 validOut &= int(testValid(gI.get(), "areatest difference(a,b)"));
@@ -1606,12 +2019,7 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
                 std::cerr << "Running difference(B,A) for areatest" << std::endl;
             }
 
-#ifndef USE_BINARYOP
             GeomPtr gDba(gB->difference(gA));
-#else
-            GeomPtr gDba = BinaryOp(gB, gA,
-                                    overlayOp(OverlayOp::opDIFFERENCE));
-#endif
 
             if(testValidOutput) {
                 validOut &= int(testValid(gI.get(), "areatest difference(b,a)"));
@@ -1621,12 +2029,7 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
                 std::cerr << "Running symdifference for areatest" << std::endl;
             }
 
-#ifndef USE_BINARYOP
             GeomPtr gSD(gA->symDifference(gB));
-#else
-            GeomPtr gSD = BinaryOp(gA, gB,
-                                   overlayOp(OverlayOp::opSYMDIFFERENCE));
-#endif
 
             if(testValidOutput) {
                 validOut &= int(testValid(gI.get(), "areatest symdifference"));
@@ -1636,12 +2039,7 @@ XMLTester::parseTest(const tinyxml2::XMLNode* node)
                 std::cerr << "Running union for areatest" << std::endl;
             }
 
-#ifndef USE_BINARYOP
             GeomPtr gU(gA->Union(gB));
-#else
-            GeomPtr gU = BinaryOp(gA, gB,
-                                  overlayOp(OverlayOp::opUNION));
-#endif
 
             double areaA = gA->getArea();
             double areaB = gB->getArea();
@@ -2005,7 +2403,7 @@ main(int argC, char* argV[])
  *         error on load of requested tests.
  *
  * Revision 1.32  2006/04/14 14:57:15  strk
- * XMLTester binary ops invoked using the new BinaryOp template function.
+ * XMLTester binary ops invoked using the new HeuristicOverlay template function.
  *
  * Revision 1.31  2006/04/07 13:26:38  strk
  * Use of unique_ptr<> to prevent confusing leaks in tester

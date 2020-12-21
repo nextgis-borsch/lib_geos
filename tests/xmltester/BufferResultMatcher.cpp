@@ -19,7 +19,7 @@
 #include "BufferResultMatcher.h"
 
 #include <geos/geom/Geometry.h>
-#include <geos/geom/BinaryOp.h>
+#include <geos/geom/HeuristicOverlay.h>
 #include <geos/operation/overlay/OverlayOp.h>
 #include <geos/algorithm/distance/DiscreteHausdorffDistance.h>
 
@@ -27,10 +27,6 @@
 
 namespace geos {
 namespace xmltester {
-
-double BufferResultMatcher::MAX_RELATIVE_AREA_DIFFERENCE = 1.0E-3;
-double BufferResultMatcher::MIN_DISTANCE_TOLERANCE = 1.0e-8;
-double BufferResultMatcher::MAX_HAUSDORFF_DISTANCE_FACTOR = 100;
 
 bool
 BufferResultMatcher::isBufferResultMatch(const geom::Geometry& actualBuffer,
@@ -41,7 +37,7 @@ BufferResultMatcher::isBufferResultMatch(const geom::Geometry& actualBuffer,
         return true;
     }
 
-    /**
+    /*
      * MD - need some more checks here - symDiffArea won't catch
      * very small holes ("tears")
      * near the edge of computed buffers (which can happen
@@ -72,11 +68,11 @@ BufferResultMatcher::isSymDiffAreaInTolerance(
     typedef std::unique_ptr<geom::Geometry> GeomPtr;
 
     using namespace operation::overlay;
-    using geos::geom::BinaryOp;
+    using geos::geom::HeuristicOverlay;
 
     double area = expectedBuffer.getArea();
-    GeomPtr diff = BinaryOp(&actualBuffer, &expectedBuffer,
-                            overlayOp(OverlayOp::opSYMDIFFERENCE));
+    GeomPtr diff = HeuristicOverlay(&actualBuffer, &expectedBuffer,
+                            OverlayOp::opSYMDIFFERENCE);
 
     double areaDiff = diff->getArea();
 

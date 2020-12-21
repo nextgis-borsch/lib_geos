@@ -126,14 +126,14 @@ void object::test<6>
 
     try {
         geom = wktreader.read("POLYGON( EMPTY, (1 1,2 2,1 2,1 1))");
-        fail("Didn't get expected exception");
+        fail("Did not get expected exception");
     }
     catch(const geos::util::IllegalArgumentException& ex) {
         ensure("Got expected exception", true);
-        ex.what();
+        (void)(ex.what());
     }
     catch(...) {
-        fail("Got unexpected execpetion.");
+        fail("Got unexpected exception");
     }
 }
 
@@ -162,7 +162,7 @@ void object::test<7>
     }
     catch(const geos::util::IllegalArgumentException& ex) {
         ensure("Got expected exception", true);
-        ex.what();
+        (void)(ex.what());
     }
     catch(...) {
         fail("Got unexpected exception");
@@ -191,6 +191,67 @@ void object::test<8>
             ensure("Did get expected exception", true);
         }
     }
+}
+
+// Correctly read higher dimensional empty
+template<>
+template<>
+void object::test<9>
+()
+{
+    auto geom1(wktreader.read("POINT EMPTY"));
+    ensure("dimension(POINT EMPTY) == 2", geom1->getCoordinateDimension() == 2);
+
+    auto geom2(wktreader.read("POINT Z EMPTY"));
+    ensure("dimension(POINT Z EMPTY) == 3", geom2->getCoordinateDimension() == 3);
+
+    auto geom3(wktreader.read("LINESTRING EMPTY"));
+    ensure("dimension(LINESTRING EMPTY) == 2", geom3->getCoordinateDimension() == 2);
+
+    auto geom4(wktreader.read("LINESTRING Z EMPTY"));
+    ensure("dimension(LINESTRING Z EMPTY) == 3", geom4->getCoordinateDimension() == 3);
+
+    auto geom5(wktreader.read("POLYGON EMPTY"));
+    ensure("dimension(POLYGON EMPTY) == 2", geom5->getCoordinateDimension() == 2);
+
+    auto geom6(wktreader.read("POLYGON Z EMPTY"));
+    ensure("dimension(POLYGON Z EMPTY) == 3", geom6->getCoordinateDimension() == 3);
+}
+
+
+// Handle WKT with mixed dimensionality in
+// coordinate sequence. This is the old behaviour, wherein
+// the first coordinate of a coordinate sequence dictates the
+// dimensionality of the following coordinates. This ignores
+// dimensionality tags (Z/M). It also has strange behaviour
+// in the multipoint case, but we leave this unchanged for now
+// as this test is being written just prior to 3.9 release.
+template<>
+template<>
+void object::test<10>
+()
+{
+    GeomPtr geom;
+    geom = wktreader.read("MULTIPOINT (1 1, 2 2)");
+    ensure("dimension(MULTIPOINT (1 1, 2 2)) == 2", geom->getCoordinateDimension() == 2);
+
+    geom = wktreader.read("LINESTRING (1 1, 2 2)");
+    ensure("dimension(LINESTRING (1 1, 2 2)) == 2", geom->getCoordinateDimension() == 2);
+
+    geom = wktreader.read("MULTIPOINT (1 1 1, 2 2)");
+    ensure("dimension(MULTIPOINT (1 1 1, 2 2)) == 3", geom->getCoordinateDimension() == 3);
+
+    geom = wktreader.read("MULTIPOINT (1 1, 2 2 2)");
+    ensure("dimension(MULTIPOINT (1 1, 2 2 2)) == 3", geom->getCoordinateDimension() == 3);
+
+    geom = wktreader.read("LINESTRING (1 1 1, 2 2)");
+    ensure("dimension(LINESTRING (1 1 1, 2 2)) == 3", geom->getCoordinateDimension() == 3);
+
+    geom = wktreader.read("LINESTRING (1 1, 2 2 2)");
+    ensure("dimension(LINESTRING (1 1, 2 2 2)) == 2", geom->getCoordinateDimension() == 2);
+
+    geom = wktreader.read("POLYGON ((0 0, 1 0, 1 1 1, 0 1, 0 0))");
+    ensure("dimension(POLYGON ((0 0, 1 0, 1 1 1, 0 1, 0 0)) == 2", geom->getCoordinateDimension() == 2);
 }
 
 } // namespace tut
