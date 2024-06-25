@@ -28,6 +28,7 @@
 #include <vector>
 #include <array>
 #include <string>
+#include <cstdint>
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -147,4 +148,3 @@ std::ostream& operator<< (std::ostream&, const TopologyLocation&);
 #endif
 
 #endif // ifndef GEOS_GEOMGRAPH_TOPOLOGYLOCATION_H
-

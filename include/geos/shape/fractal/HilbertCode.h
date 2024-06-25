@@ -17,6 +17,7 @@
 
 #include <geos/export.h>
 #include <string>
+#include <cstdint>
 
 // Forward declarations
 namespace geos {
@@ -122,6 +123,3 @@ private:
 } // namespace geos.shape.fractal
 } // namespace geos.shape
 } // namespace geos
-
-
-

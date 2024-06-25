@@ -16,6 +16,7 @@
 #pragma once
 
 #include <geos/export.h>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -55,6 +56,3 @@ private:
 } // namespace geos.shape.fractal
 } // namespace geos.shape
 } // namespace geos
-
-
-
