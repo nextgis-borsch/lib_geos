@@ -1,7 +1,7 @@
 # This is used in CI as a simple test of GEOS building as a subproject
 # within a CMake super-build context.
 
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.16.3)
 
 project(superbuild_example)
 

@@ -8,7 +8,7 @@
 # by the Free Software Foundation.
 # See the COPYING file for more information.
 ################################################################################
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.16.3)
 
 project(geos-examples VERSION 1.0.0 LANGUAGES C CXX)
 find_package(GEOS 3.10 REQUIRED)
