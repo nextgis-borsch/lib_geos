@@ -63,6 +63,10 @@ project(GEOS
   HOMEPAGE_URL "https://libgeos.org/"
 )
 
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/borsch/cmake/version.cmake)
+report_version(GEOS ${_version_major}.${_version_minor}.${_version_patch})
+write_version(${CMAKE_CURRENT_SOURCE_DIR}/Version.txt ${_version_major} ${_version_minor} ${_version_patch})
+
 if(NOT "${_version_patch_word}" STREQUAL "")
   # Re-write VERSION variables after project()
   set(GEOS_VERSION "${GEOS_VERSION}${_version_patch_word}")
@@ -383,8 +387,9 @@ add_subdirectory(capi)
 # Tests
 #-----------------------------------------------------------------------------
 if(PROJECT_IS_TOP_LEVEL)
-  include(CTest)
+  option(BUILD_TESTING "Build unit tests" OFF)
   if(BUILD_TESTING)
+    include(CTest)
     add_subdirectory(tests)
   endif()
 endif()
@@ -419,142 +424,19 @@ if(PROJECT_IS_TOP_LEVEL AND BUILD_WEBSITE)
   add_subdirectory(web)
 endif()
 
-#-----------------------------------------------------------------------------
-# Generate targets file for importing directly from GEOS build tree
-#-----------------------------------------------------------------------------
+# Installing and packaging =====================================================
 
-export(TARGETS ryu geos geos_c geos_cxx_flags geos_developer_cxx_flags
-       NAMESPACE GEOS::
-       FILE "geos-targets.cmake")
-
-#-----------------------------------------------------------------------------
-# Install and export targets - support 'make install' or equivalent
-#-----------------------------------------------------------------------------
-
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/geos-config-version.cmake"
-  VERSION ${GEOS_VERSION}
-  COMPATIBILITY AnyNewerVersion)
-
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/geos-config.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/geos-config.cmake"
-  COPYONLY)
-
-install(TARGETS geos geos_cxx_flags
-  EXPORT geos-targets
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  )
-
-install(TARGETS geos_c
-  EXPORT geos-targets
-  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-  INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  )
-
-install(EXPORT geos-targets
-  FILE geos-targets.cmake
-  NAMESPACE GEOS::
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GEOS)
-
-install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/geos-config.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/geos-config-version.cmake"
-  DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/GEOS)
-install(DIRECTORY
-  "${CMAKE_CURRENT_LIST_DIR}/include/geos"
-  "${CMAKE_CURRENT_BINARY_DIR}/include/geos"
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  FILES_MATCHING PATTERN "*.h")
-install(DIRECTORY
-  "${CMAKE_CURRENT_LIST_DIR}/include/geos"
-  "${CMAKE_CURRENT_BINARY_DIR}/include/geos"
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  FILES_MATCHING PATTERN "*.hpp")
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/capi/geos_c.h"
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(FILES "${CMAKE_CURRENT_LIST_DIR}/include/geos.h"
-  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-
-add_subdirectory(tools)
-
-#-----------------------------------------------------------------------------
-# Uninstall
-#-----------------------------------------------------------------------------
-if(PROJECT_IS_TOP_LEVEL)
-  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/borsch/cmake/uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake/uninstall.cmake"
-    IMMEDIATE @ONLY)
-
-  add_custom_target(uninstall
-    "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake/uninstall.cmake")
-endif()  # PROJECT_IS_TOP_LEVEL
-
-#-----------------------------------------------------------------------------
-# "make dist" workalike
-#-----------------------------------------------------------------------------
-if(PROJECT_IS_TOP_LEVEL)
-  get_property(_is_multi_config_generator GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-  if(NOT _is_multi_config_generator)
-    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "GEOS Computational Geometry Library")
-    set(CPACK_PACKAGE_VENDOR "OSGeo")
-    set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/README.md)
-    set(CPACK_SOURCE_GENERATOR "TBZ2")
-    set(CPACK_PACKAGE_VERSION_MAJOR ${GEOS_VERSION_MAJOR})
-    set(CPACK_PACKAGE_VERSION_MINOR ${GEOS_VERSION_MINOR})
-    set(CPACK_PACKAGE_VERSION_PATCH ${GEOS_VERSION_PATCH})
-    set(CPACK_SOURCE_PACKAGE_FILE_NAME "geos-${GEOS_VERSION}")
-    set(CPACK_VERBATIM_VARIABLES TRUE)
-    set(CPACK_SOURCE_IGNORE_FILES
-      /\\..*  # any file/directory starting with .
-      /.*build-.*/
-      #/.*build.*/ #taken out because breaks gitlab make distcheck
-      /autogen\\.sh
-      /autom4te\\.cache
-      /bin/
-      /debian/
-      /HOWTO_RELEASE
-      /include/geos/version\\.h\$
-      /php/
-      /tools/ci
-      /tools/geos-config\$
-      /tools/geos\\.pc\$
-      /web/
-      cmake_install\\.cmake\$
-      ${CMAKE_CURRENT_BINARY_DIR}
-      )
-
-    # message(STATUS "GEOS: CPACK_SOURCE_PACKAGE_FILE_NAME: ${CPACK_SOURCE_PACKAGE_FILE_NAME}")
-    # message(STATUS "GEOS: CPACK_SOURCE_IGNORE_FILES: ${CPACK_SOURCE_IGNORE_FILES}")
-    # message(STATUS "GEOS: CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
-    include(CPack)
-    add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
-
-    message(STATUS "GEOS: Configured 'dist' target")
-  endif()
-endif()  # PROJECT_IS_TOP_LEVEL
-
-#-----------------------------------------------------------------------------
-# "make check" workalike
-#-----------------------------------------------------------------------------
-
-if(PROJECT_IS_TOP_LEVEL)
-  add_custom_target(check COMMAND ${CMAKE_BUILD_TOOL} test)
+if(NOT DEFINED PACKAGE_VENDOR)
+    set(PACKAGE_VENDOR NextGIS)
 endif()
 
-#-----------------------------------------------------------------------------
-# "make distcheck" workalike
-#-----------------------------------------------------------------------------
-if(PROJECT_IS_TOP_LEVEL)
-  if(NOT _is_multi_config_generator)
-    find_package(MakeDistCheck)
-    AddMakeDistCheck()
-    message(STATUS "GEOS: Configured 'distcheck' target")
-  endif()
+include(${CMAKE_CURRENT_LIST_DIR}/cmake/borsch/cmake/packaging.cmake)
+create_borsch_package(${PROJECT_NAME}
+    VENDOR ${PACKAGE_VENDOR}
+    VERSION ${GEOS_VERSION_NOPATCH}
+    TARGETS geos geos_cxx_flags geos_developer_cxx_flags geos_c
+    HEADERS "${CMAKE_CURRENT_BINARY_DIR}/capi/geos_c.h" "${CMAKE_CURRENT_LIST_DIR}/include/geos.h"
+    HEADERS_DIRS "${CMAKE_CURRENT_LIST_DIR}/include/geos" "${CMAKE_CURRENT_BINARY_DIR}/include/geos"
+)
 
-  unset(_is_multi_config_generator)
-endif()  # PROJECT_IS_TOP_LEVEL
+add_subdirectory(tools)
